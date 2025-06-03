@@ -9,7 +9,12 @@ export class KiwiApp {
   private request = createKiwiRequest()
 
   appId: number
-  schemaPool = new Map<string, KiwiSchema>()
+  private _schemaPool = new Map<string, KiwiSchema>()
+
+  private _rootSchemas: KiwiSchema[] = []
+  get rootSchemas() {
+    return this._rootSchemas
+  }
 
   static async createByAppId(appId: number, autoSetupSchemaPool = true) {
     const kiwiApp = new KiwiApp(appId)
@@ -30,9 +35,11 @@ export class KiwiApp {
       classes: KiwiSchemaInterface[]
     }>('/schema')
     const schemaCreated: KiwiSchemaCreated = schema => {
-      this.schemaPool.set(schema.qualifiedName, schema)
+      this._schemaPool.set(schema.qualifiedName, schema)
     }
-    metaSchemaList.map(metaSchema => KiwiSchema.from(metaSchema, schemaCreated))
-    console.log('setupSchema =', this.schemaPool, metaSchemaList)
+    this._rootSchemas = metaSchemaList.map(metaSchema =>
+      KiwiSchema.from(metaSchema, schemaCreated)
+    )
+    console.log(this._rootSchemas)
   }
 }
