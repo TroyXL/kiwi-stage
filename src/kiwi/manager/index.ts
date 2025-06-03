@@ -1,21 +1,14 @@
-import { createAlova } from 'alova'
-import adapterFetch from 'alova/fetch'
-import { KIWI_BASE_REQUEST_URL, KIWI_REQUEST_TIMEOUT } from './constants'
+import { createKiwiRequest } from '../createKiwiRequest'
 
 export type KiwiManagerAuthorization = {
-  appId: number
   loginName: string
   password: string
 }
 
+const KIWI_MANAGER_APP_ID = 2
+
 export class KiwiManager {
-  appId: number
-  private request = createAlova({
-    baseURL: KIWI_BASE_REQUEST_URL,
-    timeout: KIWI_REQUEST_TIMEOUT,
-    requestAdapter: adapterFetch(),
-    responded: response => response.json(),
-  })
+  private request = createKiwiRequest()
 
   static async create(
     authorization: KiwiManagerAuthorization,
@@ -27,7 +20,7 @@ export class KiwiManager {
       autoFetchApps?: boolean
     } = {}
   ) {
-    const kiwiManager = new KiwiManager(authorization)
+    const kiwiManager = new KiwiManager()
     if (autoLogin) {
       await kiwiManager.login(authorization)
       if (autoFetchApps) {
@@ -38,15 +31,18 @@ export class KiwiManager {
     return kiwiManager
   }
 
-  private constructor(authorization: KiwiManagerAuthorization) {
-    this.appId = authorization.appId
+  private constructor() {
     this.request.options.beforeRequest = method => {
-      method.config.headers['X-App-ID'] = this.appId
+      method.config.credentials = 'include'
+      method.config.headers['X-App-ID'] = KIWI_MANAGER_APP_ID
     }
   }
 
   login(authorization: KiwiManagerAuthorization) {
-    return this.request.Post('/login', authorization)
+    return this.request.Post('/login', {
+      appId: KIWI_MANAGER_APP_ID,
+      ...authorization,
+    })
   }
 
   logout() {
