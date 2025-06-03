@@ -1,0 +1,167 @@
+@Label("商品")
+class Product(
+    @Summary
+    @Label("名称")
+    var name: string,
+    @Label("价格")
+    var price: Money,
+    @Label("库存")
+    var stock: int,
+    @Label("类目")
+    var category: Category
+) {
+
+    @Label("扣减库存")
+    fn reduceStock(@Label("数量") quantity: int) {
+        require(stock >= quantity, "Out of stock")
+        stock -= quantity
+    }
+
+    @Label("购买")
+    fn buy(@Label("数量") quantity: int, @Label("优惠券") coupon: Coupon?) -> Order {
+        reduceStock(quantity)
+        var price = this.price.times(quantity)
+        if (coupon != null)
+            price = price.sub(coupon!!.redeem())
+        val order = Order(price)
+        order.Item(this, quantity)
+        return order
+    }
+
+}
+
+@Label("优惠券")
+class Coupon(
+    @Summary
+    @Label("标题")
+    val title: string,
+    @Label("折扣") 
+    val discount: Money
+) {
+
+    @Label("已核销")
+    var redeemed = false
+
+    @Label("核销")
+    fn redeem() -> Money {
+        if (redeemed)
+            throw Exception("Coupon already redeemed")
+        redeemed = true
+        return discount
+    }
+
+}
+
+
+@Label("类目")
+enum Category {
+    @Label("电子产品")
+    ELECTRONICS,
+    @Label("服装")
+    CLOTHING,
+    @Label("其他")
+    OTHER
+;
+
+}
+
+@Label("金额")
+value class Money(
+    @Label("数额")
+    val amount: double,
+    @Label("币种")
+    val currency: Currency
+) {
+
+    @Summary
+    priv val summary = amount + " " + currency.label()
+
+    fn add(@Label("待加金额") that: Money) -> Money {
+        return Money(amount + that.getAmount(currency), currency)
+    }
+
+    fn sub(that: Money) -> Money {
+        return Money(amount - that.getAmount(currency), currency)
+    }
+
+    fn getAmount(@Label("目标币种") currency: Currency) -> double {
+        return currency.rate / this.currency.rate * amount
+    }
+
+    fn times(n: int) -> Money {
+        return Money(amount * n, currency)
+    }
+
+}
+
+@Label("币种")
+enum Currency(
+    @Label("汇率")
+    val rate: double
+) {
+    @Label("人民币")
+    YUAN(7.2) {
+
+        fn label() -> string {
+            return "元"
+        }
+
+    },
+    @Label("美元")
+    DOLLAR(1) {
+
+        fn label() -> string {
+            return "美元"
+        }
+
+    },
+    @Label("英镑")
+    POUND(0.75) {
+
+        fn label() -> string {
+            return "英镑"
+        }
+
+    },
+;
+
+    abstract fn label() -> string
+
+}
+
+@Bean
+@Label("订单服务")
+class OrderService {
+
+    fn placeOrder(@Label("商品列表") products: Product[]) -> Order {
+        require(products.length > 0, "Missing products")
+        val price = products[0].price
+        var i = 1
+        while (i < products.length) {
+            price = price.add(products[i].price)
+            i++
+        }
+        val order = Order(price)
+        products.forEach(p -> {
+            p.reduceStock(1)
+            order.Item(p, 1)
+        })
+        return order
+    }
+
+}
+
+@Label("订单")
+class Order(
+    @Label("总价")
+    val price: Money
+) {
+    @Label("订单项")
+    class Item(
+        @Label("商品")
+        val product: Product,
+        @Label("数量")
+        val quantity: int
+    )
+
+}
