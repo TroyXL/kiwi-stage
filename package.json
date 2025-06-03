@@ -10,6 +10,7 @@
     "ui:add": "pnpm dlx shadcn-vue@latest add"
   },
   "dependencies": {
+    "@arco-design/web-vue": "^2.57.0",
     "alova": "^3.2.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

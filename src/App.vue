@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { KiwiApp, KiwiManager } from './lib/kiwi'
+import { KiwiApp } from '@/kiwi'
 
 async function handleLoginKiwi() {
-  const kiwiManager = await KiwiManager.create(
-    {
-      appId: 2,
-      loginName: 'demo',
-      password: '123456',
-    },
-    {
-      autoFetchApps: false,
-    }
-  )
+  // const kiwiManager = await KiwiManager.create(
+  //   {
+  //     loginName: 'demo',
+  //     password: '123456',
+  //   }
+  // )
 
   /**
    * 简单应用 1000001018
@@ -23,5 +18,5 @@ async function handleLoginKiwi() {
 </script>
 
 <template>
-  <Button size="sm" @click="handleLoginKiwi">Button</Button>
+  <a-button type="primary" @click="handleLoginKiwi">Login Kiwi</a-button>
 </template>
