@@ -33,7 +33,7 @@ function handleClickMenuItem() {}
   <a-layout class="full-screen" v-else>
     <a-layout-sider>
       <div class="px-2 mb-2">
-        <h1 class="!text-xl px-2">Kiwi</h1>
+        <h1 class="!text-xl px-2">Kiwi App</h1>
         <SwitchKiwiApp :app-info="appInfo" />
       </div>
       <a-menu class="w-full" @menu-item-click="handleClickMenuItem">
