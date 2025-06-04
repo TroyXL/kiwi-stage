@@ -1,9 +1,32 @@
-import ArcoVue from '@arco-design/web-vue'
+import ArcoVue, {
+  Drawer,
+  Message,
+  Modal,
+  Notification,
+} from '@arco-design/web-vue'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { router } from './router'
 
 import '@arco-design/web-vue/dist/arco.css'
-import './style.css'
+import './styles/global.css'
+import './styles/override.css'
+import './styles/style.css'
 
-createApp(App).use(ArcoVue).use(router).mount('#app')
+const useGlobalInjects = {
+  install: (app: ReturnType<typeof createApp>) => {
+    ;[Message, Notification, Drawer, Modal].forEach(component => {
+      component._context = app._context
+    })
+
+    app.config.errorHandler = error => {
+      console.error(error)
+      Notification.error({
+        title: '发生错误',
+        content: (error as any).details || (error as any).message,
+      })
+    }
+  },
+}
+
+createApp(App).use(router).use(ArcoVue).use(useGlobalInjects).mount('#app')

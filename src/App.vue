@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
+import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
 import { isInteger, toInteger } from 'lodash'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -25,6 +26,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <a-spin v-if="loading" class="fixed-center" />
-  <router-view v-else />
+  <a-config-provider :locale="enUS">
+    <a-spin v-if="loading" class="fixed-center" />
+    <router-view v-else />
+  </a-config-provider>
 </template>

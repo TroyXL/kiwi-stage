@@ -1,9 +1,6 @@
 import { createKiwiRequest } from '../createKiwiRequest'
-import {
-  KiwiSchema,
-  type KiwiSchemaCreated,
-  type KiwiSchemaInterface,
-} from '../schema'
+import { KiwiManager } from '../manager'
+import { KiwiClassSchema, KiwiSchema } from '../schema'
 
 export class KiwiApp {
   private static _current: KiwiApp | null = null
@@ -22,11 +19,15 @@ export class KiwiApp {
     return this._rootSchemas
   }
 
-  static async createByAppId(appId: number, autoSetupSchemaPool = true) {
-    const kiwiApp = new KiwiApp(appId)
-    if (autoSetupSchemaPool) await kiwiApp.setupSchemaPool()
-    KiwiApp._current = kiwiApp
-    return kiwiApp
+  get rootClassSchemas() {
+    return this._rootSchemas.filter(
+      schema => schema.tag === 'class' && !(schema as KiwiClassSchema).isBean
+    ) as KiwiClassSchema[]
+  }
+
+  static async createByAppId(appId: number) {
+    KiwiApp._current = new KiwiApp(appId)
+    return KiwiApp._current
   }
 
   private constructor(appId: number) {
@@ -39,6 +40,10 @@ export class KiwiApp {
 
   dispose() {
     KiwiApp._current = null
+  }
+
+  fetchAppInfo() {
+    return KiwiManager.shared.fetchAppById(this.appId)
   }
 
   async setupSchemaPool() {
