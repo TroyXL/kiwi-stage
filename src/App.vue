@@ -1,22 +1,30 @@
 <script setup lang="ts">
-import { KiwiApp } from '@/kiwi'
+import { KiwiApp, KiwiManager } from '@/kiwi'
+import { isInteger, toInteger } from 'lodash'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { KIWI_APP_RECENT } from './lib/storageKeys'
 
-async function handleLoginKiwi() {
-  // const kiwiManager = await KiwiManager.create(
-  //   {
-  //     loginName: 'demo',
-  //     password: '123456',
-  //   }
-  // )
+const router = useRouter()
+const loading = ref(true)
 
-  /**
-   * 简单应用 1000001018
-   * 复杂应用 1000000010
-   */
-  const kiwiApp = await KiwiApp.createByAppId(1000000010)
-}
+onMounted(async () => {
+  const hasLogin = await KiwiManager.shared.hasLogin()
+  if (!hasLogin) router.replace('/login')
+  else {
+    const recentAppId = toInteger(localStorage.getItem(KIWI_APP_RECENT))
+    if (recentAppId && isInteger(recentAppId)) {
+      await KiwiApp.createByAppId(recentAppId)
+      router.replace(`/${recentAppId}`)
+    } else {
+      router.replace('/')
+    }
+  }
+  loading.value = false
+})
 </script>
 
 <template>
-  <a-button type="primary" @click="handleLoginKiwi">Login Kiwi</a-button>
+  <a-spin v-if="loading" class="fixed-center" />
+  <router-view v-else />
 </template>

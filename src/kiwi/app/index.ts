@@ -6,6 +6,12 @@ import {
 } from '../schema'
 
 export class KiwiApp {
+  private static _current: KiwiApp | null = null
+  static get current() {
+    // if (!this._current) throw new Error('KiwiApp not initialized')
+    return this._current
+  }
+
   private request = createKiwiRequest()
 
   appId: number
@@ -19,6 +25,7 @@ export class KiwiApp {
   static async createByAppId(appId: number, autoSetupSchemaPool = true) {
     const kiwiApp = new KiwiApp(appId)
     if (autoSetupSchemaPool) await kiwiApp.setupSchemaPool()
+    KiwiApp._current = kiwiApp
     return kiwiApp
   }
 
@@ -28,6 +35,10 @@ export class KiwiApp {
       method.config.credentials = 'include'
       method.config.headers['X-App-ID'] = appId
     }
+  }
+
+  dispose() {
+    KiwiApp._current = null
   }
 
   async setupSchemaPool() {
