@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { KIWI_APP_RECENT } from '@/lib/storageKeys'
 import { ArrowRightLeft } from 'lucide-vue-next'
 import { type PropType } from 'vue'
 import { useRouter } from 'vue-router'
@@ -12,7 +13,7 @@ defineProps({
 const router = useRouter()
 
 function handleSwitchApp() {
-  // localStorage.removeItem(KIWI_APP_RECENT)
+  localStorage.removeItem(KIWI_APP_RECENT)
   router.replace('/')
 }
 </script>
