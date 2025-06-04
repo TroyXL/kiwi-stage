@@ -1,5 +1,6 @@
 import { createAlova } from 'alova'
 import adapterFetch from 'alova/fetch'
+import vueHook from 'alova/vue'
 import { KIWI_BASE_REQUEST_URL, KIWI_REQUEST_TIMEOUT } from './constants'
 
 export function createKiwiRequest() {
@@ -8,6 +9,7 @@ export function createKiwiRequest() {
     baseURL: KIWI_BASE_REQUEST_URL,
     timeout: KIWI_REQUEST_TIMEOUT,
     cacheFor: null,
+    statesHook: vueHook,
     requestAdapter: adapterFetch(),
     responded: async response => {
       const { code, message, data } = (await response.json()) as {

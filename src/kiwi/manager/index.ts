@@ -1,15 +1,5 @@
 import { createKiwiRequest } from '../createKiwiRequest'
 
-export type KiwiManagerAuthorization = {
-  loginName: string
-  password: string
-}
-
-export type KiwiManagerLoginInfo = {
-  appId: number
-  userId: string
-}
-
 const KIWI_MANAGER_APP_ID = 2
 
 export class KiwiManager {
@@ -51,14 +41,21 @@ export class KiwiManager {
     return this.request.Post('/logout')
   }
 
-  listApps() {
-    return this.request.Get('/app', {
+  listApps(page = 1, pageSize = 5) {
+    return this.request.Get<{
+      total: number
+      items: KiwiAppInfo[]
+    }>('/app', {
       params: {
-        page: 1,
-        pageSize: 100,
+        page,
+        pageSize,
         searchText: void 0,
       },
     })
+  }
+
+  fetchAppById(appId: number) {
+    return this.request.Get<KiwiAppInfo>(`/app/${appId}`)
   }
 
   saveOrUpdateApp() {

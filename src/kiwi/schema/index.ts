@@ -1,24 +1,6 @@
 export type KiwiClassAccess = 'public' | 'private' | 'protected' | 'package'
 export type KiwiClassTag = 'class' | 'interface' | 'enum' | 'value'
 
-export interface KiwiEnumConstant {
-  name: string
-  label: string
-}
-
-export interface KiwiSchemaInterface {
-  access: KiwiClassAccess
-  abstract: boolean
-  tag: KiwiClassTag
-  name: string
-  qualifiedName: string
-  label: string
-  classes: KiwiSchemaInterface[]
-  enumConstants: KiwiEnumConstant[]
-}
-
-export type KiwiSchemaCreated = (schema: KiwiSchema) => void
-
 export abstract class KiwiSchema {
   readonly access: KiwiClassAccess = 'public'
   readonly isAbstract: boolean
@@ -35,13 +17,14 @@ export abstract class KiwiSchema {
   ): KiwiSchema {
     switch (schema.tag) {
       case 'class':
-        return new KiwiClass(schema, created)
+      default:
+        return new KiwiClassSchema(schema, created)
       case 'interface':
-        return new KiwiInterface(schema, created)
+        return new KiwiInterfaceSchema(schema, created)
       case 'enum':
-        return new KiwiEnum(schema, created)
+        return new KiwiEnumSchema(schema, created)
       case 'value':
-        return new KiwiValue(schema, created)
+        return new KiwiValueSchema(schema, created)
     }
   }
 
@@ -64,15 +47,23 @@ export abstract class KiwiSchema {
   }
 }
 
-class KiwiClass extends KiwiSchema {
+export class KiwiClassSchema extends KiwiSchema {
   readonly tag: KiwiClassTag = 'class'
+  readonly isBean: boolean
+  readonly beanName?: string
+
+  constructor(schema: KiwiSchemaInterface, created: KiwiSchemaCreated) {
+    super(schema, created)
+    this.isBean = !!schema.beanName
+    this.beanName = schema.beanName
+  }
 }
 
-class KiwiInterface extends KiwiSchema {
+export class KiwiInterfaceSchema extends KiwiSchema {
   readonly tag: KiwiClassTag = 'interface'
 }
 
-class KiwiEnum extends KiwiSchema {
+export class KiwiEnumSchema extends KiwiSchema {
   readonly tag: KiwiClassTag = 'enum'
 
   private _options: KiwiEnumConstant[] | null = null
@@ -98,6 +89,6 @@ class KiwiEnum extends KiwiSchema {
   }
 }
 
-class KiwiValue extends KiwiSchema {
+export class KiwiValueSchema extends KiwiSchema {
   readonly tag: KiwiClassTag = 'value'
 }
