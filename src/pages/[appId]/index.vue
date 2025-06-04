@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
+import SwitchKiwiApp from '@/components/SwitchKiwiApp.vue'
 import { KiwiApp, KiwiClassSchema } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
 import { toInteger } from 'lodash'
-import { ArrowRightLeft, Shapes } from 'lucide-vue-next'
+import { Shapes } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
-const router = useRouter()
 const route = useRoute()
 
 const { appId } = route.params as { appId: string }
@@ -25,11 +25,6 @@ onMounted(async () => {
   loading.value = false
 })
 
-function handleSwitchApp() {
-  localStorage.removeItem(KIWI_APP_RECENT)
-  router.replace('/')
-}
-
 function handleClickMenuItem() {}
 </script>
 
@@ -38,26 +33,19 @@ function handleClickMenuItem() {}
   <a-layout class="full-screen" v-else>
     <a-layout-sider>
       <div class="px-2 mb-2">
-        <h1 class="!text-xl">Kiwi</h1>
-        <a-button
-          class="w-full !justify-between gap-2"
-          type="outline"
-          @click="handleSwitchApp"
-        >
-          <span class="font-medium">{{ appInfo!.name }}</span>
-          <ArrowRightLeft :size="14" />
-        </a-button>
+        <h1 class="!text-xl px-2">Kiwi</h1>
+        <SwitchKiwiApp :app-info="appInfo" />
       </div>
       <a-menu class="w-full" @menu-item-click="handleClickMenuItem">
         <a-menu-item
           v-for="classSchema in kiwiClasses"
           :key="classSchema.qualifiedName"
-          class="flex gap-2 items-center"
+          class="flex gap-2 items-center !rounded-md transition-colors"
         >
           <Shapes :size="16" />
-          <div class="leading-snug py-1">
-            <p class="font-bold">{{ classSchema.label }}</p>
-            <p class="text-xs">{{ classSchema.qualifiedName }}</p>
+          <div class="leading-snug text-xs py-1.5">
+            <p class="font-medium">{{ classSchema.label }}</p>
+            <p>{{ classSchema.qualifiedName }}</p>
           </div>
         </a-menu-item>
       </a-menu>

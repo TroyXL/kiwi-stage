@@ -2,10 +2,11 @@
 import { KiwiApp, KiwiManager } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
 import { LogOut } from 'lucide-vue-next'
+import type { PropType } from 'vue'
 
 defineProps({
   type: {
-    type: String as () => 'primary' | 'secondary',
+    type: String as PropType<'primary' | 'secondary'>,
     default: 'primary',
   },
   onlyIcon: Boolean,
