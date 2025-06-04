@@ -5,31 +5,17 @@ export type KiwiManagerAuthorization = {
   password: string
 }
 
+export type KiwiManagerLoginInfo = {
+  appId: number
+  userId: string
+}
+
 const KIWI_MANAGER_APP_ID = 2
 
 export class KiwiManager {
+  static shared = new KiwiManager()
+
   private request = createKiwiRequest()
-
-  static async create(
-    authorization: KiwiManagerAuthorization,
-    {
-      autoLogin = true,
-      autoFetchApps = true,
-    }: {
-      autoLogin?: boolean
-      autoFetchApps?: boolean
-    } = {}
-  ) {
-    const kiwiManager = new KiwiManager()
-    if (autoLogin) {
-      await kiwiManager.login(authorization)
-      if (autoFetchApps) {
-        await kiwiManager.listApps()
-      }
-    }
-
-    return kiwiManager
-  }
 
   private constructor() {
     this.request.options.beforeRequest = method => {
@@ -38,11 +24,27 @@ export class KiwiManager {
     }
   }
 
+  async hasLogin() {
+    const loginInfo = await this.getLoginInfo()
+    return loginInfo.appId > -1
+  }
+
   login(authorization: KiwiManagerAuthorization) {
-    return this.request.Post('/login', {
+    return this.request.Post<KiwiManagerLoginInfo>('/login', {
       appId: KIWI_MANAGER_APP_ID,
       ...authorization,
     })
+  }
+
+  loginAsDemo() {
+    return this.login({
+      loginName: 'demo',
+      password: '123456',
+    })
+  }
+
+  getLoginInfo() {
+    return this.request.Get<KiwiManagerLoginInfo>('/get-login-info')
   }
 
   logout() {
@@ -53,7 +55,7 @@ export class KiwiManager {
     return this.request.Get('/app', {
       params: {
         page: 1,
-        pageSize: 20,
+        pageSize: 100,
         searchText: void 0,
       },
     })

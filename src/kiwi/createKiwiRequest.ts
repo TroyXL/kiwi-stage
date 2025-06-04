@@ -7,6 +7,7 @@ export function createKiwiRequest() {
     // 配置请求时携带cookie
     baseURL: KIWI_BASE_REQUEST_URL,
     timeout: KIWI_REQUEST_TIMEOUT,
+    cacheFor: null,
     requestAdapter: adapterFetch(),
     responded: async response => {
       const { code, message, data } = (await response.json()) as {
