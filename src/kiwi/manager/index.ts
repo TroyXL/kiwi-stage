@@ -58,8 +58,8 @@ export class KiwiManager {
     return this.request.Get<KiwiAppInfo>(`/app/${appId}`)
   }
 
-  saveOrUpdateApp() {
-    // TODO - save or update app
+  createOrUpdateApp(data: { id?: number; name: string }) {
+    return this.request.Post(`/app`, data)
   }
 
   deleteApp() {

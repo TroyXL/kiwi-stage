@@ -9,3 +9,7 @@
 .full-screen {
   @apply w-screen h-screen
 }
+
+.text-overflow-ellipsis {
+  @apply overflow-hidden text-ellipsis whitespace-nowrap
+}

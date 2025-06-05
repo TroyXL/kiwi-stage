@@ -34,7 +34,7 @@ function handleClickMenuItem() {}
     <a-layout-sider>
       <div class="px-2 mb-2">
         <h1 class="!text-xl px-2">Kiwi App</h1>
-        <SwitchKiwiApp :app-info="appInfo" />
+        <SwitchKiwiApp v-model:app-info="appInfo" />
       </div>
       <a-menu class="w-full" @menu-item-click="handleClickMenuItem">
         <a-menu-item
