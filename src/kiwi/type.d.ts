@@ -11,7 +11,7 @@ type KiwiManagerLoginInfo = {
 type KiwiAppInfo = {
   id: number
   name: string
-  ownerId: string
+  ownerId?: string
 }
 
 interface KiwiEnumConstant {
