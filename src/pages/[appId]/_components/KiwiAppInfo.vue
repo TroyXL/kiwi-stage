@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { KiwiManager } from '@/kiwi'
-import { KIWI_APP_RECENT } from '@/lib/storageKeys'
-import { ArrowRightLeft, Check, Pencil } from 'lucide-vue-next'
+import { Check, Pencil, Slash } from 'lucide-vue-next'
 import { nextTick, ref, useTemplateRef, type PropType } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -18,11 +17,6 @@ const isEditMode = ref(false)
 const appName = ref('')
 const loading = ref(false)
 const $input = useTemplateRef<HTMLInputElement>('$input')
-
-function handleSwitchApp() {
-  localStorage.removeItem(KIWI_APP_RECENT)
-  router.replace('/')
-}
 
 async function handleEditApp() {
   isEditMode.value = true
@@ -54,20 +48,20 @@ async function handleConfirmEdit() {
 </script>
 
 <template>
-  <div
-    v-if="appInfo"
-    class="flex-col p-2 pb-1 bg-blue-50/50 rounded-md border border-blue-600 text-blue-600"
-  >
+  <div v-if="appInfo" class="flex items-center gap-2">
+    <Slash :size="14" class="-rotate-[20deg]" />
+
     <span v-if="!isEditMode" class="font-medium pl-1">{{ appInfo!.name }}</span>
-    <input
+    <a-input
       v-else
       ref="$input"
-      class="outline-0"
       placeholder="App Name"
       v-model="appName"
+      :disabled="loading"
+      @press-enter="handleConfirmEdit"
     />
 
-    <div class="text-right pt-2">
+    <div>
       <template v-if="!isEditMode">
         <a-button
           size="mini"
@@ -77,17 +71,6 @@ async function handleConfirmEdit() {
         >
           <template #icon>
             <Pencil :size="12" />
-          </template>
-        </a-button>
-
-        <a-button
-          size="mini"
-          type="text"
-          class="hover:!bg-blue-100/50"
-          @click="handleSwitchApp"
-        >
-          <template #icon>
-            <ArrowRightLeft :size="12" />
           </template>
         </a-button>
       </template>
