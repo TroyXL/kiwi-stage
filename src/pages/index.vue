@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CreateKiwiApp from '@/components/CreateKiwiApp.vue'
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
+import CreateKiwiApp from '@/pages/_components/CreateKiwiApp.vue'
 import { usePagination } from 'alova/client'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'

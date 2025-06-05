@@ -62,7 +62,7 @@ export class KiwiManager {
     return this.request.Post(`/app`, data)
   }
 
-  deleteApp() {
-    // TODO - delete app
+  deleteApp(appId: number) {
+    return this.request.Delete(`/app/${appId}`)
   }
 }

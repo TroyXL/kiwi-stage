@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
-import { isInteger, toInteger } from 'lodash'
+import { isInteger, isPlainObject, mapValues, toInteger } from 'lodash'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { KIWI_APP_RECENT } from './lib/storageKeys'
+;(function replaceOkInEnLang(obj: Record<string, any>) {
+  mapValues(obj, (value, key) => {
+    if (isPlainObject(value)) {
+      replaceOkInEnLang(value)
+    } else if (value === 'Ok') {
+      obj[key] = 'OK'
+    }
+  })
+})(enUS)
+console.log('enUS', enUS)
 
 const router = useRouter()
 const loading = ref(true)
