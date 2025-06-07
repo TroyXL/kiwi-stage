@@ -6,20 +6,20 @@ import { KIWI_APP_RECENT } from '@/lib/storageKeys'
 import { Message } from '@arco-design/web-vue'
 import { useRequest } from 'alova/client'
 import { toInteger } from 'lodash'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import KiwiAppInfo from './_components/KiwiAppInfo.vue'
+import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 
 const router = useRouter()
-const route = useRoute()
+const route = useRoute('/[appId]/[qualifiedName]')
 
-const { appId } = route.params as { appId: string }
-
+const params = computed(() => route.params)
 const loading = ref(true)
 const appInfo = ref<KiwiAppInfo | null>(null)
 const kiwiClasses = ref<KiwiClassSchema[]>([])
 
 onMounted(async () => {
+  const { appId } = params.value
   localStorage.setItem(KIWI_APP_RECENT, appId)
   const kiwiApp = await KiwiApp.createByAppId(toInteger(appId))
   appInfo.value = await kiwiApp.fetchAppInfo()
@@ -34,7 +34,7 @@ function handleSwitchApp() {
 }
 
 const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
-  KiwiManager.shared.deleteApp(toInteger(appId)),
+  KiwiManager.shared.deleteApp(toInteger(params.value.appId)),
   {
     immediate: false,
     async middleware(_ctx, next) {
@@ -47,7 +47,11 @@ const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
   }
 )
 
-function handleClickMenuItem() {}
+function handleClickMenuItem(selectedQualifiedName: string) {
+  const { appId, qualifiedName } = params.value
+  if (qualifiedName === selectedQualifiedName) return
+  router.replace(`/${appId}/${selectedQualifiedName}`)
+}
 </script>
 
 <template>
@@ -83,13 +87,17 @@ function handleClickMenuItem() {}
     </a-layout-header>
     <a-layout>
       <a-layout-sider class="!w-60 border-r !shadow-none">
-        <a-menu class="w-full" @menu-item-click="handleClickMenuItem">
+        <a-menu
+          class="w-full py-1"
+          :default-selected-keys="[params.qualifiedName]"
+          @menu-item-click="handleClickMenuItem"
+        >
           <a-menu-item
             v-for="classSchema in kiwiClasses"
             :key="classSchema.qualifiedName"
-            class="flex gap-2 items-center !rounded-md transition-colors"
+            class="flex items-center !rounded-md transition-colors"
           >
-            <icon-compass />
+            <icon-compass size="18" />
             <div class="leading-snug text-xs py-1.5">
               <p class="font-medium">{{ classSchema.label }}</p>
               <p>{{ classSchema.qualifiedName }}</p>
@@ -99,6 +107,12 @@ function handleClickMenuItem() {}
       </a-layout-sider>
       <a-layout-content>
         <router-view />
+        <a-empty v-if="!params.qualifiedName" class="mt-48">
+          <template #image>
+            <icon-compass />
+          </template>
+          Select an object from the left menu to start
+        </a-empty>
       </a-layout-content>
     </a-layout>
   </a-layout>

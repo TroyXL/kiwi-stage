@@ -14,7 +14,7 @@ import { KIWI_APP_RECENT } from './lib/storageKeys'
     }
   })
 })(enUS)
-console.log('enUS', enUS)
+// console.log('enUS', enUS)
 
 const router = useRouter()
 const loading = ref(true)
@@ -24,12 +24,14 @@ onMounted(async () => {
   if (!hasLogin) router.replace('/login')
   else {
     const recentAppId = toInteger(localStorage.getItem(KIWI_APP_RECENT))
-    if (recentAppId && isInteger(recentAppId)) {
-      await KiwiApp.createByAppId(recentAppId)
-      router.replace(`/${recentAppId}`)
-    } else {
+
+    if (!recentAppId || !isInteger(recentAppId)) {
       router.replace('/')
+      return
     }
+
+    await KiwiApp.createByAppId(recentAppId)
+    if (location.pathname === '/') router.replace(`/${recentAppId}`)
   }
   loading.value = false
 })
