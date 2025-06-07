@@ -21,6 +21,7 @@ const loading = ref(true)
 
 onMounted(async () => {
   const hasLogin = await KiwiManager.shared.hasLogin()
+  loading.value = false
   if (!hasLogin) router.replace('/login')
   else {
     const recentAppId = toInteger(localStorage.getItem(KIWI_APP_RECENT))
@@ -33,7 +34,6 @@ onMounted(async () => {
     await KiwiApp.createByAppId(recentAppId)
     if (location.pathname === '/') router.replace(`/${recentAppId}`)
   }
-  loading.value = false
 })
 </script>
 
