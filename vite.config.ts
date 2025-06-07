@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [
     vueRouter({
       exclude: ['**/_components'],
+      pathParser: {
+        dotNesting: false,
+      },
     }),
     vue(),
     tailwindcss(),
