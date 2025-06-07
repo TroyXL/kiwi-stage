@@ -78,4 +78,8 @@ export class KiwiManager {
   deleteApp(appId: number) {
     return this.request.Delete(`/app/${appId}`)
   }
+
+  formatAppName(appName: string) {
+    return appName.replace(/_/g, '-').trim()
+  }
 }

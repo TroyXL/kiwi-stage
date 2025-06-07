@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { KiwiManager } from '@/kiwi'
 import { sleep } from '@/lib/utils'
 import { Check, Plus } from 'lucide-vue-next'
@@ -12,7 +13,7 @@ const emits = defineEmits<{
 const $input = useTemplateRef<HTMLInputElement>('$input')
 const isCreateMode = ref(false)
 const loading = ref(false)
-const appName = ref('')
+const appName = useEditKiwiAppName()
 
 async function handleClickCreate() {
   isCreateMode.value = true
