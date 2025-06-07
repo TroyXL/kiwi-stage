@@ -22,7 +22,7 @@ const useGlobalInjects = {
     app.config.errorHandler = error => {
       console.error(error)
       Notification.error({
-        title: '发生错误',
+        title: 'Oops...',
         content: (error as any).details || (error as any).message,
       })
     }
