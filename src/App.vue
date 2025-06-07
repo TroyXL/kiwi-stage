@@ -36,7 +36,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <a-config-provider :locale="enUS">
+  <a-config-provider global :locale="enUS">
     <a-spin v-if="loading" class="fixed-center" />
     <router-view v-else />
   </a-config-provider>

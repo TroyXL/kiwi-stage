@@ -2,27 +2,43 @@
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
 import CreateKiwiApp from '@/pages/_components/CreateKiwiApp.vue'
+import { IconSearch } from '@arco-design/web-vue/es/icon'
 import { usePagination } from 'alova/client'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const isCreateMode = ref(false)
-const { loading, data, page, pageSize, pageCount, total, reload } =
-  usePagination(
-    (page, pageSize) => KiwiManager.shared.listApps(page, pageSize),
-    {
-      total: response => response.total,
-      data: response => response.items,
-      initialData: {
-        total: 0,
-        data: [],
-        pageCount: 1,
-      },
-      initialPage: 1,
-      initialPageSize: 5,
-    }
-  )
+const searchText = ref('')
+
+const {
+  loading,
+  data,
+  page,
+  pageSize,
+  pageCount,
+  total,
+  reload: reloadAppList,
+} = usePagination(
+  (page, pageSize) =>
+    KiwiManager.shared.listApps({
+      page,
+      pageSize,
+      searchText: searchText.value,
+    }),
+  {
+    total: response => response.total,
+    data: response => response.items,
+    initialData: {
+      total: 0,
+      data: [],
+      pageCount: 1,
+    },
+    initialPage: 1,
+    initialPageSize: 5,
+    debounce: 2000,
+  }
+)
 
 onMounted(async () => {
   const {} = await KiwiManager.shared.listApps()
@@ -47,7 +63,7 @@ function handleCreateModeChange(createMode: boolean) {
       <template #extra>
         <CreateKiwiApp
           @mode-changed="handleCreateModeChange"
-          @created="reload"
+          @created="reloadAppList"
         />
         <LogoutButton
           v-if="!isCreateMode"
@@ -57,7 +73,22 @@ function handleCreateModeChange(createMode: boolean) {
         />
       </template>
 
-      <div class="relative h-[300px]">
+      <a-input-search
+        search-button
+        allow-clear
+        placeholder="Input keyword to search"
+        v-model="searchText"
+        @clear="reloadAppList"
+        @search="reloadAppList"
+        @press-enter="reloadAppList"
+      >
+        <template #button-icon>
+          <icon-search />
+        </template>
+        <template #button-default> Search </template>
+      </a-input-search>
+
+      <div class="relative h-[300px] mt-4">
         <a-spin class="absolute-center" v-if="loading" />
         <a-list v-if="data.length">
           <a-list-item v-for="item in data" :key="item.id">

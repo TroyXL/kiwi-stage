@@ -41,15 +41,28 @@ export class KiwiManager {
     return this.request.Post('/logout')
   }
 
-  listApps(page = 1, pageSize = 5) {
-    return this.request.Get<{
-      total: number
-      items: KiwiAppInfo[]
-    }>('/app', {
+  listApps(
+    {
+      page,
+      pageSize,
+      searchText,
+    }: KiwiPaginationRequest & {
+      searchText?: string
+    } = {
+      page: 1,
+      pageSize: 5,
+    }
+  ) {
+    searchText = searchText?.trim()
+    return this.request.Get<
+      KiwiPaginationResponse<{
+        items: KiwiAppInfo[]
+      }>
+    >('/app', {
       params: {
         page,
         pageSize,
-        searchText: void 0,
+        searchText: searchText || void 0,
       },
     })
   }
