@@ -4,6 +4,7 @@ import ArcoVue, {
   Modal,
   Notification,
 } from '@arco-design/web-vue'
+import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { router } from './router'
@@ -29,4 +30,9 @@ const useGlobalInjects = {
   },
 }
 
-createApp(App).use(router).use(ArcoVue).use(useGlobalInjects).mount('#app')
+createApp(App)
+  .use(router)
+  .use(ArcoVue)
+  .use(ArcoVueIcon)
+  .use(useGlobalInjects)
+  .mount('#app')
