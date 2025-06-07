@@ -88,9 +88,9 @@ function handleCreateModeChange(createMode: boolean) {
         <template #button-default> Search </template>
       </a-input-search>
 
-      <div class="relative h-[300px] mt-4">
+      <div class="relative min-h-[300px] mt-4">
         <a-spin class="absolute-center" v-if="loading" />
-        <a-list v-if="data.length">
+        <a-list v-if="data.length" class="bg-background">
           <a-list-item v-for="item in data" :key="item.id">
             <a-list-item-meta :title="item.name" />
             <template #actions>

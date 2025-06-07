@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { KiwiManager } from '@/kiwi'
 import { Check, Pencil, Slash } from 'lucide-vue-next'
 import { nextTick, ref, useTemplateRef, type PropType } from 'vue'
-import { useRouter } from 'vue-router'
 
 const props = defineProps({
   appInfo: {
@@ -12,11 +12,10 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:appInfo'])
 
-const router = useRouter()
 const isEditMode = ref(false)
-const appName = ref('')
 const loading = ref(false)
 const $input = useTemplateRef<HTMLInputElement>('$input')
+const appName = useEditKiwiAppName()
 
 async function handleEditApp() {
   isEditMode.value = true
