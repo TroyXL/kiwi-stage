@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { KiwiManager } from '@/kiwi'
-import { Check, Pencil, Slash } from 'lucide-vue-next'
 import { nextTick, ref, useTemplateRef, type PropType } from 'vue'
 
 const props = defineProps({
@@ -48,44 +47,32 @@ async function handleConfirmEdit() {
 
 <template>
   <div v-if="appInfo" class="flex items-center gap-2">
-    <Slash :size="14" class="-rotate-[20deg]" />
+    <icon-oblique-line />
 
     <span v-if="!isEditMode" class="font-medium pl-1">{{ appInfo!.name }}</span>
-    <a-input
+    <a-input-search
       v-else
+      search-button
       ref="$input"
       placeholder="App Name"
       v-model="appName"
       :disabled="loading"
+      @search="handleConfirmEdit"
       @press-enter="handleConfirmEdit"
-    />
+    >
+      <template #button-icon>
+        <icon-check />
+      </template>
+    </a-input-search>
 
     <div>
       <template v-if="!isEditMode">
-        <a-button
-          size="mini"
-          type="text"
-          class="hover:!bg-blue-100/50"
-          @click="handleEditApp"
-        >
+        <a-button type="text" @click="handleEditApp">
           <template #icon>
-            <Pencil :size="12" />
+            <icon-pen />
           </template>
         </a-button>
       </template>
-
-      <a-button
-        v-else
-        size="mini"
-        type="text"
-        class="hover:!bg-blue-100/50"
-        :loading="loading"
-        @click="handleConfirmEdit"
-      >
-        <template #icon>
-          <Check :size="12" />
-        </template>
-      </a-button>
     </div>
   </div>
 </template>

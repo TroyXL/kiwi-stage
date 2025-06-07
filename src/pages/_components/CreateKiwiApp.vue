@@ -2,7 +2,6 @@
 import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { KiwiManager } from '@/kiwi'
 import { sleep } from '@/lib/utils'
-import { Check, Plus } from 'lucide-vue-next'
 import { nextTick, ref, useTemplateRef } from 'vue'
 
 const emits = defineEmits<{
@@ -54,7 +53,7 @@ async function handleConfirmCreate() {
     type="primary"
     @click="handleClickCreate"
   >
-    <Plus :size="14" />
+    <icon-plus />
     <span>Create</span>
   </a-button>
   <div v-else class="flex gap-2">
@@ -66,7 +65,7 @@ async function handleConfirmCreate() {
     />
     <a-button type="primary" :loading="loading" @click="handleConfirmCreate">
       <template #icon>
-        <Check :size="14" />
+        <icon-check />
       </template>
     </a-button>
   </div>

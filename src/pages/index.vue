@@ -2,7 +2,6 @@
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
 import CreateKiwiApp from '@/pages/_components/CreateKiwiApp.vue'
-import { IconSearch } from '@arco-design/web-vue/es/icon'
 import { usePagination } from 'alova/client'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -36,7 +35,6 @@ const {
     },
     initialPage: 1,
     initialPageSize: 5,
-    debounce: 2000,
   }
 )
 
@@ -81,12 +79,7 @@ function handleCreateModeChange(createMode: boolean) {
         @clear="reloadAppList"
         @search="reloadAppList"
         @press-enter="reloadAppList"
-      >
-        <template #button-icon>
-          <icon-search />
-        </template>
-        <template #button-default> Search </template>
-      </a-input-search>
+      />
 
       <div class="relative min-h-[300px] mt-4">
         <a-spin class="absolute-center" v-if="loading" />

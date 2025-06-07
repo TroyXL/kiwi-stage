@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
+import { showConfirm } from '@/lib/showConfirm'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
-import { Modal } from '@arco-design/web-vue'
 import { useRequest } from 'alova/client'
-import { LogOut } from 'lucide-vue-next'
 import type { PropType } from 'vue'
 
 defineProps({
@@ -19,16 +18,12 @@ const { loading, send: handleLogout } = useRequest(
   {
     immediate: false,
     async middleware(_ctx, next) {
-      Modal.confirm({
-        title: 'Confirm logout?',
-        content: '',
-        async onOk() {
-          await next()
-          KiwiApp.current?.dispose()
-          localStorage.removeItem(KIWI_APP_RECENT)
-          location.reload()
-        },
-      })
+      if (await showConfirm('Confirm logout?')) {
+        await next()
+        KiwiApp.current?.dispose()
+        localStorage.removeItem(KIWI_APP_RECENT)
+        location.reload()
+      }
     },
   }
 )
@@ -42,7 +37,7 @@ const { loading, send: handleLogout } = useRequest(
     @click="handleLogout"
   >
     <template #icon>
-      <LogOut :size="14" />
+      <icon-export />
     </template>
   </a-button>
   <a-button
@@ -52,7 +47,7 @@ const { loading, send: handleLogout } = useRequest(
     :loading="loading"
     @click="handleLogout"
   >
-    <LogOut :size="14" />
+    <icon-export />
     <span>Logout</span>
   </a-button>
 </template>

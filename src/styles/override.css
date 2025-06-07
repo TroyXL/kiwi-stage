@@ -3,3 +3,7 @@ body {
   --border-radius-medium: 8px;
   --border-radius-large: 16px;
 }
+
+.arco-modal-simple .arco-modal-footer {
+  margin: 0;
+}
