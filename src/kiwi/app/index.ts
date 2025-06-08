@@ -11,6 +11,11 @@ export class KiwiApp {
 
   private request = createKiwiRequest()
 
+  private _appInfo!: KiwiAppInfo
+  get appInfo() {
+    return this._appInfo
+  }
+
   appId: number
   private _schemaPool = new Map<string, KiwiSchema>()
 
@@ -27,6 +32,10 @@ export class KiwiApp {
 
   static async createByAppId(appId: number) {
     KiwiApp._current = new KiwiApp(appId)
+    await Promise.allSettled([
+      KiwiApp._current.getAppInfo(),
+      KiwiApp._current.setupSchemaPool(),
+    ])
     return KiwiApp._current
   }
 
@@ -42,8 +51,9 @@ export class KiwiApp {
     KiwiApp._current = null
   }
 
-  fetchAppInfo() {
-    return KiwiManager.shared.fetchAppById(this.appId)
+  async getAppInfo() {
+    this._appInfo = await KiwiManager.shared.fetchAppById(this.appId)
+    return this._appInfo
   }
 
   async setupSchemaPool() {
@@ -57,5 +67,34 @@ export class KiwiApp {
       KiwiSchema.from(metaSchema, schemaCreated)
     )
     console.log(this._rootSchemas)
+  }
+
+  getSchemaByQualifiedName(qualifiedName: string) {
+    return this._schemaPool.get(qualifiedName)
+  }
+
+  getFullType(typeName: string) {
+    return `org.kiwi.${this.appInfo.name}.${typeName}`
+  }
+
+  parseFullType(fullTypeName: string) {
+    return fullTypeName.replace(`org.kiwi.${this.appInfo.name}.`, '')
+  }
+
+  fetchObjects(
+    payload: KiwiPaginationRequest<{
+      // refer to schema.qualifiedName
+      type?: string
+      criteria?: Dict
+      newlyCreated?: string
+    }> = {
+      page: 1,
+      pageSize: 20,
+    }
+  ) {
+    return this.request.Post<KiwiPaginationResponse<{ items: KiwiObject[] }>>(
+      '/object/search',
+      payload
+    )
   }
 }

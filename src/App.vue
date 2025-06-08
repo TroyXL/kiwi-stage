@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { KiwiApp, KiwiManager } from '@/kiwi'
+import { KiwiManager } from '@/kiwi'
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
 import { isInteger, isPlainObject, mapValues, toInteger } from 'lodash'
 import { onMounted, ref } from 'vue'
@@ -30,8 +30,6 @@ onMounted(async () => {
       router.replace('/')
       return
     }
-
-    await KiwiApp.createByAppId(recentAppId)
     if (location.pathname === '/') router.replace(`/${recentAppId}`)
   }
 })
