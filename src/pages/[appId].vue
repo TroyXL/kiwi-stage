@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
-import { KiwiApp, KiwiClassSchema, KiwiManager } from '@/kiwi'
-import { showConfirm } from '@/lib/showConfirm'
+import { KiwiApp, KiwiClassSchema } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
-import { Message } from '@arco-design/web-vue'
-import { useRequest } from 'alova/client'
 import { toInteger } from 'lodash'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -27,25 +24,6 @@ onMounted(async () => {
   loading.value = false
 })
 
-function handleSwitchApp() {
-  localStorage.removeItem(KIWI_APP_RECENT)
-  router.replace('/')
-}
-
-const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
-  KiwiManager.shared.deleteApp(toInteger(params.value.appId)),
-  {
-    immediate: false,
-    async middleware(_ctx, next) {
-      if (await showConfirm('Confirm delete this app?')) {
-        await next()
-        Message.success(`App <${appInfo.value!.name}> deleted`)
-        handleSwitchApp()
-      }
-    },
-  }
-)
-
 function handleClickMenuItem(selectedQualifiedName: string) {
   const { appId, qualifiedName } = params.value
   if (qualifiedName === selectedQualifiedName) return
@@ -64,23 +42,6 @@ function handleClickMenuItem(selectedQualifiedName: string) {
         <KiwiAppInfo v-model:app-info="appInfo" />
       </div>
       <div class="flex items-center gap-2">
-        <a-button
-          type="text"
-          status="danger"
-          :loading="deleteLoading"
-          @click="handleDeleteApp"
-        >
-          <template #icon>
-            <icon-delete />
-          </template>
-        </a-button>
-
-        <a-button type="text" @click="handleSwitchApp">
-          <template #icon>
-            <icon-swap />
-          </template>
-        </a-button>
-
         <LogoutButton only-icon />
       </div>
     </a-layout-header>
