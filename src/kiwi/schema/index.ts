@@ -1,4 +1,6 @@
+import { mapValues } from 'lodash'
 import { KiwiField, type KiwiTableColumn } from './field'
+import type { KiwiPrimitiveType } from './type'
 
 export abstract class KiwiSchema {
   readonly access: KiwiAccess = 'public'
@@ -9,7 +11,7 @@ export abstract class KiwiSchema {
   readonly label: string
   readonly enumConstants: KiwiEnumConstant[]
   readonly subSchemas: KiwiSchema[]
-  readonly fields: KiwiField[]
+  readonly fields = new Map<string, KiwiField>()
 
   static from(
     schema: KiwiSchemaInterface,
@@ -35,20 +37,42 @@ export abstract class KiwiSchema {
     this.qualifiedName = schema.qualifiedName
     this.label = schema.label
     this.enumConstants = schema.enumConstants
-    this.fields = schema.fields?.map(field => new KiwiField(field)) || []
-    this.subSchemas = this.subSchemasTransformer(schema.classes, created)
+    this.subSchemas = schema.classes.map(subSchema =>
+      KiwiSchema.from(subSchema, created)
+    )
+    schema.fields?.forEach(field =>
+      this.fields.set(field.name, new KiwiField(field))
+    )
     created(this)
   }
 
-  subSchemasTransformer(
-    subSchemas: KiwiSchemaInterface[],
-    created: KiwiSchemaCreated
-  ): KiwiSchema[] {
-    return subSchemas.map(subSchema => KiwiSchema.from(subSchema, created))
+  transformFieldsToTableColumns(): KiwiTableColumn[] {
+    return Array.from(this.fields.values()).reduce((tableColumns, field) => {
+      if (field.summary) tableColumns.unshift(field.tableColumn)
+      else tableColumns.push(field.tableColumn)
+      return tableColumns
+    }, [] as KiwiTableColumn[])
   }
 
-  transformFieldsToTableColumns(): KiwiTableColumn[] {
-    return this.fields.map(field => field.tableColumn)
+  transformObjectsToTableRows(objects: KiwiObject[]): Dict[] {
+    return objects.map(obj => {
+      const row: Dict = {
+        id: obj.id,
+      }
+
+      if (obj.fields) {
+        mapValues(obj.fields, (value, key) => {
+          const kiwiField = this.fields.get(key)
+          if (!kiwiField) return
+
+          if (kiwiField.type.kind === 'primitive')
+            row[key] = (kiwiField.type as KiwiPrimitiveType).formatValue(value)
+          else row[key] = (value as KiwiObject).summary
+        })
+      }
+
+      return row
+    })
   }
 }
 

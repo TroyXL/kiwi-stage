@@ -20,11 +20,20 @@ export abstract class KiwiType {
 }
 
 export class KiwiPrimitiveType extends KiwiType {
-  name: string
+  name: KiwiPrimitiveTypeEnum
 
   constructor(type: KiwiTypeInterface) {
     super('primitive')
     this.name = type.name!
+  }
+
+  formatValue(value: any) {
+    switch (this.name) {
+      case 'boolean':
+        return value ? 'YES' : 'NO'
+      default:
+        return value
+    }
   }
 }
 

@@ -30,8 +30,7 @@ const {
     data: response => response.items,
     initialData: {
       total: 0,
-      data: [],
-      pageCount: 1,
+      items: [],
     },
     initialPage: 1,
     initialPageSize: 5,
