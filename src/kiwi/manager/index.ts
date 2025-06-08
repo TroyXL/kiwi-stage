@@ -46,9 +46,9 @@ export class KiwiManager {
       page,
       pageSize,
       searchText,
-    }: KiwiPaginationRequest & {
+    }: KiwiPaginationRequest<{
       searchText?: string
-    } = {
+    }> = {
       page: 1,
       pageSize: 5,
     }

@@ -1,15 +1,15 @@
-export type KiwiClassAccess = 'public' | 'private' | 'protected' | 'package'
-export type KiwiClassTag = 'class' | 'interface' | 'enum' | 'value'
+import { KiwiField, type KiwiTableColumn } from './field'
 
 export abstract class KiwiSchema {
-  readonly access: KiwiClassAccess = 'public'
+  readonly access: KiwiAccess = 'public'
   readonly isAbstract: boolean
   abstract readonly tag: KiwiClassTag
   readonly name: string
   readonly qualifiedName: string
   readonly label: string
   readonly enumConstants: KiwiEnumConstant[]
-  readonly subSchemas: KiwiSchema[] = []
+  readonly subSchemas: KiwiSchema[]
+  readonly fields: KiwiField[]
 
   static from(
     schema: KiwiSchemaInterface,
@@ -35,6 +35,7 @@ export abstract class KiwiSchema {
     this.qualifiedName = schema.qualifiedName
     this.label = schema.label
     this.enumConstants = schema.enumConstants
+    this.fields = schema.fields?.map(field => new KiwiField(field)) || []
     this.subSchemas = this.subSchemasTransformer(schema.classes, created)
     created(this)
   }
@@ -44,6 +45,10 @@ export abstract class KiwiSchema {
     created: KiwiSchemaCreated
   ): KiwiSchema[] {
     return subSchemas.map(subSchema => KiwiSchema.from(subSchema, created))
+  }
+
+  transformFieldsToTableColumns(): KiwiTableColumn[] {
+    return this.fields.map(field => field.tableColumn)
   }
 }
 

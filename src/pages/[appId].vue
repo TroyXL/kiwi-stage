@@ -22,8 +22,7 @@ onMounted(async () => {
   const { appId } = params.value
   localStorage.setItem(KIWI_APP_RECENT, appId)
   const kiwiApp = await KiwiApp.createByAppId(toInteger(appId))
-  appInfo.value = await kiwiApp.fetchAppInfo()
-  await kiwiApp.setupSchemaPool()
+  appInfo.value = kiwiApp.appInfo
   kiwiClasses.value = kiwiApp.rootClassSchemas
   loading.value = false
 })
