@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
-import { showConfirm } from '@/lib/showConfirm'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
+import { showConfirm } from '@/lib/userInterface'
 import { useRequest } from 'alova/client'
 import type { PropType } from 'vue'
 

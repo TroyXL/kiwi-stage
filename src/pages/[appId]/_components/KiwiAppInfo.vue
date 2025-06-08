@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
+import { useSwitchKiwiApp } from '@/hooks/useSwitchKiwiApp'
 import { KiwiManager } from '@/kiwi'
+import { showConfirm } from '@/lib/userInterface'
+import { Message } from '@arco-design/web-vue'
+import { useRequest } from 'alova/client'
 import { nextTick, ref, useTemplateRef, type PropType } from 'vue'
 
 const props = defineProps({
@@ -16,6 +20,21 @@ const loading = ref(false)
 const $input = useTemplateRef<HTMLInputElement>('$input')
 const appName = useEditKiwiAppName()
 
+const handleSwitchApp = useSwitchKiwiApp()
+
+const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
+  KiwiManager.shared.deleteApp(props.appInfo!.id),
+  {
+    immediate: false,
+    async middleware(_ctx, next) {
+      if (await showConfirm('Confirm delete this app?')) {
+        await next()
+        Message.success(`App <${props.appInfo!.name}> deleted`)
+        handleSwitchApp()
+      }
+    },
+  }
+)
 async function handleEditApp() {
   isEditMode.value = true
   appName.value = props.appInfo!.name
@@ -65,14 +84,27 @@ async function handleConfirmEdit() {
       </template>
     </a-input-search>
 
-    <div>
-      <template v-if="!isEditMode">
-        <a-button type="text" @click="handleEditApp">
-          <template #icon>
-            <icon-pen />
-          </template>
-        </a-button>
-      </template>
+    <div v-if="!isEditMode">
+      <a-button type="text" @click="handleEditApp">
+        <template #icon>
+          <icon-pen />
+        </template>
+      </a-button>
+      <a-button type="text" @click="handleSwitchApp">
+        <template #icon>
+          <icon-swap />
+        </template>
+      </a-button>
+      <a-button
+        type="text"
+        status="danger"
+        :loading="deleteLoading"
+        @click="handleDeleteApp"
+      >
+        <template #icon>
+          <icon-delete />
+        </template>
+      </a-button>
     </div>
   </div>
 </template>
