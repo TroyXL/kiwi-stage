@@ -29,10 +29,22 @@ type KiwiEnumConstant = {
 }
 
 type KiwiAccess = 'public' | 'private' | 'protected' | 'package'
-
 type KiwiClassTag = 'class' | 'interface' | 'enum' | 'value'
-
 type KiwiTypeKind = 'primitive' | 'class' | 'array' | 'union'
+type KiwiPrimitiveTypeEnum =
+  | 'byte'
+  | 'short'
+  | 'int'
+  | 'long'
+  | 'float'
+  | 'double'
+  | 'boolean'
+  | 'char'
+  | 'string'
+  | 'void'
+  | 'never'
+  | 'any'
+  | 'null'
 
 interface KiwiSchemaInterface {
   access: KiwiClassAccess
@@ -57,7 +69,7 @@ interface KiwiFieldInterface {
 
 interface KiwiTypeInterface {
   kind: KiwiTypeKind
-  name?: string
+  name?: KiwiPrimitiveTypeEnum
   qualifiedName?: string
   elementType?: KiwiTypeInterface
   alternatives?: KiwiTypeInterface[]

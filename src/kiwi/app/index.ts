@@ -9,27 +9,6 @@ export class KiwiApp {
     return this._current
   }
 
-  private request = createKiwiRequest()
-
-  private _appInfo!: KiwiAppInfo
-  get appInfo() {
-    return this._appInfo
-  }
-
-  appId: number
-  private _schemaPool = new Map<string, KiwiSchema>()
-
-  private _rootSchemas: KiwiSchema[] = []
-  get rootSchemas() {
-    return this._rootSchemas
-  }
-
-  get rootClassSchemas() {
-    return this._rootSchemas.filter(
-      schema => schema.tag === 'class' && !(schema as KiwiClassSchema).isBean
-    ) as KiwiClassSchema[]
-  }
-
   static async createByAppId(appId: number) {
     KiwiApp._current = new KiwiApp(appId)
     await Promise.allSettled([
@@ -37,6 +16,25 @@ export class KiwiApp {
       KiwiApp._current.setupSchemaPool(),
     ])
     return KiwiApp._current
+  }
+
+  private request = createKiwiRequest()
+
+  appId: number
+  private _appInfo!: KiwiAppInfo
+  get appInfo() {
+    return this._appInfo
+  }
+
+  private _schemaPool = new Map<string, KiwiSchema>()
+  private _rootSchemas: KiwiSchema[] = []
+  get rootSchemas() {
+    return this._rootSchemas
+  }
+  get rootClassSchemas() {
+    return this._rootSchemas.filter(
+      schema => schema.tag === 'class' && !(schema as KiwiClassSchema).isBean
+    ) as KiwiClassSchema[]
   }
 
   private constructor(appId: number) {

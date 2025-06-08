@@ -40,14 +40,10 @@ const { loading, send: handleLogout } = useRequest(
       <icon-export />
     </template>
   </a-button>
-  <a-button
-    v-else
-    class="space-x-1.5"
-    :type="type"
-    :loading="loading"
-    @click="handleLogout"
-  >
-    <icon-export />
+  <a-button v-else :type="type" :loading="loading" @click="handleLogout">
+    <template #icon>
+      <icon-export />
+    </template>
     <span>Logout</span>
   </a-button>
 </template>

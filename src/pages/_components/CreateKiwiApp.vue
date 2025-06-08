@@ -47,13 +47,10 @@ async function handleConfirmCreate() {
 </script>
 
 <template>
-  <a-button
-    v-if="!isCreateMode"
-    class="space-x-1.5"
-    type="primary"
-    @click="handleClickCreate"
-  >
-    <icon-plus />
+  <a-button v-if="!isCreateMode" type="primary" @click="handleClickCreate">
+    <template #icon>
+      <icon-plus />
+    </template>
     <span>Create</span>
   </a-button>
   <div v-else class="flex gap-2">
