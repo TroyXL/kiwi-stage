@@ -7,3 +7,14 @@ body {
 .arco-modal-simple .arco-modal-footer {
   margin: 0;
 }
+
+.arco-drawer {
+  height: calc(100% - 16px);
+  margin: 8px;
+  border-radius: var(--border-radius-medium);
+  overflow: hidden;
+  background: transparent;
+}
+.arco-drawer > * {
+  background-color: var(--color-bg-3);
+}

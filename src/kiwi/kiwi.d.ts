@@ -57,6 +57,7 @@ interface KiwiSchemaInterface {
   classes: KiwiSchemaInterface[]
   enumConstants: KiwiEnumConstant[]
   fields?: KiwiFieldInterface[]
+  methods?: KiwiMethodInterface[]
 }
 
 interface KiwiFieldInterface {
@@ -73,6 +74,21 @@ interface KiwiTypeInterface {
   qualifiedName?: string
   elementType?: KiwiTypeInterface
   alternatives?: KiwiTypeInterface[]
+}
+
+interface KiwiParameterInterface {
+  name: string
+  label: string
+  type: KiwiTypeInterface
+}
+
+interface KiwiMethodInterface {
+  access: KiwiAccess
+  abstract: boolean
+  name: string
+  label: string
+  parameters: KiwiParameterInterface[]
+  returnType: KiwiTypeInterface
 }
 
 type KiwiSchemaCreated = (schema: KiwiSchema) => void

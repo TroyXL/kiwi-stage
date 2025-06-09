@@ -1,5 +1,6 @@
 import { mapValues } from 'lodash'
 import { KiwiField, type KiwiTableColumn, type KiwiTableRow } from './field'
+import { KiwiMethod } from './method'
 import type { KiwiPrimitiveType } from './type'
 
 export abstract class KiwiSchema {
@@ -12,6 +13,7 @@ export abstract class KiwiSchema {
   readonly enumConstants: KiwiEnumConstant[]
   readonly subSchemas: KiwiSchema[]
   readonly fields = new Map<string, KiwiField>()
+  readonly methods: KiwiMethod[] = []
 
   private _tableColumns: KiwiTableColumn[] | null = null
   get tableColumns(): KiwiTableColumn[] {
@@ -55,6 +57,10 @@ export abstract class KiwiSchema {
     this.subSchemas = schema.classes.map(subSchema =>
       KiwiSchema.from(subSchema, created)
     )
+    this.methods =
+      schema.methods
+        ?.filter(method => !method.abstract && method.access === 'public')
+        .map(method => new KiwiMethod(method)) ?? []
     schema.fields?.forEach(field =>
       this.fields.set(field.name, new KiwiField(field))
     )
@@ -64,7 +70,7 @@ export abstract class KiwiSchema {
   transformObjectsToTableRows(objects: KiwiObject[]): KiwiTableRow[] {
     return objects.map(obj => {
       const row: KiwiTableRow = {
-        id: obj.id,
+        __id__: obj.id,
         __summary__: obj.summary,
       }
 
