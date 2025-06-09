@@ -6,6 +6,11 @@ export type KiwiTableColumn = {
   field: KiwiField
 }
 
+export type KiwiTableRow = {
+  id?: string
+  __summary__?: string
+} & Dict
+
 export class KiwiField {
   access: KiwiAccess
   name: string

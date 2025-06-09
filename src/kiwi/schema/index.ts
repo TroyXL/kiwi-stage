@@ -1,5 +1,5 @@
 import { mapValues } from 'lodash'
-import { KiwiField, type KiwiTableColumn } from './field'
+import { KiwiField, type KiwiTableColumn, type KiwiTableRow } from './field'
 import type { KiwiPrimitiveType } from './type'
 
 export abstract class KiwiSchema {
@@ -12,6 +12,21 @@ export abstract class KiwiSchema {
   readonly enumConstants: KiwiEnumConstant[]
   readonly subSchemas: KiwiSchema[]
   readonly fields = new Map<string, KiwiField>()
+
+  private _tableColumns: KiwiTableColumn[] | null = null
+  get tableColumns(): KiwiTableColumn[] {
+    if (!this._tableColumns) {
+      this._tableColumns = Array.from(this.fields.values()).reduce(
+        (tableColumns, field) => {
+          if (field.summary) tableColumns.unshift(field.tableColumn)
+          else tableColumns.push(field.tableColumn)
+          return tableColumns
+        },
+        [] as KiwiTableColumn[]
+      )
+    }
+    return this._tableColumns
+  }
 
   static from(
     schema: KiwiSchemaInterface,
@@ -46,18 +61,11 @@ export abstract class KiwiSchema {
     created(this)
   }
 
-  transformFieldsToTableColumns(): KiwiTableColumn[] {
-    return Array.from(this.fields.values()).reduce((tableColumns, field) => {
-      if (field.summary) tableColumns.unshift(field.tableColumn)
-      else tableColumns.push(field.tableColumn)
-      return tableColumns
-    }, [] as KiwiTableColumn[])
-  }
-
-  transformObjectsToTableRows(objects: KiwiObject[]): Dict[] {
+  transformObjectsToTableRows(objects: KiwiObject[]): KiwiTableRow[] {
     return objects.map(obj => {
-      const row: Dict = {
+      const row: KiwiTableRow = {
         id: obj.id,
+        __summary__: obj.summary,
       }
 
       if (obj.fields) {

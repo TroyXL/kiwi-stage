@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
 import { KiwiApp } from '@/kiwi'
 import { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import ObjectPreview from './[qualifiedName]/_components/ObjectPreview.vue'
 
 const ACTION_COLUMN: TableColumnData = {
   dataIndex: '__actions__',
@@ -16,14 +18,13 @@ const ACTION_COLUMN: TableColumnData = {
 
 const route = useRoute('/[appId]/[qualifiedName]')
 const params = computed(() => route.params)
+const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const kiwiClassSchema = computed(() =>
-  KiwiApp.current!.getSchemaByQualifiedName(params.value.qualifiedName)
+  kiwiAppAndSchemaStore.switchKiwiClassSchema(params.value.qualifiedName)
 )
-
 const columns = computed<TableColumnData[]>(() => {
   if (!kiwiClassSchema.value) return []
-  return kiwiClassSchema.value
-    .transformFieldsToTableColumns()
+  return kiwiClassSchema.value.tableColumns
     .map(column => ({
       ...column,
       fixed: column.field.summary ? 'left' : void 0,
@@ -49,10 +50,8 @@ const {
     }),
   {
     total: response => response.total,
-    data: response => {
-      if (!kiwiClassSchema.value) return []
-      return kiwiClassSchema.value.transformObjectsToTableRows(response.items)
-    },
+    data: response =>
+      kiwiClassSchema.value?.transformObjectsToTableRows(response.items) ?? [],
     initialData: {
       total: 0,
       items: [],
@@ -98,14 +97,18 @@ const {
         total,
       }"
     >
-      <template #actions>
+      <template #actions="{ record }">
         <div class="space-x-2">
           <a-button type="text" class="hover:!bg-blue-100/80">
             <template #icon>
               <icon-pen />
             </template>
           </a-button>
-          <a-button type="text" class="hover:!bg-blue-100/80">
+          <a-button
+            type="text"
+            class="hover:!bg-blue-100/80"
+            @click="kiwiAppAndSchemaStore.showObjectPreview(record)"
+          >
             <template #icon>
               <icon-file />
             </template>
@@ -119,4 +122,5 @@ const {
       </template>
     </a-table>
   </a-page-header>
+  <ObjectPreview />
 </template>

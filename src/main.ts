@@ -10,6 +10,7 @@ import App from './App.vue'
 import { router } from './router'
 
 import '@arco-design/web-vue/dist/arco.css'
+import { createPinia } from 'pinia'
 import './styles/global.css'
 import './styles/override.css'
 import './styles/style.css'
@@ -32,6 +33,7 @@ const useGlobalInjects = {
 
 createApp(App)
   .use(router)
+  .use(createPinia())
   .use(ArcoVue)
   .use(ArcoVueIcon)
   .use(useGlobalInjects)
