@@ -12,7 +12,7 @@ const ACTION_COLUMN: TableColumnData = {
   title: '',
   align: 'right',
   fixed: 'right',
-  width: 140,
+  width: 100,
   slotName: 'actions',
 }
 
@@ -88,6 +88,8 @@ const {
     </template>
 
     <a-table
+      stripe
+      row-key="__id__"
       :loading="loading"
       :columns="columns"
       :data="data"
@@ -98,27 +100,20 @@ const {
       }"
     >
       <template #actions="{ record }">
-        <div class="space-x-2">
-          <a-button type="text" class="hover:!bg-blue-100/80">
-            <template #icon>
-              <icon-pen />
-            </template>
-          </a-button>
-          <a-button
-            type="text"
-            class="hover:!bg-blue-100/80"
-            @click="kiwiAppAndSchemaStore.showObjectPreview(record)"
-          >
-            <template #icon>
-              <icon-file />
-            </template>
-          </a-button>
-          <a-button type="text" status="danger" class="hover:!bg-red-100/80">
-            <template #icon>
-              <icon-delete />
-            </template>
-          </a-button>
-        </div>
+        <a-button
+          type="text"
+          class="hover:!bg-blue-100/80"
+          @click="kiwiAppAndSchemaStore.showObjectPreview(record)"
+        >
+          <template #icon>
+            <icon-file />
+          </template>
+        </a-button>
+        <a-button type="text" class="hover:!bg-blue-100/80">
+          <template #icon>
+            <icon-pen />
+          </template>
+        </a-button>
       </template>
     </a-table>
   </a-page-header>

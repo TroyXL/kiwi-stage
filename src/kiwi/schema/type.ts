@@ -51,7 +51,7 @@ export class KiwiArrayType extends KiwiType {
 
   constructor(type: KiwiTypeInterface) {
     super('array')
-    this.elementType = KiwiType.from(type)
+    this.elementType = KiwiType.from(type.elementType!)
   }
 }
 

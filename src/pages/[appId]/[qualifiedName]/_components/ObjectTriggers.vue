@@ -1,7 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
+
+const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
+const methods = kiwiAppAndSchemaStore.getKiwiSchema()?.methods || []
+</script>
 
 <template>
-  <a-dropdown position="tl">
+  <a-dropdown v-if="methods.length" position="tl">
     <a-button type="outline">
       <template #icon>
         <icon-command />
@@ -9,9 +14,9 @@
       Triggers
     </a-button>
     <template #content>
-      <a-doption>Option 1</a-doption>
-      <a-doption disabled>Option 2</a-doption>
-      <a-doption :value="{ value: 'Option3' }">Option 3</a-doption>
+      <a-doption v-for="mt in methods" :key="mt.name">{{
+        mt.label || mt.name
+      }}</a-doption>
     </template>
   </a-dropdown>
   <a-button status="danger" type="outline">

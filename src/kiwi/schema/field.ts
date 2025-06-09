@@ -7,7 +7,7 @@ export type KiwiTableColumn = {
 }
 
 export type KiwiTableRow = {
-  id?: string
+  __id__?: string
   __summary__?: string
 } & Dict
 
