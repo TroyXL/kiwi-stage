@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
-import { KiwiApp, KiwiClassSchema } from '@/kiwi'
+import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
+import { KiwiClassSchema } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
 import { toInteger } from 'lodash'
 import { computed, onMounted, ref } from 'vue'
@@ -9,6 +10,7 @@ import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 
 const router = useRouter()
 const route = useRoute('/[appId]/[qualifiedName]')
+const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 
 const params = computed(() => route.params)
 const loading = ref(true)
@@ -18,7 +20,7 @@ const kiwiClasses = ref<KiwiClassSchema[]>([])
 onMounted(async () => {
   const { appId } = params.value
   localStorage.setItem(KIWI_APP_RECENT, appId)
-  const kiwiApp = await KiwiApp.createByAppId(toInteger(appId))
+  const kiwiApp = await kiwiAppAndSchemaStore.switchKiwiApp(toInteger(appId))
   appInfo.value = kiwiApp.appInfo
   kiwiClasses.value = kiwiApp.rootClassSchemas
   loading.value = false
