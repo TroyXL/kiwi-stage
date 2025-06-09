@@ -18,7 +18,7 @@ export class KiwiApp {
     return KiwiApp._current
   }
 
-  private request = createKiwiRequest()
+  readonly request = createKiwiRequest()
 
   appId: number
   private _appInfo!: KiwiAppInfo

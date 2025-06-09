@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
+import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { computed } from 'vue'
 import ObjectDetail from './ObjectDetail.vue'
 import ObjectActions from './ObjectTriggers.vue'

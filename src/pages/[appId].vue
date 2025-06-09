@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
-import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
 import { KiwiClassSchema } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
+import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { toInteger } from 'lodash'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'

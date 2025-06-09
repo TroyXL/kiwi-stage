@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
+import type { KiwiMethod } from '@/kiwi/schema/method'
+import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const methods = kiwiAppAndSchemaStore.getKiwiSchema()?.methods || []
+
+function handleInvokeMethod(method: KiwiMethod) {
+  kiwiAppAndSchemaStore.invokeMethod(method)
+}
 </script>
 
 <template>
-  <a-dropdown v-if="methods.length" position="tl">
+  <a-dropdown v-if="methods.length" position="tl" @select="handleInvokeMethod">
     <a-button type="outline">
       <template #icon>
         <icon-command />
@@ -14,8 +19,8 @@ const methods = kiwiAppAndSchemaStore.getKiwiSchema()?.methods || []
       Triggers
     </a-button>
     <template #content>
-      <a-doption v-for="mt in methods" :key="mt.name">{{
-        mt.label || mt.name
+      <a-doption v-for="method in methods" :key="method.name" :value="method">{{
+        method.label || method.name
       }}</a-doption>
     </template>
   </a-dropdown>

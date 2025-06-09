@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
 import { KiwiApp } from '@/kiwi'
+import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import MethodInvoker from './[qualifiedName]/_components/MethodInvoker.vue'
 import ObjectPreview from './[qualifiedName]/_components/ObjectPreview.vue'
 
 const ACTION_COLUMN: TableColumnData = {
@@ -118,4 +119,5 @@ const {
     </a-table>
   </a-page-header>
   <ObjectPreview />
+  <MethodInvoker />
 </template>
