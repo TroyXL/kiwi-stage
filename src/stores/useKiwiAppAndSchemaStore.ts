@@ -1,5 +1,6 @@
 import { KiwiApp, KiwiSchema } from '@/kiwi'
 import type { KiwiTableRow } from '@/kiwi/schema/field'
+import type { KiwiMethod } from '@/kiwi/schema/method'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -38,6 +39,11 @@ export const useKiwiAppAndSchemaStore = defineStore(
       isEditObject.value = isEditMode
     }
 
+    const willInvokeMethod = ref<KiwiMethod | null>(null)
+    function invokeMethod(method: KiwiMethod | null) {
+      willInvokeMethod.value = method
+    }
+
     return {
       getKiwiApp() {
         return kiwiApp
@@ -54,6 +60,8 @@ export const useKiwiAppAndSchemaStore = defineStore(
       selectedObject,
       isEditObject,
       showObjectPreview,
+      willInvokeMethod,
+      invokeMethod,
     }
   }
 )

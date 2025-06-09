@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useKiwiAppAndSchemaStore } from '@/controllers/useKiwiAppAndSchemaStore'
+import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const columns = kiwiAppAndSchemaStore.getKiwiSchema()?.tableColumns || []
