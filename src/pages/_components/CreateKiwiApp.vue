@@ -56,7 +56,7 @@ async function handleConfirmCreate() {
   <div v-else class="flex gap-2">
     <a-input
       ref="$input"
-      v-model="appName"
+      v-model.trim="appName"
       placeholder="App Name"
       class="flex-1 w-0"
     />
