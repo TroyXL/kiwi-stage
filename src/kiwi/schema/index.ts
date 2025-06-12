@@ -98,13 +98,13 @@ export abstract class KiwiSchema {
     })
   }
 
-  invokeMethod(objectId: string, methodName: string, parameters: Dict) {
+  invokeMethod(objectId: string, methodName: string, parameters?: Dict) {
     if (!objectId) throw new Error('Object id is required to invoke method')
     if (!methodName) throw new Error('Method name is required to invoke method')
     if (!this.validMethodNames.includes(methodName))
       throw new Error(`Method <${methodName}> not found`)
 
-    KiwiApp.current?.request.Post('/object/invoke', {
+    return KiwiApp.current?.request.Post('/object/invoke', {
       receiver: {
         id: objectId,
       },
