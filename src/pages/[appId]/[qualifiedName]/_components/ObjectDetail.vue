@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
+import { computed } from 'vue'
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const columns = kiwiAppAndSchemaStore.getKiwiSchema()?.tableColumns || []
-const data = kiwiAppAndSchemaStore.selectedObject
+const data = computed(() => kiwiAppAndSchemaStore.selectedObject.data)
 </script>
 
 <template>

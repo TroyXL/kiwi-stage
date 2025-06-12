@@ -3,7 +3,7 @@ import { KiwiApp } from '@/kiwi'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
-import { computed } from 'vue'
+import { computed, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import MethodInvoker from './[qualifiedName]/_components/MethodInvoker.vue'
 import ObjectPreview from './[qualifiedName]/_components/ObjectPreview.vue'
@@ -41,7 +41,8 @@ const {
   page,
   pageSize,
   total,
-  reload: handleReloadObjectList,
+  reload: handleResetObjectList,
+  send: handleRefreshObjectList,
 } = usePagination(
   (page, pageSize) =>
     KiwiApp.current!.fetchObjects({
@@ -62,6 +63,8 @@ const {
     watchingStates: [params],
   }
 )
+
+provide('refreshObjectList', handleRefreshObjectList)
 </script>
 
 <template>
@@ -79,7 +82,7 @@ const {
           <span>Add</span>
         </a-button>
 
-        <a-button @click="handleReloadObjectList">
+        <a-button @click="handleResetObjectList">
           <template #icon>
             <icon-refresh />
           </template>
@@ -104,7 +107,7 @@ const {
         <a-button
           type="text"
           class="hover:!bg-blue-100/80"
-          @click="kiwiAppAndSchemaStore.showObjectPreview(record)"
+          @click="kiwiAppAndSchemaStore.showObjectPreview(record.__id__)"
         >
           <template #icon>
             <icon-file />
