@@ -2,12 +2,7 @@
 import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
 import { ref, watch } from 'vue'
 
-const FLOAT_TYPES: KiwiPrimitiveTypeEnum[] = [
-  'short',
-  'long',
-  'float',
-  'double',
-]
+const FLOAT_TYPES: KiwiPrimitiveTypeEnum[] = ['long', 'float', 'double']
 
 const props = defineProps<{
   name: string
@@ -43,5 +38,10 @@ watch(model, () => {
     v-if="type.name === 'boolean'"
     placeholder="Please Enter"
     v-model="model"
+  />
+  <a-input
+    v-if="type.name === 'string'"
+    placeholder="Please Enter"
+    v-model.trim="model"
   />
 </template>

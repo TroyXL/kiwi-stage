@@ -1,3 +1,5 @@
+type KiwiErrorHandler = (error: Error) => void
+
 type KiwiPaginationRequest<T extends Dict> = {
   page?: number
   pageSize?: number

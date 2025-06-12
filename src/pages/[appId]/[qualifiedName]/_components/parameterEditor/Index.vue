@@ -2,7 +2,7 @@
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
 import { ref } from 'vue'
-import PrimitiveParamterEditor from './PrimitiveParamterEditor.vue'
+import PrimitiveParameterEditor from './PrimitiveParameterEditor.vue'
 
 const props = defineProps<{
   parameters: KiwiParameter[]
@@ -32,8 +32,8 @@ defineExpose({
 <template>
   <a-form :model="formModel" :wrapper-col-props="{ span: 16 }">
     <template v-for="parameter in parameters">
-      <a-form-item :label="parameter.label">
-        <PrimitiveParamterEditor
+      <a-form-item v-if="!parameter.ignore" :label="parameter.label">
+        <PrimitiveParameterEditor
           v-if="parameter.type.kind === 'primitive'"
           :name="parameter.name"
           :value="formModel[parameter.name]"

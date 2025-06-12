@@ -11,6 +11,7 @@ import { router } from './router'
 
 import '@arco-design/web-vue/dist/arco.css'
 import { createPinia } from 'pinia'
+import { setupKiwiErrorHandler } from './kiwi'
 import './styles/global.css'
 import './styles/override.css'
 import './styles/style.css'
@@ -28,6 +29,7 @@ const useGlobalInjects = {
         content: (error as any).details || (error as any).message,
       })
     }
+    setupKiwiErrorHandler(app.config.errorHandler as KiwiErrorHandler)
   },
 }
 

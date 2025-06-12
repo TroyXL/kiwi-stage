@@ -6,8 +6,8 @@ export class KiwiMethod {
   abstract: boolean
   name: string
   label: string
-  parameters: KiwiParameterInterface[]
-  returnType: KiwiTypeInterface
+  parameters: KiwiParameter[]
+  returnType: KiwiType
 
   constructor(method: KiwiMethodInterface) {
     this.access = method.access

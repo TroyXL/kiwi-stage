@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { computed, ref, useTemplateRef, watch } from 'vue'
-import ParamterEditor from './ParamterEditor/Index.vue'
+import ParameterEditor from './parameterEditor/Index.vue'
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const targetMethod = computed(() => kiwiAppAndSchemaStore.willInvokeMethod)
 const hasParameters = computed(() => !!targetMethod.value?.parameters.length)
 const visible = ref(false)
 const $parameterEditor =
-  useTemplateRef<InstanceType<typeof ParamterEditor>>('$parameterEditor')
+  useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
 
 watch(targetMethod, () => {
   visible.value = !!targetMethod.value
@@ -54,7 +54,7 @@ async function handleExcuteMethod() {
       This action cannot be undo.
     </div>
     <div v-else>
-      <ParamterEditor
+      <ParameterEditor
         ref="$parameterEditor"
         :parameters="targetMethod!.parameters"
       />
