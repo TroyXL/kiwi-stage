@@ -74,7 +74,7 @@ function handleCreateModeChange(createMode: boolean) {
         search-button
         allow-clear
         placeholder="Input keyword to search"
-        v-model="searchText"
+        v-model.trim="searchText"
         @clear="reloadAppList"
         @search="reloadAppList"
         @press-enter="reloadAppList"
