@@ -11,7 +11,11 @@ function handleInvokeMethod(method: KiwiMethod) {
 </script>
 
 <template>
-  <a-dropdown v-if="methods.length" position="tl" @select="handleInvokeMethod">
+  <a-dropdown
+    v-if="methods.length > 3"
+    position="tl"
+    @select="handleInvokeMethod"
+  >
     <a-button type="outline">
       <template #icon>
         <icon-command />
@@ -24,10 +28,24 @@ function handleInvokeMethod(method: KiwiMethod) {
       }}</a-doption>
     </template>
   </a-dropdown>
+
+  <a-button
+    v-else
+    v-for="method in methods"
+    :key="method.name"
+    :value="method"
+    type="secondary"
+    @click="handleInvokeMethod(method)"
+  >
+    <template #icon>
+      <icon-command />
+    </template>
+    {{ method.label || method.name }}
+  </a-button>
+
   <a-button status="danger" type="outline">
     <template #icon>
       <icon-delete />
     </template>
-    Delete
   </a-button>
 </template>

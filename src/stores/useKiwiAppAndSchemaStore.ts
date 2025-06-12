@@ -11,35 +11,63 @@ export const useKiwiAppAndSchemaStore = defineStore(
     let kiwiSchema: KiwiSchema | null = null
     let qualifiedName = ''
 
+    const selectedObject = ref({
+      id: '',
+      loading: false,
+      isEdit: false,
+      data: null as KiwiTableRow | null,
+    })
+
+    const willInvokeMethod = ref<KiwiMethod | null>(null)
+
     async function switchKiwiApp(appId: number) {
       kiwiApp = await KiwiApp.createByAppId(appId)
       return kiwiApp
     }
-    KiwiApp.createByAppId
+
     function disposeKiwiApp() {
       kiwiApp?.dispose()
       kiwiApp = null
+      disposeKiwiClassSchema()
+    }
+
+    function disposeKiwiClassSchema() {
       kiwiSchema = null
       qualifiedName = ''
+      selectedObject.value = {
+        id: '',
+        loading: false,
+        isEdit: false,
+        data: null,
+      }
+      willInvokeMethod.value = null
     }
 
     function switchKiwiClassSchema(_qualifiedName: string) {
+      disposeKiwiClassSchema()
       kiwiSchema = kiwiApp?.getSchemaByQualifiedName(_qualifiedName) ?? null
       qualifiedName = _qualifiedName
       return kiwiSchema
     }
 
-    const selectedObject = ref<KiwiTableRow | null>(null)
-    const isEditObject = ref(false)
-    function showObjectPreview(
-      object: KiwiTableRow | null,
-      isEditMode = false
-    ) {
-      selectedObject.value = object
-      isEditObject.value = isEditMode
+    async function showObjectPreview(objectId: string, isEditMode = false) {
+      selectedObject.value.id = objectId
+      selectedObject.value.isEdit = isEditMode
+      selectedObject.value.data = null
+      if (!objectId) return
+      selectedObject.value.loading = true
+      const res = await kiwiApp?.fetchObjectById(objectId)
+      if (res) {
+        const rows = kiwiSchema?.transformObjectsToTableRows([res])
+        selectedObject.value.data = rows?.[0] ?? null
+      }
+      selectedObject.value.loading = false
     }
 
-    const willInvokeMethod = ref<KiwiMethod | null>(null)
+    function refreshObjectPreview() {
+      showObjectPreview(selectedObject.value.id, selectedObject.value.isEdit)
+    }
+
     function invokeMethod(method: KiwiMethod | null) {
       willInvokeMethod.value = method
     }
@@ -58,8 +86,8 @@ export const useKiwiAppAndSchemaStore = defineStore(
       disposeKiwiApp,
       switchKiwiClassSchema,
       selectedObject,
-      isEditObject,
       showObjectPreview,
+      refreshObjectPreview,
       willInvokeMethod,
       invokeMethod,
     }

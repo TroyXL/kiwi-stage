@@ -1,33 +1,31 @@
 <script setup lang="ts">
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
-import { computed } from 'vue'
 import ObjectDetail from './ObjectDetail.vue'
-import ObjectActions from './ObjectTriggers.vue'
+import ObjectTriggers from './ObjectTriggers.vue'
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const showObjectPreview = computed(() => !!kiwiAppAndSchemaStore.selectedObject)
 </script>
 
 <template>
-  <a-drawer
-    hide-cancel
-    unmount-on-close
-    :width="480"
-    :visible="showObjectPreview"
-    @cancel="kiwiAppAndSchemaStore.showObjectPreview(null)"
+  <a-page-header
+    v-if="kiwiAppAndSchemaStore.selectedObject.id"
+    class="fixed z-10 left-60 top-14 right-0 bottom-0 bg-background"
+    title="Record Detail"
+    @back="kiwiAppAndSchemaStore.showObjectPreview('')"
   >
-    <template #title> Record Detail </template>
-
-    <template #footer>
+    <template #extra>
       <div class="flex gap-2">
-        <ObjectActions />
-        <span class="flex-1" />
-        <a-button @click="kiwiAppAndSchemaStore.showObjectPreview(null)">
-          Cancel
-        </a-button>
+        <ObjectTriggers />
       </div>
     </template>
 
-    <ObjectDetail v-if="!kiwiAppAndSchemaStore.isEditObject" />
-  </a-drawer>
+    <div
+      v-if="kiwiAppAndSchemaStore.selectedObject.loading"
+      class="flex justify-center"
+    >
+      <a-spin />
+    </div>
+
+    <ObjectDetail v-if="!kiwiAppAndSchemaStore.selectedObject.isEdit" />
+  </a-page-header>
 </template>

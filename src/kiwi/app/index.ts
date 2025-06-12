@@ -95,4 +95,8 @@ export class KiwiApp {
       payload
     )
   }
+
+  fetchObjectById(id: string) {
+    return this.request.Get<KiwiObject>(`/object/${id}`)
+  }
 }
