@@ -31,7 +31,9 @@ async function handleExcuteMethod() {
   const objectId = route.params.objectId
   const methodName = targetMethod.value?.name
   if (!objectId || !methodName) return false
-  const parameters = $parameterEditor.value?.getParameters()
+  const parameters = await $parameterEditor.value?.getParameters()
+  if (!parameters) return false
+
   try {
     await kiwiAppAndSchemaStore.kiwiSchema?.invokeMethod(
       objectId,

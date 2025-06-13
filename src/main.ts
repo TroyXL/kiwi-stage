@@ -4,14 +4,13 @@ import ArcoVue, {
   Modal,
   Notification,
 } from '@arco-design/web-vue'
+import '@arco-design/web-vue/dist/arco.css'
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
+import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
-import { router } from './router'
-
-import '@arco-design/web-vue/dist/arco.css'
-import { createPinia } from 'pinia'
 import { setupKiwiErrorHandler } from './kiwi'
+import { router } from './router'
 import './styles/global.css'
 import './styles/override.css'
 import './styles/style.css'

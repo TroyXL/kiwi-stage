@@ -18,6 +18,7 @@ export class KiwiParameter {
   label: string
   type: KiwiType
   ignore = false
+  required = false
 
   constructor(parameter: KiwiParameterInterface) {
     this.name = parameter.name
@@ -25,6 +26,11 @@ export class KiwiParameter {
     this.type = KiwiType.from(parameter.type)
     if (this.type.kind === 'primitive') {
       this.ignore = IGNORE_TYPES.includes((this.type as KiwiPrimitiveType).name)
+    }
+    if (this.type.kind !== 'union') {
+      this.required = true
+    } else {
+      // TODO: union type
     }
   }
 }

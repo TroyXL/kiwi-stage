@@ -18,3 +18,7 @@ body {
 .arco-drawer > * {
   background-color: var(--color-bg-3);
 }
+
+.arco-form-item-label-required-symbol svg {
+  vertical-align: unset;
+}
