@@ -47,7 +47,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
         <LogoutButton only-icon />
       </div>
     </a-layout-header>
-    <a-layout>
+    <a-layout class="h-0">
       <a-layout-sider class="!w-60 border-r !shadow-none">
         <a-menu
           class="w-full py-1"

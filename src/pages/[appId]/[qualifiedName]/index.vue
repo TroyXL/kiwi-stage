@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { KiwiApp } from '@/kiwi'
 import { useEmitter } from '@/lib/emitter'
+import Scaffold from '@/pages/_components/Scaffold.vue'
 import {
   useKiwiAppAndSchemaStore,
   useKiwiSchemaByRouteAndGetParams,
@@ -90,12 +91,12 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
 </script>
 
 <template>
-  <a-page-header
-    :show-back="false"
+  <Scaffold
+    bodyClass="flex flex-col !p-0"
     :title="kiwiClassSchema?.label"
     :subtitle="qualifiedName"
   >
-    <template #extra>
+    <template #actions>
       <a-space>
         <a-button type="primary">
           <template #icon>
@@ -113,31 +114,39 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
       </a-space>
     </template>
 
-    <a-table
-      stripe
-      row-key="__id__"
-      :loading="loading"
-      :columns="columns"
-      :data="data"
-      :pagination="{
-        page,
-        pageSize,
-        total,
-        showTotal: true,
-      }"
-      @page-change="handlePageChange"
-    >
-      <template #actions="{ record }">
-        <a-button
-          type="text"
-          class="hover:!bg-blue-100/80"
-          @click="handleShowObjectDetail(record.__id__)"
-        >
-          <template #icon>
-            <icon-file />
-          </template>
-        </a-button>
-      </template>
-    </a-table>
-  </a-page-header>
+    <div class="h-0 flex-1 p-8 overflow-auto">
+      <a-table
+        stripe
+        row-key="__id__"
+        class="rounded-none"
+        :loading="loading"
+        :columns="columns"
+        :data="data"
+        :pagination="false"
+        :sticky-header="-32"
+        @page-change="handlePageChange"
+      >
+        <template #actions="{ record }">
+          <a-button
+            type="text"
+            class="hover:!bg-blue-100/80"
+            @click="handleShowObjectDetail(record.__id__)"
+          >
+            <template #icon>
+              <icon-file />
+            </template>
+          </a-button>
+        </template>
+      </a-table>
+    </div>
+
+    <div class="flex justify-end px-8 py-4 border-t">
+      <a-pagination
+        v-model:page="page"
+        :page-size="pageSize"
+        :total="total"
+        show-total
+      />
+    </div>
+  </Scaffold>
 </template>
