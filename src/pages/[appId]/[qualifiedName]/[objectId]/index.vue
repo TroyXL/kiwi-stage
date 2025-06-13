@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import emitter from '@/lib/emitter'
+import Scaffold from '@/pages/_components/Scaffold.vue'
 import {
   useKiwiAppAndSchemaStore,
   useKiwiSchemaByRouteAndGetParams,
@@ -37,12 +38,8 @@ function handleRefreshDetail() {
 </script>
 
 <template>
-  <a-page-header
-    class="fixed z-10 left-60 top-14 right-0 bottom-0 bg-background"
-    title="Record Detail"
-    @back="handleGoBackToList"
-  >
-    <template #extra v-if="!loading">
+  <Scaffold title="Record Detail" show-back @back="handleGoBackToList">
+    <template #actions v-if="!loading">
       <div class="flex gap-2">
         <ObjectTriggers />
       </div>
@@ -52,6 +49,6 @@ function handleRefreshDetail() {
       <a-spin />
     </div>
     <ObjectDetail v-else :data="data" />
-  </a-page-header>
-  <MethodInvoker @refresh="handleRefreshDetail" />
+    <MethodInvoker @refresh="handleRefreshDetail" />
+  </Scaffold>
 </template>

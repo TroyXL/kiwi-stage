@@ -35,12 +35,16 @@ const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
     },
   }
 )
+
 async function handleEditApp() {
   isEditMode.value = true
   appName.value = props.appInfo!.name
   await nextTick()
   $input.value?.focus()
 }
+
+// async function handleSyncApp() {}
+
 async function handleConfirmEdit() {
   const newName = appName.value.trim()
   if (newName && newName !== props.appInfo?.name) {
@@ -90,6 +94,11 @@ async function handleConfirmEdit() {
           <icon-pen />
         </template>
       </a-button>
+      <!-- <a-button type="text" @click="handleSyncApp">
+        <template #icon>
+          <icon-sync />
+        </template>
+      </a-button> -->
       <a-button type="text" @click="handleSwitchApp">
         <template #icon>
           <icon-swap />
