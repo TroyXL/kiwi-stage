@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
-import { computed, inject, ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import ParameterEditor from './parameterEditor/Index.vue'
 
+const emits = defineEmits<{
+  refresh: []
+}>()
+
+const route = useRoute('/[appId]/[qualifiedName]/[objectId]/')
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const targetMethod = computed(() => kiwiAppAndSchemaStore.willInvokeMethod)
 const hasParameters = computed(() => !!targetMethod.value?.parameters.length)
@@ -12,7 +18,6 @@ const hasParameters = computed(() => !!targetMethod.value?.parameters.length)
 const visible = ref(false)
 const $parameterEditor =
   useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
-const handleRefreshObjectList = inject<() => void>('refreshObjectList')
 
 watch(targetMethod, () => {
   visible.value = !!targetMethod.value
@@ -23,17 +28,18 @@ function handleCloseModal() {
 }
 
 async function handleExcuteMethod() {
-  const objectId = kiwiAppAndSchemaStore.selectedObject.id
+  const objectId = route.params.objectId
   const methodName = targetMethod.value?.name
   if (!objectId || !methodName) return false
   const parameters = $parameterEditor.value?.getParameters()
   try {
-    await kiwiAppAndSchemaStore
-      .getKiwiSchema()
-      ?.invokeMethod(objectId, methodName, parameters)
+    await kiwiAppAndSchemaStore.kiwiSchema?.invokeMethod(
+      objectId,
+      methodName,
+      parameters
+    )
+    emits('refresh')
     Message.success('Done')
-    kiwiAppAndSchemaStore.refreshObjectPreview()
-    handleRefreshObjectList?.()
     return true
   } catch (error) {
     return false

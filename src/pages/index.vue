@@ -92,12 +92,13 @@ function handleCreateModeChange(createMode: boolean) {
         </a-list>
       </div>
 
-      <div class="flex justify-end mt-4" v-if="pageCount! > 1">
+      <div class="flex justify-end mt-4">
         <a-pagination
           v-model:current="page"
           :page-size="pageSize"
           :total="total"
           show-total
+          hide-on-single-page
           simple
         />
       </div>

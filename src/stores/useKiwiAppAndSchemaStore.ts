@@ -1,71 +1,40 @@
 import { KiwiApp, KiwiSchema } from '@/kiwi'
-import type { KiwiTableRow } from '@/kiwi/schema/field'
 import type { KiwiMethod } from '@/kiwi/schema/method'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 export const useKiwiAppAndSchemaStore = defineStore(
   'kiwiSchemaAndObjects',
   () => {
-    let kiwiApp: KiwiApp | null = null
-    let kiwiSchema: KiwiSchema | null = null
-    let qualifiedName = ''
-
-    const selectedObject = ref({
-      id: '',
-      loading: false,
-      isEdit: false,
-      data: null as KiwiTableRow | null,
-    })
-
+    const kiwiApp = ref<KiwiApp | null>(null)
+    const kiwiSchema = ref<KiwiSchema | null>(null)
+    const qualifiedName = ref('')
     const willInvokeMethod = ref<KiwiMethod | null>(null)
 
     async function switchKiwiApp(appId: number) {
-      kiwiApp = await KiwiApp.createByAppId(appId)
-      return kiwiApp
+      kiwiApp.value = await KiwiApp.createByAppId(appId)
+      return kiwiApp.value
+    }
+
+    function switchKiwiSchema(newQualifiedName: string) {
+      if (qualifiedName.value === newQualifiedName) return
+      disposeKiwiClassSchema()
+      qualifiedName.value = newQualifiedName
+      kiwiSchema.value =
+        kiwiApp.value?.getSchemaByQualifiedName(qualifiedName.value) ?? null
     }
 
     function disposeKiwiApp() {
-      kiwiApp?.dispose()
-      kiwiApp = null
+      kiwiApp.value?.dispose()
+      kiwiApp.value = null
       disposeKiwiClassSchema()
     }
 
     function disposeKiwiClassSchema() {
-      kiwiSchema = null
-      qualifiedName = ''
-      selectedObject.value = {
-        id: '',
-        loading: false,
-        isEdit: false,
-        data: null,
-      }
+      kiwiSchema.value = null
+      qualifiedName.value = ''
       willInvokeMethod.value = null
-    }
-
-    function switchKiwiClassSchema(_qualifiedName: string) {
-      disposeKiwiClassSchema()
-      kiwiSchema = kiwiApp?.getSchemaByQualifiedName(_qualifiedName) ?? null
-      qualifiedName = _qualifiedName
-      return kiwiSchema
-    }
-
-    async function showObjectPreview(objectId: string, isEditMode = false) {
-      selectedObject.value.id = objectId
-      selectedObject.value.isEdit = isEditMode
-      selectedObject.value.data = null
-      if (!objectId) return
-      selectedObject.value.loading = true
-      const res = await kiwiApp?.fetchObjectById(objectId)
-      if (res) {
-        const rows = kiwiSchema?.transformObjectsToTableRows([res])
-        selectedObject.value.data = rows?.[0] ?? null
-      }
-      selectedObject.value.loading = false
-    }
-
-    function refreshObjectPreview() {
-      showObjectPreview(selectedObject.value.id, selectedObject.value.isEdit)
     }
 
     function invokeMethod(method: KiwiMethod | null) {
@@ -73,23 +42,29 @@ export const useKiwiAppAndSchemaStore = defineStore(
     }
 
     return {
-      getKiwiApp() {
-        return kiwiApp
-      },
-      getKiwiSchema() {
-        return kiwiSchema
-      },
-      fetQualifiedName() {
-        return qualifiedName
-      },
-      switchKiwiApp,
-      disposeKiwiApp,
-      switchKiwiClassSchema,
-      selectedObject,
-      showObjectPreview,
-      refreshObjectPreview,
+      kiwiApp,
+      kiwiSchema,
+      qualifiedName,
       willInvokeMethod,
+      switchKiwiApp,
+      switchKiwiSchema,
+      disposeKiwiApp,
       invokeMethod,
     }
   }
 )
+
+export function useKiwiSchemaByRouteAndGetParams() {
+  const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
+  const route = useRoute('/[appId]/[qualifiedName]/[objectId]/')
+  const params = computed(() => route.params)
+  const qualifiedName = computed(() => route.params.qualifiedName)
+  watch(
+    qualifiedName,
+    value => {
+      kiwiAppAndSchemaStore.switchKiwiSchema(value)
+    },
+    { immediate: true }
+  )
+  return params
+}

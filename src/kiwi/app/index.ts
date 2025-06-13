@@ -87,7 +87,7 @@ export class KiwiApp {
       newlyCreated?: string
     }> = {
       page: 1,
-      pageSize: 20,
+      pageSize: 10,
     }
   ) {
     return this.request.Post<KiwiPaginationResponse<{ items: KiwiObject[] }>>(

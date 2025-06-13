@@ -3,7 +3,7 @@ import type { KiwiMethod } from '@/kiwi/schema/method'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const methods = kiwiAppAndSchemaStore.getKiwiSchema()?.methods || []
+const methods = kiwiAppAndSchemaStore.kiwiSchema?.methods || []
 
 function handleInvokeMethod(method: KiwiMethod) {
   kiwiAppAndSchemaStore.invokeMethod(method)
@@ -41,6 +41,12 @@ function handleInvokeMethod(method: KiwiMethod) {
       <icon-command />
     </template>
     {{ method.label || method.name }}
+  </a-button>
+
+  <a-button type="outline">
+    <template #icon>
+      <icon-pen />
+    </template>
   </a-button>
 
   <a-button status="danger" type="outline">
