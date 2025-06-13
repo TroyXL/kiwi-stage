@@ -9,7 +9,7 @@ import { useRoute, useRouter } from 'vue-router'
 import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 
 const router = useRouter()
-const route = useRoute('/[appId]/[qualifiedName]')
+const route = useRoute('/[appId]/[qualifiedName]/')
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 
 const params = computed(() => route.params)
@@ -68,7 +68,11 @@ function handleClickMenuItem(selectedQualifiedName: string) {
         </a-menu>
       </a-layout-sider>
       <a-layout-content>
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <keep-alive include="KiwiObjectsPage">
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
         <a-empty v-if="!params.qualifiedName" class="mt-48">
           <template #image>
             <icon-compass />
