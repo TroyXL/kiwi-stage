@@ -47,7 +47,12 @@ defineExpose({
 </script>
 
 <template>
-  <a-form ref="$form" :model="formModel" :rules="formRules">
+  <a-form
+    ref="$form"
+    :model="formModel"
+    :rules="formRules"
+    :wrapper-col-props="{ span: 16 }"
+  >
     <template v-for="parameter in parameters">
       <template v-if="!parameter.ignore">
         <PrimitiveParameterEditor
