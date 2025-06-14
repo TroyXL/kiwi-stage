@@ -27,12 +27,12 @@ const ACTION_COLUMN: TableColumnData = {
 const router = useRouter()
 const params = useKiwiSchemaByRouteAndGetParams()
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const kiwiClassSchema = computed(() => kiwiAppAndSchemaStore.kiwiSchema)
+const kiwiSchema = computed(() => kiwiAppAndSchemaStore.kiwiSchema)
 const qualifiedName = computed(() => kiwiAppAndSchemaStore.qualifiedName)
 
 const columns = computed<TableColumnData[]>(() => {
-  if (!kiwiClassSchema.value) return []
-  return kiwiClassSchema.value.tableColumns
+  if (!kiwiSchema.value) return []
+  return kiwiSchema.value.tableColumns
     .map(column => ({
       ...column,
       fixed: column.field.summary ? 'left' : void 0,
@@ -93,7 +93,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
 <template>
   <Scaffold
     bodyClass="flex flex-col !p-0"
-    :title="kiwiClassSchema?.label"
+    :title="kiwiSchema?.label"
     :subtitle="qualifiedName"
   >
     <template #actions>

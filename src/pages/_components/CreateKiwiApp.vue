@@ -4,7 +4,7 @@ import { KiwiManager } from '@/kiwi'
 import { sleep } from '@/lib/utils'
 import { nextTick, ref, useTemplateRef } from 'vue'
 
-const emits = defineEmits<{
+const emit = defineEmits<{
   created: []
   modeChanged: [isCreateMode: boolean]
 }>()
@@ -18,13 +18,13 @@ async function handleClickCreate() {
   isCreateMode.value = true
   await nextTick()
   $input.value?.focus()
-  emits('modeChanged', isCreateMode.value)
+  emit('modeChanged', isCreateMode.value)
 }
 
 function handleCancelCreate() {
   isCreateMode.value = false
   appName.value = ''
-  emits('modeChanged', isCreateMode.value)
+  emit('modeChanged', isCreateMode.value)
 }
 
 async function handleConfirmCreate() {
@@ -40,7 +40,7 @@ async function handleConfirmCreate() {
       .finally(() => {
         loading.value = false
       })
-    emits('created')
+    emit('created')
   }
   handleCancelCreate()
 }

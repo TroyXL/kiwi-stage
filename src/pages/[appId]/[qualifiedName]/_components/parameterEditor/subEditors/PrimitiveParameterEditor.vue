@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
+import type { FieldRule } from '@arco-design/web-vue'
 import { isNil } from 'lodash'
 import { ref, watch } from 'vue'
 
@@ -14,28 +15,38 @@ const TYPE_DEFAULT_VALUES = {
 
 const props = defineProps<{
   parameter: KiwiParameter
+  prefixFieldName?: string
   value: any
 }>()
-const emits = defineEmits<{
-  changed: [value: any, name: string]
+const emit = defineEmits<{
+  change: [value: any, name: string]
 }>()
 
 const typeAsserts = (() => {
-  const typeName = (props.parameter.type as KiwiPrimitiveType).name
+  const parameter = props.parameter
+  const typeName = (parameter.type as KiwiPrimitiveType).name
   const isInteger = typeName === 'int'
   const isFloat = FLOAT_TYPES.includes(typeName)
   const isBoolean = typeName === 'boolean'
   const isString = typeName === 'string'
 
-  const defaultValue = isInteger
-    ? TYPE_DEFAULT_VALUES.isInteger
-    : isFloat
-    ? TYPE_DEFAULT_VALUES.isFloat
-    : isBoolean
-    ? TYPE_DEFAULT_VALUES.isBoolean
-    : isString
-    ? TYPE_DEFAULT_VALUES.isString
-    : void 0
+  const defaultValue =
+    props.value ?? isInteger
+      ? TYPE_DEFAULT_VALUES.isInteger
+      : isFloat
+      ? TYPE_DEFAULT_VALUES.isFloat
+      : isBoolean
+      ? TYPE_DEFAULT_VALUES.isBoolean
+      : isString
+      ? TYPE_DEFAULT_VALUES.isString
+      : void 0
+
+  const rules: FieldRule[] = [
+    {
+      required: parameter.required,
+      message: `${parameter.label || parameter.name} is required`,
+    },
+  ]
 
   return {
     isInteger,
@@ -43,14 +54,18 @@ const typeAsserts = (() => {
     isBoolean,
     isString,
     defaultValue,
+    rules,
+    fieldName: props.prefixFieldName
+      ? `${props.prefixFieldName}.${parameter.name}`
+      : parameter.name,
   }
 })()
 
-const model = ref(props.value ?? typeAsserts.defaultValue)
+const model = ref(typeAsserts.defaultValue)
 watch(
   model,
   () => {
-    emits('changed', model.value, props.parameter.name)
+    emit('change', model.value, props.parameter.name)
   },
   {
     immediate: isNil(props.value),
@@ -59,7 +74,11 @@ watch(
 </script>
 
 <template>
-  <a-form-item :label="parameter.label" :field="parameter.name">
+  <a-form-item
+    :label="parameter.label"
+    :field="typeAsserts.fieldName"
+    :rules="typeAsserts.rules"
+  >
     <a-input-number
       v-if="typeAsserts.isInteger"
       v-model="model"

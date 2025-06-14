@@ -13,7 +13,7 @@ const props = defineProps({
     required: true,
   },
 })
-const emits = defineEmits(['update:appInfo'])
+const emit = defineEmits(['update:appInfo'])
 
 const isEditMode = ref(false)
 const loading = ref(false)
@@ -57,7 +57,7 @@ async function handleConfirmEdit() {
       .finally(() => {
         loading.value = false
       })
-    emits('update:appInfo', {
+    emit('update:appInfo', {
       ...props.appInfo!,
       name: newName,
     })
