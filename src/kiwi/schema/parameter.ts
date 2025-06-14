@@ -17,6 +17,8 @@ export class KiwiParameter {
   name: string
   label: string
   type: KiwiType
+
+  // UI 相关属性
   ignore = false
   required = false
 
