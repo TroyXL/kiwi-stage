@@ -56,6 +56,9 @@ interface KiwiSchemaInterface {
   qualifiedName: string
   beanName?: string
   label: string
+  constructor: {
+    parameters: KiwiParameterInterface[]
+  }
   classes: KiwiSchemaInterface[]
   enumConstants: KiwiEnumConstant[]
   fields?: KiwiFieldInterface[]

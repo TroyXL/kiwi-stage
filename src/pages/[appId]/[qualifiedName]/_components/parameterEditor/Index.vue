@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
-import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
 import type { FormInstance } from '@arco-design/web-vue'
 import type { FieldRule } from '@arco-design/web-vue/es/form/interface'
 import { ref } from 'vue'
+import ClassParamterEditor from './ClassParamterEditor.vue'
 import PrimitiveParameterEditor from './PrimitiveParameterEditor.vue'
 
 const props = defineProps<{
@@ -47,26 +47,22 @@ defineExpose({
 </script>
 
 <template>
-  <a-form
-    ref="$form"
-    :model="formModel"
-    :rules="formRules"
-    :wrapper-col-props="{ span: 16 }"
-  >
+  <a-form ref="$form" :model="formModel" :rules="formRules">
     <template v-for="parameter in parameters">
-      <a-form-item
-        v-if="!parameter.ignore"
-        :label="parameter.label"
-        :field="parameter.name"
-      >
+      <template v-if="!parameter.ignore">
         <PrimitiveParameterEditor
           v-if="parameter.type.kind === 'primitive'"
-          :name="parameter.name"
+          :parameter="parameter"
           :value="formModel[parameter.name]"
-          :type="parameter.type as KiwiPrimitiveType"
           @changed="handleParameterChanged"
         />
-      </a-form-item>
+
+        <ClassParamterEditor
+          v-if="parameter.type.kind === 'class'"
+          :parameter="parameter"
+          :value="formModel[parameter.name]"
+        />
+      </template>
     </template>
   </a-form>
 </template>

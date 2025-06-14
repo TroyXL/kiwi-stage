@@ -2,6 +2,7 @@ import { mapValues } from 'lodash'
 import { KiwiApp } from '../app'
 import { KiwiField, type KiwiTableColumn, type KiwiTableRow } from './field'
 import { KiwiMethod } from './method'
+import { KiwiParameter } from './parameter'
 import type { KiwiPrimitiveType } from './type'
 
 export abstract class KiwiSchema {
@@ -11,6 +12,7 @@ export abstract class KiwiSchema {
   readonly name: string
   readonly qualifiedName: string
   readonly label: string
+  readonly constructorParameters: KiwiParameter[]
   readonly enumConstants: KiwiEnumConstant[]
   readonly subSchemas: KiwiSchema[]
   readonly fields = new Map<string, KiwiField>()
@@ -62,6 +64,9 @@ export abstract class KiwiSchema {
     this.name = schema.name
     this.qualifiedName = schema.qualifiedName
     this.label = schema.label
+    this.constructorParameters = schema.constructor.parameters.map(
+      param => new KiwiParameter(param)
+    )
     this.enumConstants = schema.enumConstants
     this.subSchemas = schema.classes.map(subSchema =>
       KiwiSchema.from(subSchema, created)
