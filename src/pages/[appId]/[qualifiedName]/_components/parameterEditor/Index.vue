@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { FormInstance } from '@arco-design/web-vue'
-import type { FieldRule } from '@arco-design/web-vue/es/form/interface'
-import { ref } from 'vue'
-import ClassParamterEditor from './ClassParamterEditor.vue'
-import PrimitiveParameterEditor from './PrimitiveParameterEditor.vue'
+import { ref, useTemplateRef } from 'vue'
+import ParameterEditor from './ParameterEditor.vue'
 
 const props = defineProps<{
   parameters: KiwiParameter[]
   model?: Dict
 }>()
+const emit = defineEmits(['change'])
 
 const formModel = ref(
   props.parameters.reduce((acc, cur) => {
@@ -18,56 +17,29 @@ const formModel = ref(
   }, {} as Dict)
 )
 
-const formRules = ref(
-  props.parameters.reduce((acc, cur) => {
-    acc[cur.name] = {
-      required: cur.required,
-      message: `${cur.label || cur.name} is required`,
-    }
-    return acc
-  }, {} as Dict<FieldRule>)
-)
-
-const $form = ref<FormInstance>()
+const $form = useTemplateRef<FormInstance>('$form')
 
 function handleParameterChanged(value: any, name: string) {
   formModel.value[name] = value
-}
-
-async function getParameters() {
-  const errors = await $form.value?.validate()
-  if (errors) return
-
-  return formModel.value
+  emit('change', formModel.value)
 }
 
 defineExpose({
-  getParameters,
+  async validate() {
+    return await $form.value?.validate()
+  },
+  getParameters() {
+    return formModel.value
+  },
 })
 </script>
 
 <template>
-  <a-form
-    ref="$form"
-    :model="formModel"
-    :rules="formRules"
-    :wrapper-col-props="{ span: 16 }"
-  >
-    <template v-for="parameter in parameters">
-      <template v-if="!parameter.ignore">
-        <PrimitiveParameterEditor
-          v-if="parameter.type.kind === 'primitive'"
-          :parameter="parameter"
-          :value="formModel[parameter.name]"
-          @changed="handleParameterChanged"
-        />
-
-        <ClassParamterEditor
-          v-if="parameter.type.kind === 'class'"
-          :parameter="parameter"
-          :value="formModel[parameter.name]"
-        />
-      </template>
-    </template>
+  <a-form ref="$form" :model="formModel" :wrapper-col-props="{ span: 16 }">
+    <ParameterEditor
+      :parameters="parameters"
+      :model="formModel"
+      @change="handleParameterChanged"
+    />
   </a-form>
 </template>

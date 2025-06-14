@@ -5,7 +5,7 @@ import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ParameterEditor from './parameterEditor/Index.vue'
 
-const emits = defineEmits<{
+const emit = defineEmits<{
   refresh: []
 }>()
 
@@ -31,8 +31,9 @@ async function handleExcuteMethod() {
   const objectId = route.params.objectId
   const methodName = targetMethod.value?.name
   if (!objectId || !methodName) return false
-  const parameters = await $parameterEditor.value?.getParameters()
-  if (!parameters) return false
+  const errors = await $parameterEditor.value?.validate()
+  if (errors) return false
+  const parameters = $parameterEditor.value?.getParameters()
 
   try {
     await kiwiAppAndSchemaStore.kiwiSchema?.invokeMethod(
@@ -40,7 +41,7 @@ async function handleExcuteMethod() {
       methodName,
       parameters
     )
-    emits('refresh')
+    emit('refresh')
     Message.success('Done')
     return true
   } catch (error) {

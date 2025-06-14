@@ -19,7 +19,7 @@ export const useKiwiAppAndSchemaStore = defineStore(
 
     function switchKiwiSchema(newQualifiedName: string) {
       if (qualifiedName.value === newQualifiedName) return
-      disposeKiwiClassSchema()
+      disposeKiwiSchema()
       qualifiedName.value = newQualifiedName
       kiwiSchema.value =
         kiwiApp.value?.getSchemaByQualifiedName(qualifiedName.value) ?? null
@@ -28,10 +28,10 @@ export const useKiwiAppAndSchemaStore = defineStore(
     function disposeKiwiApp() {
       kiwiApp.value?.dispose()
       kiwiApp.value = null
-      disposeKiwiClassSchema()
+      disposeKiwiSchema()
     }
 
-    function disposeKiwiClassSchema() {
+    function disposeKiwiSchema() {
       kiwiSchema.value = null
       qualifiedName.value = ''
       willInvokeMethod.value = null

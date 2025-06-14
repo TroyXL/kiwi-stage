@@ -1,6 +1,6 @@
 import { createKiwiRequest } from '../createKiwiRequest'
 import { KiwiManager } from '../manager'
-import { KiwiClassSchema, KiwiSchema } from '../schema'
+import { KiwiSchema } from '../schema'
 
 export class KiwiApp {
   private static _current: KiwiApp | null = null
@@ -33,8 +33,8 @@ export class KiwiApp {
   }
   get rootClassSchemas() {
     return this._rootSchemas.filter(
-      schema => schema.tag === 'class' && !(schema as KiwiClassSchema).isBean
-    ) as KiwiClassSchema[]
+      schema => schema.tag === 'class' && !schema.isBean
+    )
   }
 
   private constructor(appId: number) {
@@ -61,8 +61,8 @@ export class KiwiApp {
     const schemaCreated: KiwiSchemaCreated = schema => {
       this._schemaPool.set(schema.qualifiedName, schema)
     }
-    this._rootSchemas = metaSchemaList.map(metaSchema =>
-      KiwiSchema.from(metaSchema, schemaCreated)
+    this._rootSchemas = metaSchemaList.map(
+      metaSchema => new KiwiSchema(metaSchema, schemaCreated)
     )
     console.log(this._rootSchemas)
   }
