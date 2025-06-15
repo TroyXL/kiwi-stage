@@ -3,7 +3,6 @@ import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiClassType } from '@/kiwi/schema/type'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import type { FieldRule } from '@arco-design/web-vue'
-import { isNil } from 'lodash'
 import { ref } from 'vue'
 import ParameterEditor from '../ParameterEditor.vue'
 
@@ -17,11 +16,9 @@ const emit = defineEmits<{
 }>()
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const kiwiSchema = kiwiAppAndSchemaStore.kiwiApp?.getSchemaByQualifiedName(
-  (props.parameter.type as KiwiClassType).qualifiedName
-)
-
-const model = ref(props.value)
+const qualifiedName = (props.parameter.type as KiwiClassType).qualifiedName
+const kiwiSchema =
+  kiwiAppAndSchemaStore.kiwiApp?.getSchemaByQualifiedName(qualifiedName)
 
 const typeAssert = (() => {
   if (!kiwiSchema || kiwiSchema.tag === 'interface') {
@@ -44,16 +41,16 @@ const typeAssert = (() => {
       ]
 
   const defaultModel = isValue
-    ? kiwiSchema.constructorParameters.reduce((acc, cur) => {
+    ? props.value?.fields ??
+      kiwiSchema.constructorParameters.reduce((acc, cur) => {
         acc[cur.name] = props.value?.[cur.name]
         return acc
       }, {} as Dict)
+    : isClass
+    ? props.value?.id
+    : isEnum
+    ? props.value?.name
     : void 0
-
-  if (isNil(model.value) && !isNil(defaultModel)) {
-    model.value = defaultModel
-    triggerValueChange()
-  }
 
   return {
     isValue,
@@ -70,6 +67,9 @@ const typeAssert = (() => {
   }
 })()
 
+const model = ref(typeAssert.defaultModel)
+triggerValueChange()
+
 // 下拉框的校验基于表单的 model
 // 而不是传入下拉框的 model
 // 由于下拉框默认的 change 触发时机早于 watch
@@ -85,7 +85,15 @@ function handleValueChanged(nextValue: any, name: string) {
 }
 
 function triggerValueChange() {
-  emit('change', model.value, props.parameter.name)
+  const nextValue = typeAssert.isValue
+    ? { type: qualifiedName, fields: model.value }
+    : typeAssert.isEnum
+    ? { type: qualifiedName, name: model.value }
+    : typeAssert.isClass
+    ? { type: qualifiedName, id: model.value }
+    : void 0
+
+  emit('change', nextValue, props.parameter.name)
 }
 </script>
 
