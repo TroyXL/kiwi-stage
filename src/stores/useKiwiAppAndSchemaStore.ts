@@ -1,5 +1,4 @@
 import { KiwiApp, KiwiSchema } from '@/kiwi'
-import type { KiwiMethod } from '@/kiwi/schema/method'
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -10,7 +9,6 @@ export const useKiwiAppAndSchemaStore = defineStore(
     const kiwiApp = ref<KiwiApp | null>(null)
     const kiwiSchema = ref<KiwiSchema | null>(null)
     const qualifiedName = ref('')
-    const willInvokeMethod = ref<KiwiMethod | null>(null)
 
     async function switchKiwiApp(appId: number) {
       kiwiApp.value = await KiwiApp.createByAppId(appId)
@@ -34,22 +32,15 @@ export const useKiwiAppAndSchemaStore = defineStore(
     function disposeKiwiSchema() {
       kiwiSchema.value = null
       qualifiedName.value = ''
-      willInvokeMethod.value = null
-    }
-
-    function invokeMethod(method: KiwiMethod | null) {
-      willInvokeMethod.value = method
     }
 
     return {
       kiwiApp,
       kiwiSchema,
       qualifiedName,
-      willInvokeMethod,
       switchKiwiApp,
       switchKiwiSchema,
       disposeKiwiApp,
-      invokeMethod,
     }
   }
 )

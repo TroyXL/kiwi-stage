@@ -1,26 +1,30 @@
 <script setup lang="ts">
+import type { KiwiMethod } from '@/kiwi/schema/method'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
 import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ParameterEditor from './parameterEditor/Index.vue'
 
+const props = defineProps<{
+  targetMethod: KiwiMethod | null
+  data: KiwiObject
+}>()
 const emit = defineEmits<{
   refresh: []
+  close: []
 }>()
 
+const $parameterEditor =
+  useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
 const route = useRoute('/[appId]/[qualifiedName]/[objectId]/')
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const targetMethod = computed(() => kiwiAppAndSchemaStore.willInvokeMethod)
-const hasParameters = computed(() => !!targetMethod.value?.parameters.length)
+const hasParameters = computed(() => !!props.targetMethod?.parameters.length)
 // 使用 visible 是为了保证在弹窗彻底关闭后，清空 willInvokeMethod
 // 由于弹窗存在动画，如果在关闭时立刻清空 willInvokeMethod，会导致弹窗 UI 产生抖动
 const visible = ref(false)
-const $parameterEditor =
-  useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
-
-watch(targetMethod, () => {
-  visible.value = !!targetMethod.value
+watch(props, nextProps => {
+  visible.value = !!nextProps.targetMethod
 })
 
 function handleCloseModal() {
@@ -29,7 +33,7 @@ function handleCloseModal() {
 
 async function handleExcuteMethod() {
   const objectId = route.params.objectId
-  const methodName = targetMethod.value?.name
+  const methodName = props.targetMethod?.name
   if (!objectId || !methodName) return false
   const errors = await $parameterEditor.value?.validate()
   if (errors) return false
@@ -61,7 +65,7 @@ async function handleExcuteMethod() {
     :on-before-ok="handleExcuteMethod"
     @ok="handleCloseModal"
     @cancel="handleCloseModal"
-    @close="kiwiAppAndSchemaStore.invokeMethod(null)"
+    @close="emit('close')"
   >
     <template #title>
       {{ targetMethod?.label || targetMethod?.name }}
@@ -73,6 +77,7 @@ async function handleExcuteMethod() {
       <ParameterEditor
         ref="$parameterEditor"
         :parameters="targetMethod!.parameters"
+        :data="data"
       />
     </div>
   </a-modal>
