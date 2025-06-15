@@ -34,6 +34,11 @@ function handleRefreshDetail() {
   refreshDetail()
   emitter.emit('refreshObjectList')
 }
+
+function handleDeleteRecord() {
+  handleGoBackToList()
+  emitter.emit('refreshObjectList')
+}
 </script>
 
 <template>
@@ -44,7 +49,7 @@ function handleRefreshDetail() {
           v-if="data"
           :data="data"
           @refresh="handleRefreshDetail"
-          @deleted="handleGoBackToList"
+          @deleted="handleDeleteRecord"
         />
       </div>
     </template>
