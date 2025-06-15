@@ -25,13 +25,7 @@ const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
   {
     immediate: false,
     async middleware(_ctx, next) {
-      if (
-        !(await showConfirm(
-          'Confirm delete this record?',
-          'This action cannot be undo'
-        ))
-      )
-        return
+      if (!(await showConfirm('confirmDeleteRecord', 'actionUndoTip'))) return
       await next()
       emit('deleted')
       Message.success('Deleted')

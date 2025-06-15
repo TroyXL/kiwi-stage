@@ -2,6 +2,7 @@
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiSchema } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
+import text from '@/lib/text'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { toInteger } from 'lodash'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -81,7 +82,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
           <template #image>
             <icon-compass />
           </template>
-          Select an object from the left menu to start
+          {{ text.selectObjectTip }}
         </a-empty>
       </a-layout-content>
     </a-layout>

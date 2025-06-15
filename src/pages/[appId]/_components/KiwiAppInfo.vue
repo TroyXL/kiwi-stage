@@ -27,7 +27,7 @@ const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
   {
     immediate: false,
     async middleware(_ctx, next) {
-      if (await showConfirm('Confirm delete this app?')) {
+      if (await showConfirm('confirmDeleteApp', 'actionUndoTip')) {
         await next()
         Message.success(`App <${props.appInfo!.name}> deleted`)
         handleSwitchApp()

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiClassType } from '@/kiwi/schema/type'
+import text from '@/lib/text'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import type { FieldRule } from '@arco-design/web-vue'
 import ParameterEditor from '../ParameterEditor.vue'
@@ -34,7 +35,7 @@ const typeAssert = (() => {
     : [
         {
           required: parameter.required,
-          message: `${parameter.label || parameter.name} is required`,
+          message: `${parameter.label || parameter.name} ${text.isRequired}`,
         },
       ]
 
@@ -73,8 +74,7 @@ const typeAssert = (() => {
       v-else-if="typeAssert.isEnum"
       v-model="model"
       allow-clear
-      placeholder="Please select"
-      validate-trigger="blur"
+      :placeholder="text.placeholderSelect"
     >
       <a-option
         v-for="option in typeAssert.enumOptions"
@@ -84,5 +84,12 @@ const typeAssert = (() => {
         {{ option.label }}
       </a-option>
     </a-select>
+
+    <a-input
+      v-else-if="typeAssert.isClass"
+      readonly
+      allow-clear
+      :placeholder="text.placeholderSelect"
+    />
   </a-form-item>
 </template>

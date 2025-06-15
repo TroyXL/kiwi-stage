@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { KiwiApp } from '@/kiwi'
 import { useEmitter } from '@/lib/emitter'
+import text from '@/lib/text'
 import Scaffold from '@/pages/_components/Scaffold.vue'
 import {
   useKiwiAppAndSchemaStore,
@@ -102,14 +103,14 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
           <template #icon>
             <icon-plus />
           </template>
-          <span>Add</span>
+          <span>{{ text.createLabel }}</span>
         </a-button>
 
         <a-button @click="handleResetObjectList">
           <template #icon>
             <icon-refresh />
           </template>
-          <span>Refresh</span>
+          <span>{{ text.refreshLabel }}</span>
         </a-button>
       </a-space>
     </template>

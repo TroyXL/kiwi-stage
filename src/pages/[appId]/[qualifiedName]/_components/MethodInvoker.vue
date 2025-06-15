@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { KiwiMethod } from '@/kiwi/schema/method'
+import text from '@/lib/text'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
 import { computed, ref, useTemplateRef, watch } from 'vue'
@@ -61,7 +62,7 @@ async function handleExcuteMethod() {
     :closable="false"
     :mask-closable="false"
     :simple="!hasParameters"
-    ok-text="Excute"
+    :ok-text="text.excuteLabel"
     :on-before-ok="handleExcuteMethod"
     @ok="handleCloseModal"
     @cancel="handleCloseModal"
@@ -70,9 +71,7 @@ async function handleExcuteMethod() {
     <template #title>
       {{ targetMethod?.label || targetMethod?.name }}
     </template>
-    <div v-if="!hasParameters" class="text-center mb-6">
-      This action cannot be undo.
-    </div>
+    <div v-if="!hasParameters">{{ text.actionUndoTip }}</div>
     <div v-else>
       <ParameterEditor
         ref="$parameterEditor"

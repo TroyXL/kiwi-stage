@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
+import text from '@/lib/text'
 import CreateKiwiApp from '@/pages/_components/CreateKiwiApp.vue'
 import { usePagination } from 'alova/client'
 import { onMounted, ref } from 'vue'
@@ -54,7 +55,7 @@ function handleCreateModeChange(createMode: boolean) {
   <div class="flex justify-center items-center full-screen bg-muted">
     <a-page-header
       class="w-[640px] rounded-md bg-background shadow-2xl !pb-0"
-      title="Select a Kiwi App"
+      :title="text.selectKiwiApp"
       :show-back="false"
     >
       <template #extra>
@@ -73,8 +74,8 @@ function handleCreateModeChange(createMode: boolean) {
       <a-input-search
         search-button
         allow-clear
-        placeholder="Input keyword to search"
         v-model.trim="searchText"
+        :placeholder="text.placeholderSearchKeyword"
         @clear="reloadAppList"
         @search="reloadAppList"
         @press-enter="reloadAppList"
@@ -86,7 +87,9 @@ function handleCreateModeChange(createMode: boolean) {
           <a-list-item v-for="item in data" :key="item.id">
             <a-list-item-meta :title="item.name" />
             <template #actions>
-              <a-button size="mini" @click="openApp(item.id)">Open</a-button>
+              <a-button size="mini" @click="openApp(item.id)">{{
+                text.openLabel
+              }}</a-button>
             </template>
           </a-list-item>
         </a-list>
