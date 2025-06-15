@@ -7,6 +7,10 @@ body {
 .arco-modal-simple .arco-modal-footer {
   margin: 0;
 }
+.arco-modal-simple .arco-modal-body {
+  margin-bottom: 24px;
+  text-align: center;
+}
 
 .arco-drawer {
   height: calc(100% - 16px);

@@ -40,7 +40,12 @@ function handleRefreshDetail() {
   <Scaffold title="Record Detail" show-back @back="handleGoBackToList">
     <template #actions v-if="!loading">
       <div class="flex gap-2">
-        <ObjectTriggers :data="data" @refresh="handleRefreshDetail" />
+        <ObjectTriggers
+          v-if="data"
+          :data="data"
+          @refresh="handleRefreshDetail"
+          @deleted="handleGoBackToList"
+        />
       </div>
     </template>
 

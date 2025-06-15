@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { KiwiMethod } from '@/kiwi/schema/method'
+import { showConfirm } from '@/lib/userInterface'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
+import { Message } from '@arco-design/web-vue'
+import { useRequest } from 'alova/client'
 import { ref } from 'vue'
 import MethodInvoker from './MethodInvoker.vue'
 
-defineProps<{
+const props = defineProps<{
   data: KiwiObject
 }>()
-const emit = defineEmits(['refresh'])
+const emit = defineEmits(['refresh', 'deleted'])
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const methods = kiwiAppAndSchemaStore.kiwiSchema?.methods || []
@@ -16,6 +19,25 @@ const targetMethod = ref<KiwiMethod | null>(null)
 function handleInvokeMethod(method: KiwiMethod) {
   targetMethod.value = method
 }
+
+const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
+  kiwiAppAndSchemaStore.kiwiApp!.deleteObjectById(props.data.id!),
+  {
+    immediate: false,
+    async middleware(_ctx, next) {
+      if (
+        !(await showConfirm(
+          'Confirm delete this record?',
+          'This action cannot be undo'
+        ))
+      )
+        return
+      await next()
+      emit('deleted')
+      Message.success('Deleted')
+    },
+  }
+)
 </script>
 
 <template>
@@ -57,7 +79,12 @@ function handleInvokeMethod(method: KiwiMethod) {
     </template>
   </a-button>
 
-  <a-button status="danger" type="outline">
+  <a-button
+    status="danger"
+    type="outline"
+    :loading="deleteLoading"
+    @click="handleDeleteObject"
+  >
     <template #icon>
       <icon-delete />
     </template>

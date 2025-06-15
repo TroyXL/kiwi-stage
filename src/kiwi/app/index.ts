@@ -102,6 +102,10 @@ export class KiwiApp {
     return this.request.Get<KiwiObject>(`/object/${id}`)
   }
 
+  deleteObjectById(id: string) {
+    return this.request.Delete(`/object/${id}`)
+  }
+
   transformParametersToFormData(
     parameters: KiwiParameter[],
     data?: KiwiObject
