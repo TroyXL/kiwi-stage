@@ -4,7 +4,7 @@ import { KiwiSchema } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { toInteger } from 'lodash'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 
@@ -24,6 +24,10 @@ onMounted(async () => {
   appInfo.value = kiwiApp.appInfo
   kiwiClasses.value = kiwiApp.rootClassSchemas
   loading.value = false
+})
+
+onUnmounted(() => {
+  kiwiAppAndSchemaStore.disposeKiwiApp()
 })
 
 function handleClickMenuItem(selectedQualifiedName: string) {

@@ -142,7 +142,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
 
     <div class="flex justify-end px-8 py-4 border-t">
       <a-pagination
-        v-model:page="page"
+        v-model:current="page"
         :page-size="pageSize"
         :total="total"
         show-total
