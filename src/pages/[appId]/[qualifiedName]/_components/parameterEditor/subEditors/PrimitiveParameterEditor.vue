@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
+import text from '@/lib/text'
 import type { FieldRule } from '@arco-design/web-vue'
 
 const FLOAT_TYPES: KiwiPrimitiveTypeEnum[] = ['long', 'float', 'double']
@@ -24,7 +25,7 @@ const typeAsserts = (() => {
   const rules: FieldRule[] = [
     {
       required: parameter.required,
-      message: `${parameter.label || parameter.name} is required`,
+      message: `${parameter.label || parameter.name} ${text.isRequired}`,
     },
   ]
 
@@ -50,26 +51,26 @@ const typeAsserts = (() => {
     <a-input-number
       v-if="typeAsserts.isInteger"
       v-model="model"
-      placeholder="Please Enter"
       mode="button"
+      :placeholder="text.placeholderEnter"
       :step="1"
       :precision="0"
     />
     <a-input-number
       v-else-if="typeAsserts.isFloat"
       v-model="model"
-      placeholder="Please Enter"
       mode="button"
+      :placeholder="text.placeholderEnter"
     />
     <a-switch
       v-else-if="typeAsserts.isBoolean"
-      placeholder="Please Enter"
       v-model="model"
+      :placeholder="text.placeholderEnter"
     />
     <a-input
       v-else-if="typeAsserts.isString"
-      placeholder="Please Enter"
       v-model.trim="model"
+      :placeholder="text.placeholderEnter"
     />
   </a-form-item>
 </template>

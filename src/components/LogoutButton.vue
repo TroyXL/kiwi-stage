@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
+import text from '@/lib/text'
 import { showConfirm } from '@/lib/userInterface'
 import { useRequest } from 'alova/client'
 import type { PropType } from 'vue'
@@ -18,7 +19,7 @@ const { loading, send: handleLogout } = useRequest(
   {
     immediate: false,
     async middleware(_ctx, next) {
-      if (await showConfirm('Confirm logout?')) {
+      if (await showConfirm('logoutTip')) {
         await next()
         KiwiApp.current?.dispose()
         localStorage.removeItem(KIWI_APP_RECENT)
@@ -44,6 +45,6 @@ const { loading, send: handleLogout } = useRequest(
     <template #icon>
       <icon-export />
     </template>
-    <span>Logout</span>
+    <span>{{ text.logoutLabel }}</span>
   </a-button>
 </template>
