@@ -7,12 +7,15 @@ import ParameterEditor from './ParameterEditor.vue'
 
 const props = defineProps<{
   parameters: KiwiParameter[]
-  // model?: Dict
+  data?: KiwiObject
 }>()
 const emit = defineEmits(['change'])
 
 const formModel = ref(
-  KiwiApp.current?.transformParametersToFormData(props.parameters) ?? {}
+  KiwiApp.current?.transformParametersToFormData(
+    props.parameters,
+    props.data
+  ) ?? {}
 )
 const $form = useTemplateRef<FormInstance>('$form')
 

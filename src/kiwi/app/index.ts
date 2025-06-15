@@ -102,14 +102,21 @@ export class KiwiApp {
     return this.request.Get<KiwiObject>(`/object/${id}`)
   }
 
-  transformParametersToFormData(parameters: KiwiParameter[]) {
+  transformParametersToFormData(
+    parameters: KiwiParameter[],
+    data?: KiwiObject
+  ) {
     return parameters.reduce((formData, param) => {
       if (param.ignore) return formData
+
+      const value = data?.fields?.[param.name]
+      // console.log('param.name =', param.name, data?.fields, value)
 
       if (param.type.kind === 'primitive') {
         const typeName = (param.type as KiwiPrimitiveType).name
         formData[param.name] =
-          typeName === 'string' ? '' : typeName === 'boolean' ? false : 0
+          value ??
+          (typeName === 'string' ? '' : typeName === 'boolean' ? false : 0)
       } else if (param.type.kind === 'class') {
         const qualifiedName = (param.type as KiwiClassType).qualifiedName
         const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
@@ -117,17 +124,18 @@ export class KiwiApp {
         if (kiwiSchemaTag) {
           formData[param.name] =
             kiwiSchemaTag === 'enum'
-              ? void 0
+              ? value?.name
               : kiwiSchemaTag === 'class'
-              ? void 0
+              ? value?.id
               : kiwiSchemaTag === 'value'
               ? this.transformParametersToFormData(
-                  kiwiSchema.constructorParameters
+                  kiwiSchema.constructorParameters,
+                  value
                 )
               : void 0
         }
       }
-
+      // console.log('=== formData =', formData)
       return formData
     }, {} as Dict)
   }

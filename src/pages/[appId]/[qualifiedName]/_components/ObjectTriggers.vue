@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import type { KiwiMethod } from '@/kiwi/schema/method'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
+import { ref } from 'vue'
+import MethodInvoker from './MethodInvoker.vue'
+
+defineProps<{
+  data: KiwiObject
+}>()
+const emit = defineEmits(['refresh'])
 
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const methods = kiwiAppAndSchemaStore.kiwiSchema?.methods || []
+const targetMethod = ref<KiwiMethod | null>(null)
 
 function handleInvokeMethod(method: KiwiMethod) {
-  kiwiAppAndSchemaStore.invokeMethod(method)
+  targetMethod.value = method
 }
 </script>
 
@@ -54,4 +62,11 @@ function handleInvokeMethod(method: KiwiMethod) {
       <icon-delete />
     </template>
   </a-button>
+
+  <MethodInvoker
+    :target-method="targetMethod"
+    :data="data"
+    @refresh="emit('refresh')"
+    @close="targetMethod = null"
+  />
 </template>

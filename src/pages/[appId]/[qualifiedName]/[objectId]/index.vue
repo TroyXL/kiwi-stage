@@ -7,7 +7,6 @@ import {
 } from '@/stores/useKiwiAppAndSchemaStore'
 import { useRequest } from 'alova/client'
 import { useRouter } from 'vue-router'
-import MethodInvoker from '../_components/MethodInvoker.vue'
 import ObjectDetail from '../_components/ObjectDetail.vue'
 import ObjectTriggers from '../_components/ObjectTriggers.vue'
 
@@ -41,7 +40,7 @@ function handleRefreshDetail() {
   <Scaffold title="Record Detail" show-back @back="handleGoBackToList">
     <template #actions v-if="!loading">
       <div class="flex gap-2">
-        <ObjectTriggers />
+        <ObjectTriggers :data="data" @refresh="handleRefreshDetail" />
       </div>
     </template>
 
@@ -49,6 +48,5 @@ function handleRefreshDetail() {
       <a-spin />
     </div>
     <ObjectDetail v-else :data="data" />
-    <MethodInvoker @refresh="handleRefreshDetail" />
   </Scaffold>
 </template>
