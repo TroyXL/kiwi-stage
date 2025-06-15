@@ -2,25 +2,16 @@
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
 import type { FieldRule } from '@arco-design/web-vue'
-import { isNil } from 'lodash'
-import { ref, watch } from 'vue'
 
 const FLOAT_TYPES: KiwiPrimitiveTypeEnum[] = ['long', 'float', 'double']
-const TYPE_DEFAULT_VALUES = {
-  isInteger: 0,
-  isFloat: 0,
-  isBoolean: false,
-  isString: '',
-}
 
 const props = defineProps<{
   parameter: KiwiParameter
-  prefixFieldName?: string
-  value: any
+  parentFieldName?: string
 }>()
-const emit = defineEmits<{
-  change: [value: any, name: string]
-}>()
+const model = defineModel<any>({
+  required: true,
+})
 
 const typeAsserts = (() => {
   const parameter = props.parameter
@@ -29,17 +20,6 @@ const typeAsserts = (() => {
   const isFloat = FLOAT_TYPES.includes(typeName)
   const isBoolean = typeName === 'boolean'
   const isString = typeName === 'string'
-
-  const defaultValue =
-    props.value ?? isInteger
-      ? TYPE_DEFAULT_VALUES.isInteger
-      : isFloat
-      ? TYPE_DEFAULT_VALUES.isFloat
-      : isBoolean
-      ? TYPE_DEFAULT_VALUES.isBoolean
-      : isString
-      ? TYPE_DEFAULT_VALUES.isString
-      : void 0
 
   const rules: FieldRule[] = [
     {
@@ -53,24 +33,12 @@ const typeAsserts = (() => {
     isFloat,
     isBoolean,
     isString,
-    defaultValue,
     rules,
-    fieldName: props.prefixFieldName
-      ? `${props.prefixFieldName}.${parameter.name}`
+    fieldName: props.parentFieldName
+      ? `${props.parentFieldName}.${parameter.name}`
       : parameter.name,
   }
 })()
-
-const model = ref(typeAsserts.defaultValue)
-watch(
-  model,
-  () => {
-    emit('change', model.value, props.parameter.name)
-  },
-  {
-    immediate: isNil(props.value),
-  }
-)
 </script>
 
 <template>

@@ -1,6 +1,8 @@
 import { createKiwiRequest } from '../createKiwiRequest'
 import { KiwiManager } from '../manager'
 import { KiwiSchema } from '../schema'
+import type { KiwiParameter } from '../schema/parameter'
+import type { KiwiClassType, KiwiPrimitiveType } from '../schema/type'
 
 export class KiwiApp {
   private static _current: KiwiApp | null = null
@@ -98,5 +100,77 @@ export class KiwiApp {
 
   fetchObjectById(id: string) {
     return this.request.Get<KiwiObject>(`/object/${id}`)
+  }
+
+  transformParametersToFormData(parameters: KiwiParameter[]) {
+    return parameters.reduce((formData, param) => {
+      if (param.ignore) return formData
+
+      if (param.type.kind === 'primitive') {
+        const typeName = (param.type as KiwiPrimitiveType).name
+        formData[param.name] =
+          typeName === 'string' ? '' : typeName === 'boolean' ? false : 0
+      } else if (param.type.kind === 'class') {
+        const qualifiedName = (param.type as KiwiClassType).qualifiedName
+        const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
+        const kiwiSchemaTag = kiwiSchema?.tag
+        if (kiwiSchemaTag) {
+          formData[param.name] =
+            kiwiSchemaTag === 'enum'
+              ? void 0
+              : kiwiSchemaTag === 'class'
+              ? void 0
+              : kiwiSchemaTag === 'value'
+              ? this.transformParametersToFormData(
+                  kiwiSchema.constructorParameters
+                )
+              : void 0
+        }
+      }
+
+      return formData
+    }, {} as Dict)
+  }
+
+  transformFormDataToFormattedParameters(
+    parameters: KiwiParameter[],
+    formData: Dict
+  ) {
+    return parameters.reduce((formatted, param) => {
+      if (param.ignore) return formData
+
+      const value = formData[param.name]
+      if (param.type.kind === 'primitive') {
+        formatted[param.name] = value
+      } else if (param.type.kind === 'class') {
+        const qualifiedName = (param.type as KiwiClassType).qualifiedName
+        const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
+        const kiwiSchemaTag = kiwiSchema?.tag
+        if (kiwiSchemaTag) {
+          formatted[param.name] =
+            kiwiSchemaTag === 'enum'
+              ? {
+                  type: qualifiedName,
+                  name: value,
+                }
+              : kiwiSchemaTag === 'class'
+              ? {
+                  type: qualifiedName,
+                  id: value,
+                }
+              : kiwiSchemaTag === 'value'
+              ? {
+                  type: qualifiedName,
+                  fields: this.transformFormDataToFormattedParameters(
+                    kiwiSchema.constructorParameters,
+                    value
+                  ),
+                }
+              : void 0
+        }
+      }
+
+      return formatted
+    }, {} as Dict)
   }
 }

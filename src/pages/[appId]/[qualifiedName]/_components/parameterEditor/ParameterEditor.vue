@@ -5,36 +5,29 @@ import PrimitiveParameterEditor from './subEditors/PrimitiveParameterEditor.vue'
 
 defineProps<{
   parameters: KiwiParameter[]
-  prefixFieldName?: string
-  model: Dict
+  parentFieldName?: string
 }>()
 
-const emit = defineEmits<{
-  change: [value: any, name: string]
-}>()
-
-function handleParameterChanged(value: any, name: string) {
-  emit('change', value, name)
-}
+const model = defineModel<Dict>({
+  required: true,
+})
 </script>
 
 <template>
   <template v-for="parameter in parameters">
     <PrimitiveParameterEditor
       v-if="!parameter.ignore && parameter.type.kind === 'primitive'"
-      :prefix-field-name="prefixFieldName"
+      v-model="model[parameter.name]"
+      :parent-field-name="parentFieldName"
       :parameter="parameter"
-      :value="model[parameter.name]"
-      @change="handleParameterChanged"
     />
 
     <ClassParameterEditor
       v-if="!parameter.ignore && parameter.type.kind === 'class'"
+      v-model="model[parameter.name]"
       ref="$classParameterEditors"
-      :prefix-field-name="prefixFieldName"
+      :parent-field-name="parentFieldName"
       :parameter="parameter"
-      :value="model[parameter.name]"
-      @change="handleParameterChanged"
     />
   </template>
 </template>
