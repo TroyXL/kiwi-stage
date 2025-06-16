@@ -10,6 +10,7 @@ const i18nText = {
   selectObjectTip: 'Select an object from the left menu to start',
   recordDetailTitle: 'Record Detail',
   isRequired: '{0} is required',
+  loginLabel: 'Login as Demo',
   excuteLabel: 'Excute',
   openLabel: 'Open',
   logoutLabel: 'Logout',
