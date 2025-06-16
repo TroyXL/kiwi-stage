@@ -5,6 +5,7 @@ import text from '@/lib/text'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import type { FieldRule } from '@arco-design/web-vue'
 import ParameterEditor from '../ParameterEditor.vue'
+import ObjectSelector from './ObjectSelector.vue'
 
 const props = defineProps<{
   parameter: KiwiParameter
@@ -85,11 +86,7 @@ const typeAssert = (() => {
       </a-option>
     </a-select>
 
-    <a-input
-      v-else-if="typeAssert.isClass"
-      readonly
-      allow-clear
-      :placeholder="text.placeholderSelect"
-    />
+    <ObjectSelector />
   </a-form-item>
 </template>
+<!-- v-else-if="typeAssert.isClass" -->

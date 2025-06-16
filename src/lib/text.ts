@@ -11,6 +11,8 @@ const text = {
   logoutLabel: 'Logout',
   createLabel: 'Create',
   refreshLabel: 'Refresh',
+  cancelLabel: 'Cancel',
+  okLabel: 'OK',
   placeholderSearchKeyword: 'Input keyword to search',
   placeholderSelect: 'Please select',
   placeholderEnter: 'Please enter',

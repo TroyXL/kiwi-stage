@@ -26,3 +26,7 @@ body {
 .arco-form-item-label-required-symbol svg {
   vertical-align: unset;
 }
+
+.clear-mask-layer .arco-drawer-mask {
+  background: transparent;
+}
