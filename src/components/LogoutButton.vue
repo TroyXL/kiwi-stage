@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
+import { i18nKey, useI18nText } from '@/lib/i18n'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
-import text from '@/lib/text'
 import { showConfirm } from '@/lib/userInterface'
 import { useRequest } from 'alova/client'
 import type { PropType } from 'vue'
@@ -14,12 +14,14 @@ defineProps({
   onlyIcon: Boolean,
 })
 
+const t = useI18nText()
+
 const { loading, send: handleLogout } = useRequest(
   KiwiManager.shared.logout(),
   {
     immediate: false,
     async middleware(_ctx, next) {
-      if (await showConfirm('logoutTip')) {
+      if (await showConfirm(t(i18nKey.logoutTip))) {
         await next()
         KiwiApp.current?.dispose()
         localStorage.removeItem(KIWI_APP_RECENT)
@@ -45,6 +47,6 @@ const { loading, send: handleLogout } = useRequest(
     <template #icon>
       <icon-export />
     </template>
-    <span>{{ text.logoutLabel }}</span>
+    <span>{{ $t(i18nKey.logoutLabel) }}</span>
   </a-button>
 </template>

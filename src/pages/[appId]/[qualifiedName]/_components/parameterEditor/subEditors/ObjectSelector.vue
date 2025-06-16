@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { KiwiTableRow } from '@/kiwi/schema/field'
-import text from '@/lib/text'
+import { i18nKey } from '@/lib/i18n'
 import { ref } from 'vue'
 import ObjectList from '../../ObjectList.vue'
 
@@ -40,7 +40,7 @@ function handleSelectItem(row: KiwiTableRow) {
   <a-space>
     <a-input
       readonly
-      :placeholder="text.placeholderSelect"
+      :placeholder="$t(i18nKey.placeholderSelect)"
       :model-value="selectedRow?.__summary__"
       @click="handleOpenSelector"
     />
@@ -69,14 +69,14 @@ function handleSelectItem(row: KiwiTableRow) {
       <template #footer>
         <a-space>
           <a-button @click="handleCloseSelector">
-            {{ text.cancelLabel }}
+            {{ $t(i18nKey.cancelLabel) }}
           </a-button>
           <a-button
             type="primary"
             :disabled="!tempSelectedRow"
             @click="handleConfirmSelect"
           >
-            {{ text.okLabel }}
+            {{ $t(i18nKey.okLabel) }}
           </a-button>
         </a-space>
       </template>

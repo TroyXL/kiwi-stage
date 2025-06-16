@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { KiwiManager } from '@/kiwi'
-import text from '@/lib/text'
+import { i18nKey } from '@/lib/i18n'
 import { sleep } from '@/lib/utils'
 import { nextTick, ref, useTemplateRef } from 'vue'
 
@@ -52,7 +52,7 @@ async function handleConfirmCreate() {
     <template #icon>
       <icon-plus />
     </template>
-    <span>{{ text.createLabel }}</span>
+    <span>{{ $t(i18nKey.createLabel) }}</span>
   </a-button>
   <div v-else class="flex gap-2">
     <a-input

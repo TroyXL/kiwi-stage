@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiSchema } from '@/kiwi'
+import { i18nKey } from '@/lib/i18n'
 import { KIWI_APP_RECENT } from '@/lib/storageKeys'
-import text from '@/lib/text'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { toInteger } from 'lodash'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -82,7 +82,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
           <template #image>
             <icon-compass />
           </template>
-          {{ text.selectObjectTip }}
+          {{ $t(i18nKey.selectObjectTip) }}
         </a-empty>
       </a-layout-content>
     </a-layout>

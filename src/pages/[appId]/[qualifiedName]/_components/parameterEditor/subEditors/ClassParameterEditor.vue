@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiClassType } from '@/kiwi/schema/type'
-import text from '@/lib/text'
+import { i18nKey, useI18nText } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import type { FieldRule } from '@arco-design/web-vue'
 import ParameterEditor from '../ParameterEditor.vue'
@@ -15,6 +15,7 @@ const model = defineModel<any>({
   required: true,
 })
 
+const t = useI18nText()
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const qualifiedName = (props.parameter.type as KiwiClassType).qualifiedName
 const kiwiSchema =
@@ -36,7 +37,7 @@ const typeAssert = (() => {
     : [
         {
           required: parameter.required,
-          message: `${parameter.label || parameter.name} ${text.isRequired}`,
+          message: t(i18nKey.isRequired, [parameter.label || parameter.name]),
         },
       ]
 
@@ -75,7 +76,7 @@ const typeAssert = (() => {
       v-else-if="typeAssert.isEnum"
       v-model="model"
       allow-clear
-      :placeholder="text.placeholderSelect"
+      :placeholder="$t(i18nKey.placeholderSelect)"
     >
       <a-option
         v-for="option in typeAssert.enumOptions"

@@ -10,6 +10,7 @@ import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { setupKiwiErrorHandler } from './kiwi'
+import { i18n } from './lib/i18n'
 import { router } from './router'
 import './styles/global.css'
 import './styles/override.css'
@@ -38,4 +39,5 @@ createApp(App)
   .use(ArcoVue)
   .use(ArcoVueIcon)
   .use(useGlobalInjects)
+  .use(i18n)
   .mount('#app')
