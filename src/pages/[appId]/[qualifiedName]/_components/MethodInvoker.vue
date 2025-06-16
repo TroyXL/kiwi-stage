@@ -57,6 +57,7 @@ async function handleExcuteMethod() {
 
 <template>
   <a-modal
+    unmount-on-close
     :visible="visible"
     :title-align="hasParameters ? 'start' : void 0"
     :closable="false"

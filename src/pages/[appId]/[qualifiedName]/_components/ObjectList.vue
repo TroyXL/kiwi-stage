@@ -8,15 +8,6 @@ import type { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
 import { computed } from 'vue'
 
-const ACTION_COLUMN: TableColumnData = {
-  dataIndex: '__actions__',
-  title: '',
-  align: 'right',
-  fixed: 'right',
-  width: 60,
-  slotName: 'actions',
-}
-
 const props = defineProps<{
   qualifiedName: string
   isSelectMode?: boolean
@@ -26,6 +17,15 @@ const emit = defineEmits<{
   showDetail: [id: string]
   select: [row: KiwiTableRow]
 }>()
+
+const ACTION_COLUMN: TableColumnData = {
+  dataIndex: '__actions__',
+  title: '',
+  align: 'right',
+  fixed: 'right',
+  width: 60,
+  slotName: 'actions',
+}
 
 const kiwiSchema = computed(() =>
   KiwiApp.current?.getSchemaByQualifiedName(props.qualifiedName)
@@ -96,18 +96,12 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
           </template>
           <span>{{ text.createLabel }}</span>
         </a-button>
-
-        <template v-if="isSelectMode">
-          <span>Select Mode</span>
-        </template>
-        <template v-else>
-          <a-button @click="handleResetObjectList">
-            <template #icon>
-              <icon-refresh />
-            </template>
-            <span>{{ text.refreshLabel }}</span>
-          </a-button>
-        </template>
+        <a-button @click="handleResetObjectList">
+          <template #icon>
+            <icon-refresh />
+          </template>
+          <span>{{ text.refreshLabel }}</span>
+        </a-button>
       </a-space>
     </template>
 
@@ -138,13 +132,18 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
       </a-table>
     </div>
 
-    <div class="flex justify-end px-8 py-4 border-t">
+    <div
+      class="flex px-8 py-4 border-t"
+      :class="isSelectMode ? 'justify-between' : 'justify-end'"
+    >
       <a-pagination
         v-model:current="page"
         :page-size="pageSize"
         :total="total"
         show-total
       />
+
+      <slot name="footer" v-if="isSelectMode" />
     </div>
   </Scaffold>
 </template>
