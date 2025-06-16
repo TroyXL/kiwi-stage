@@ -86,7 +86,9 @@ const typeAssert = (() => {
       </a-option>
     </a-select>
 
-    <ObjectSelector />
+    <ObjectSelector
+      v-else-if="typeAssert.isClass"
+      :qualified-name="(parameter.type as KiwiClassType).qualifiedName"
+    />
   </a-form-item>
 </template>
-<!-- v-else-if="typeAssert.isClass" -->
