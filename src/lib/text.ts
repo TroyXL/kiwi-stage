@@ -12,6 +12,7 @@ const text = {
   createLabel: 'Create',
   refreshLabel: 'Refresh',
   cancelLabel: 'Cancel',
+  clearLabel: 'Clear',
   okLabel: 'OK',
   placeholderSearchKeyword: 'Input keyword to search',
   placeholderSelect: 'Please select',

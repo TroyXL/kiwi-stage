@@ -4,29 +4,52 @@ import text from '@/lib/text'
 import { ref } from 'vue'
 import ObjectList from '../../ObjectList.vue'
 
+defineProps<{
+  qualifiedName: string
+}>()
+
 const showSelector = ref(false)
 const selectedRow = ref<KiwiTableRow | null>(null)
+const tempSelectedRow = ref<KiwiTableRow | null>(null)
+
+function handleOpenSelector() {
+  showSelector.value = true
+  tempSelectedRow.value = selectedRow.value
+}
 
 function handleCloseSelector() {
   showSelector.value = false
 }
 
+function handleClearSelect() {
+  selectedRow.value = null
+  handleCloseSelector()
+}
+
 function handleConfirmSelect() {
+  selectedRow.value = tempSelectedRow.value
   handleCloseSelector()
 }
 
 function handleSelectItem(row: KiwiTableRow) {
-  selectedRow.value = row
+  tempSelectedRow.value = row
 }
 </script>
 
 <template>
-  <a-input
-    readonly
-    allow-clear
-    :placeholder="text.placeholderSelect"
-    @click="showSelector = true"
-  />
+  <a-space>
+    <a-input
+      readonly
+      :placeholder="text.placeholderSelect"
+      :model-value="selectedRow?.__summary__"
+      @click="handleOpenSelector"
+    />
+    <a-button v-if="selectedRow" @click="handleClearSelect">
+      <template #icon>
+        <icon-close />
+      </template>
+    </a-button>
+  </a-space>
 
   <a-drawer
     unmount-on-close
@@ -38,8 +61,9 @@ function handleSelectItem(row: KiwiTableRow) {
     :footer="false"
   >
     <ObjectList
-      qualified-name="Product"
+      :qualified-name="qualifiedName"
       is-select-mode
+      :selected-id="selectedRow?.__id__"
       @select="handleSelectItem"
     >
       <template #footer>
@@ -49,10 +73,11 @@ function handleSelectItem(row: KiwiTableRow) {
           </a-button>
           <a-button
             type="primary"
-            :disabled="!selectedRow"
+            :disabled="!tempSelectedRow"
             @click="handleConfirmSelect"
-            >{{ text.okLabel }}</a-button
           >
+            {{ text.okLabel }}
+          </a-button>
         </a-space>
       </template>
     </ObjectList>

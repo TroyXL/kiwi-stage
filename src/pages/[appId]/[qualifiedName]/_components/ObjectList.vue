@@ -11,6 +11,7 @@ import { computed } from 'vue'
 const props = defineProps<{
   qualifiedName: string
   isSelectMode?: boolean
+  selectedId?: string
 }>()
 
 const emit = defineEmits<{
@@ -32,7 +33,12 @@ const kiwiSchema = computed(() =>
 )
 
 const rowSelection = props.isSelectMode
-  ? { type: 'radio', fixed: true, width: 40 }
+  ? {
+      type: 'radio',
+      fixed: true,
+      width: 40,
+      defaultSelectedRowKeys: props.selectedId ? [props.selectedId] : void 0,
+    }
   : void 0
 
 const columns = computed<TableColumnData[]>(() => {
