@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { KiwiManager } from '@/kiwi'
+import { i18nKey } from '@/lib/i18n'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -19,6 +20,7 @@ async function handleLogin() {
     type="primary"
     :loading="loading"
     @click="handleLogin"
-    >Login as Demo</a-button
   >
+    {{ $t(i18nKey.loginLabel) }}
+  </a-button>
 </template>
