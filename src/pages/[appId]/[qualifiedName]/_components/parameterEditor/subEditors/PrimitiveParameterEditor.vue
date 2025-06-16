@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
 import type { KiwiPrimitiveType } from '@/kiwi/schema/type'
-import text from '@/lib/text'
+import { i18nKey, useI18nText } from '@/lib/i18n'
 import type { FieldRule } from '@arco-design/web-vue'
 
 const FLOAT_TYPES: KiwiPrimitiveTypeEnum[] = ['long', 'float', 'double']
@@ -14,6 +14,7 @@ const model = defineModel<any>({
   required: true,
 })
 
+const t = useI18nText()
 const typeAsserts = (() => {
   const parameter = props.parameter
   const typeName = (parameter.type as KiwiPrimitiveType).name
@@ -25,7 +26,7 @@ const typeAsserts = (() => {
   const rules: FieldRule[] = [
     {
       required: parameter.required,
-      message: `${parameter.label || parameter.name} ${text.isRequired}`,
+      message: t(i18nKey.isRequired, [parameter.label || parameter.name]),
     },
   ]
 
@@ -52,7 +53,7 @@ const typeAsserts = (() => {
       v-if="typeAsserts.isInteger"
       v-model="model"
       mode="button"
-      :placeholder="text.placeholderEnter"
+      :placeholder="$t(i18nKey.placeholderEnter)"
       :step="1"
       :precision="0"
     />
@@ -60,17 +61,18 @@ const typeAsserts = (() => {
       v-else-if="typeAsserts.isFloat"
       v-model="model"
       mode="button"
-      :placeholder="text.placeholderEnter"
+      :placeholder="$t(i18nKey.placeholderEnter)"
     />
     <a-switch
       v-else-if="typeAsserts.isBoolean"
       v-model="model"
-      :placeholder="text.placeholderEnter"
+      :placeholder="$t(i18nKey.placeholderEnter)"
     />
     <a-input
       v-else-if="typeAsserts.isString"
       v-model.trim="model"
-      :placeholder="text.placeholderEnter"
+      allow-clear
+      :placeholder="$t(i18nKey.placeholderEnter)"
     />
   </a-form-item>
 </template>

@@ -2,6 +2,7 @@
 import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { useSwitchKiwiApp } from '@/hooks/useSwitchKiwiApp'
 import { KiwiManager } from '@/kiwi'
+import { i18nKey, useI18nText } from '@/lib/i18n'
 import { showConfirm } from '@/lib/userInterface'
 import { Message } from '@arco-design/web-vue'
 import { useRequest } from 'alova/client'
@@ -17,6 +18,7 @@ const emit = defineEmits(['update:appInfo'])
 
 const isEditMode = ref(false)
 const loading = ref(false)
+const t = useI18nText()
 const $input = useTemplateRef<HTMLInputElement>('$input')
 const appName = useEditKiwiAppName()
 
@@ -27,7 +29,9 @@ const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
   {
     immediate: false,
     async middleware(_ctx, next) {
-      if (await showConfirm('confirmDeleteApp', 'actionUndoTip')) {
+      if (
+        await showConfirm(t(i18nKey.confirmDeleteApp), t(i18nKey.actionUndoTip))
+      ) {
         await next()
         Message.success(`App <${props.appInfo!.name}> deleted`)
         handleSwitchApp()

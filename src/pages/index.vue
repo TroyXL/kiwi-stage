@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
-import text from '@/lib/text'
+import { i18nKey } from '@/lib/i18n'
 import CreateKiwiApp from '@/pages/_components/CreateKiwiApp.vue'
 import { usePagination } from 'alova/client'
 import { onMounted, ref } from 'vue'
@@ -16,7 +16,6 @@ const {
   data,
   page,
   pageSize,
-  pageCount,
   total,
   reload: reloadAppList,
 } = usePagination(
@@ -55,7 +54,7 @@ function handleCreateModeChange(createMode: boolean) {
   <div class="flex justify-center items-center full-screen bg-muted">
     <a-page-header
       class="w-[640px] rounded-md bg-background shadow-2xl !pb-0"
-      :title="text.selectKiwiApp"
+      :title="$t(i18nKey.selectKiwiApp)"
       :show-back="false"
     >
       <template #extra>
@@ -75,7 +74,7 @@ function handleCreateModeChange(createMode: boolean) {
         search-button
         allow-clear
         v-model.trim="searchText"
-        :placeholder="text.placeholderSearchKeyword"
+        :placeholder="$t(i18nKey.placeholderSearchKeyword)"
         @clear="reloadAppList"
         @search="reloadAppList"
         @press-enter="reloadAppList"
@@ -88,7 +87,7 @@ function handleCreateModeChange(createMode: boolean) {
             <a-list-item-meta :title="item.name" />
             <template #actions>
               <a-button size="mini" @click="openApp(item.id)">{{
-                text.openLabel
+                $t(i18nKey.openLabel)
               }}</a-button>
             </template>
           </a-list-item>

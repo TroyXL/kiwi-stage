@@ -1,11 +1,15 @@
-const text = {
+import { mapValues } from 'lodash'
+import { createI18n, useI18n } from 'vue-i18n'
+
+const i18nText = {
   actionUndoTip: 'This action cannot be undo.',
   selectKiwiApp: 'Select a Kiwi App',
   logoutTip: 'Confirm logout?',
   confirmDeleteApp: 'Confirm delete this app?',
   confirmDeleteRecord: 'Confirm delete this record?',
   selectObjectTip: 'Select an object from the left menu to start',
-  isRequired: 'is required',
+  recordDetailTitle: 'Record Detail',
+  isRequired: '{0} is required',
   excuteLabel: 'Excute',
   openLabel: 'Open',
   logoutLabel: 'Logout',
@@ -19,5 +23,21 @@ const text = {
   placeholderEnter: 'Please enter',
 }
 
-export default text
-export type TextKey = keyof typeof text
+export type I18nKey = keyof typeof i18nText
+export const i18nKey = mapValues(i18nText, (_, key) => key) as Record<
+  I18nKey,
+  I18nKey
+>
+
+export const i18n = createI18n({
+  fallbackLocale: 'en',
+  messages: {
+    en: i18nText,
+    zh: i18nText,
+  },
+})
+
+export function useI18nText() {
+  const { t } = useI18n()
+  return t
+}

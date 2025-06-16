@@ -2,7 +2,8 @@
 import { KiwiApp } from '@/kiwi'
 import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { useEmitter } from '@/lib/emitter'
-import text from '@/lib/text'
+import { i18nKey, useI18nText } from '@/lib/i18n'
+
 import Scaffold from '@/pages/_components/Scaffold.vue'
 import type { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
@@ -27,6 +28,8 @@ const ACTION_COLUMN: TableColumnData = {
   width: 60,
   slotName: 'actions',
 }
+
+const t = useI18nText()
 
 const kiwiSchema = computed(() =>
   KiwiApp.current?.getSchemaByQualifiedName(props.qualifiedName)
@@ -100,13 +103,13 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
           <template #icon>
             <icon-plus />
           </template>
-          <span>{{ text.createLabel }}</span>
+          <span>{{ $t(i18nKey.createLabel) }}</span>
         </a-button>
         <a-button @click="handleResetObjectList">
           <template #icon>
             <icon-refresh />
           </template>
-          <span>{{ text.refreshLabel }}</span>
+          <span>{{ $t(i18nKey.refreshLabel) }}</span>
         </a-button>
       </a-space>
     </template>

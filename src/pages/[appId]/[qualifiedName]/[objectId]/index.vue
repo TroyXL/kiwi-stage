@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import emitter from '@/lib/emitter'
+import { i18nKey } from '@/lib/i18n'
 import Scaffold from '@/pages/_components/Scaffold.vue'
 import {
   useKiwiAppAndSchemaStore,
@@ -42,7 +43,11 @@ function handleDeleteRecord() {
 </script>
 
 <template>
-  <Scaffold title="Record Detail" show-back @back="handleGoBackToList">
+  <Scaffold
+    :title="$t(i18nKey.recordDetailTitle)"
+    show-back
+    @back="handleGoBackToList"
+  >
     <template #actions v-if="!loading">
       <div class="flex gap-2">
         <ObjectTriggers

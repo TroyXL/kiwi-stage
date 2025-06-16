@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { KiwiMethod } from '@/kiwi/schema/method'
+import { i18nKey, useI18nText } from '@/lib/i18n'
 import { showConfirm } from '@/lib/userInterface'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
@@ -12,6 +13,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['refresh', 'deleted'])
 
+const t = useI18nText()
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const methods = kiwiAppAndSchemaStore.kiwiSchema?.methods || []
 const targetMethod = ref<KiwiMethod | null>(null)
@@ -25,7 +27,13 @@ const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
   {
     immediate: false,
     async middleware(_ctx, next) {
-      if (!(await showConfirm('confirmDeleteRecord', 'actionUndoTip'))) return
+      if (
+        !(await showConfirm(
+          t(i18nKey.confirmDeleteRecord),
+          t(i18nKey.actionUndoTip)
+        ))
+      )
+        return
       await next()
       emit('deleted')
       Message.success('Deleted')
@@ -47,9 +55,11 @@ const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
       Triggers
     </a-button>
     <template #content>
-      <a-doption v-for="method in methods" :key="method.name" :value="method">{{
-        method.label || method.name
-      }}</a-doption>
+      <a-doption v-for="method in methods" :key="method.name" :value="method">
+        <span class="px-2">
+          {{ method.label || method.name }}
+        </span>
+      </a-doption>
     </template>
   </a-dropdown>
 

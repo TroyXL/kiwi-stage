@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { KiwiMethod } from '@/kiwi/schema/method'
-import text from '@/lib/text'
+import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
 import { computed, ref, useTemplateRef, watch } from 'vue'
@@ -63,7 +63,7 @@ async function handleExcuteMethod() {
     :closable="false"
     :mask-closable="false"
     :simple="!hasParameters"
-    :ok-text="text.excuteLabel"
+    :ok-text="$t(i18nKey.excuteLabel)"
     :on-before-ok="handleExcuteMethod"
     @ok="handleCloseModal"
     @cancel="handleCloseModal"
@@ -72,7 +72,7 @@ async function handleExcuteMethod() {
     <template #title>
       {{ targetMethod?.label || targetMethod?.name }}
     </template>
-    <div v-if="!hasParameters">{{ text.actionUndoTip }}</div>
+    <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div>
     <div v-else>
       <ParameterEditor
         ref="$parameterEditor"
