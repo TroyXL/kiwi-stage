@@ -1,5 +1,4 @@
 import { mapValues } from 'lodash'
-import { KiwiApp } from '../app'
 import { KiwiField, type KiwiTableColumn, type KiwiTableRow } from './field'
 import { KiwiMethod } from './method'
 import { KiwiParameter } from './parameter'
@@ -93,21 +92,6 @@ export class KiwiSchema {
       }
 
       return row
-    })
-  }
-
-  invokeMethod(objectId: string, methodName: string, parameters?: Dict) {
-    if (!objectId) throw new Error('Object id is required to invoke method')
-    if (!methodName) throw new Error('Method name is required to invoke method')
-    if (!this.validMethodNames.includes(methodName))
-      throw new Error(`Method <${methodName}> not found`)
-
-    return KiwiApp.current?.request.Post('/object/invoke', {
-      receiver: {
-        id: objectId,
-      },
-      method: methodName,
-      arguments: parameters,
     })
   }
 }

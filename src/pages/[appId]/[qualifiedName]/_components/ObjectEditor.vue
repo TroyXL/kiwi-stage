@@ -3,23 +3,18 @@ import type { KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
-import { computed, useTemplateRef, watch } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import ParameterEditor from './parameterEditor/Index.vue'
 
 const props = defineProps<{
   targetSchema: KiwiSchema
   data?: KiwiObject
-  objectId?: string
 }>()
 const visible = defineModel<boolean>('visible')
 const emit = defineEmits<{
-  refresh: []
+  refresh: [newObjectId?: string]
   close: []
 }>()
-
-watch(visible, visible => {
-  console.log('visible', visible)
-})
 
 const $parameterEditor =
   useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
@@ -37,15 +32,16 @@ async function handleConfirmEdit() {
   const errors = await $parameterEditor.value?.validate()
   if (errors) return false
   const parameters = $parameterEditor.value?.getParameters()
-  const payload = {
+  const payload: KiwiCreateOrUpdateObject = {
     object: {
+      id: props.data?.id,
       type: props.targetSchema.qualifiedName,
       fields: parameters,
     },
   }
   try {
-    await kiwiApp?.createObject(payload)
-    emit('refresh')
+    const newObjectId = await kiwiApp?.createOrUpdateObject(payload)
+    emit('refresh', newObjectId)
     Message.success('Done')
     return true
   } catch (error) {
@@ -69,7 +65,7 @@ async function handleConfirmEdit() {
     @close="emit('close')"
   >
     <template #title>{{
-      $t(objectId ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
+      $t(data?.id ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
     }}</template>
     <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div>
     <div v-else>

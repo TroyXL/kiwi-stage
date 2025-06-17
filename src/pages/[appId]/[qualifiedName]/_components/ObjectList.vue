@@ -55,7 +55,8 @@ const columns = computed<TableColumnData[]>(() => {
 })
 
 const showObjectEditor = ref(false)
-const editObjectId = ref<string | undefined>(void 0)
+
+let newlyCreated: string | undefined = void 0
 
 const {
   loading,
@@ -64,14 +65,18 @@ const {
   pageSize,
   total,
   reload: handleResetObjectList,
-  send: handleRefreshObjectList,
+  refresh: handleRefreshObjectList,
 } = usePagination(
-  (page, pageSize) =>
-    KiwiApp.current!.fetchObjects({
+  (page, pageSize) => {
+    const requestInstance = KiwiApp.current!.fetchObjects({
       page,
       pageSize,
       type: props.qualifiedName,
-    }),
+      newlyCreated,
+    })
+    newlyCreated = void 0
+    return requestInstance
+  },
   {
     total: response => response.total,
     data: response =>
@@ -88,6 +93,11 @@ const {
 
 function handleSelectRow(_: any, __: any, record: KiwiTableRow) {
   emit('select', record)
+}
+
+function handleRefreshObjectListWithNewlyCreated(newlyCreatedId?: string) {
+  newlyCreated = newlyCreatedId
+  handleRefreshObjectList()
 }
 
 useEmitter('refreshObjectList', handleRefreshObjectList)
@@ -162,6 +172,6 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
     v-if="kiwiSchema"
     v-model:visible="showObjectEditor"
     :target-schema="kiwiSchema"
-    :object-id="editObjectId"
+    @refresh="handleRefreshObjectListWithNewlyCreated"
   />
 </template>
