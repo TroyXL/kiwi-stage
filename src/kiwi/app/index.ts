@@ -106,6 +106,10 @@ export class KiwiApp {
     return this.request.Delete(`/object/${id}`)
   }
 
+  createObject(data: Dict) {
+    return this.request.Post('/object', data)
+  }
+
   transformParametersToFormData(
     parameters: KiwiParameter[],
     data?: KiwiObject

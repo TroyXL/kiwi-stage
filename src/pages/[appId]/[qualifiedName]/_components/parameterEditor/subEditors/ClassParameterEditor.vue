@@ -57,39 +57,38 @@ const typeAssert = (() => {
 </script>
 
 <template>
-  <a-form-item
-    v-if="!parameter.ignore"
-    :label="parameter.label"
-    :field="typeAssert.fieldName"
-    :hide-label="typeAssert.hideLabel"
-    :rules="typeAssert.rules"
-  >
-    <a-space v-if="typeAssert.isValue" class="w-full" direction="vertical">
-      <ParameterEditor
-        v-model="model"
-        :parent-field-name="parameter.name"
-        :parameters="typeAssert.constructorParameters"
-      />
-    </a-space>
-
-    <a-select
-      v-else-if="typeAssert.isEnum"
+  <template v-if="!parameter.ignore">
+    <ParameterEditor
+      v-if="typeAssert.isValue"
       v-model="model"
-      allow-clear
-      :placeholder="$t(i18nKey.placeholderSelect)"
-    >
-      <a-option
-        v-for="option in typeAssert.enumOptions"
-        :key="option.name"
-        :value="option.name"
-      >
-        {{ option.label }}
-      </a-option>
-    </a-select>
-
-    <ObjectSelector
-      v-else-if="typeAssert.isClass"
-      :qualified-name="(parameter.type as KiwiClassType).qualifiedName"
+      :parent-field-name="parameter.name"
+      :parameters="typeAssert.constructorParameters"
     />
-  </a-form-item>
+    <a-form-item
+      v-else
+      :label="parameter.label"
+      :field="typeAssert.fieldName"
+      :hide-label="typeAssert.hideLabel"
+      :rules="typeAssert.rules"
+    >
+      <a-select
+        v-if="typeAssert.isEnum"
+        v-model="model"
+        allow-clear
+        :placeholder="$t(i18nKey.placeholderSelect)"
+      >
+        <a-option
+          v-for="option in typeAssert.enumOptions"
+          :key="option.name"
+          :value="option.name"
+        >
+          {{ option.label }}
+        </a-option>
+      </a-select>
+      <ObjectSelector
+        v-else-if="typeAssert.isClass"
+        :qualified-name="(parameter.type as KiwiClassType).qualifiedName"
+      />
+    </a-form-item>
+  </template>
 </template>

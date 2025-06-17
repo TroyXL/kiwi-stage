@@ -70,7 +70,7 @@ const typeAsserts = (() => {
     />
     <a-input
       v-else-if="typeAsserts.isString"
-      v-model.trim="model"
+      v-model="model"
       allow-clear
       :placeholder="$t(i18nKey.placeholderEnter)"
     />

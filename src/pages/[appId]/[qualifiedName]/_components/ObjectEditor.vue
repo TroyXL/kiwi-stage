@@ -1,51 +1,50 @@
 <script setup lang="ts">
-import type { KiwiMethod } from '@/kiwi'
+import type { KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
-import { computed, ref, useTemplateRef, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, useTemplateRef, watch } from 'vue'
 import ParameterEditor from './parameterEditor/Index.vue'
 
 const props = defineProps<{
-  targetMethod: KiwiMethod | null
-  data: KiwiObject
+  targetSchema: KiwiSchema
+  data?: KiwiObject
+  objectId?: string
 }>()
+const visible = defineModel<boolean>('visible')
 const emit = defineEmits<{
   refresh: []
   close: []
 }>()
 
+watch(visible, visible => {
+  console.log('visible', visible)
+})
+
 const $parameterEditor =
   useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
-const route = useRoute('/[appId]/[qualifiedName]/[objectId]/')
-const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const hasParameters = computed(() => !!props.targetMethod?.parameters.length)
-// 使用 visible 是为了保证在弹窗彻底关闭后，清空 willInvokeMethod
-// 由于弹窗存在动画，如果在关闭时立刻清空 willInvokeMethod，会导致弹窗 UI 产生抖动
-const visible = ref(false)
-watch(props, nextProps => {
-  visible.value = !!nextProps.targetMethod
+const { kiwiApp } = useKiwiAppAndSchemaStore()
+const hasParameters = computed(() => {
+  if (props.targetSchema?.constructorParameters.length) return true
 })
 
 function handleCloseModal() {
   visible.value = false
 }
 
-async function handleExcuteMethod() {
-  const objectId = route.params.objectId
-  const methodName = props.targetMethod?.name
-  if (!objectId || !methodName) return false
+async function handleConfirmEdit() {
+  if (!kiwiApp) return false
   const errors = await $parameterEditor.value?.validate()
   if (errors) return false
   const parameters = $parameterEditor.value?.getParameters()
-
+  const payload = {
+    object: {
+      type: props.targetSchema.qualifiedName,
+      fields: parameters,
+    },
+  }
   try {
-    await kiwiAppAndSchemaStore.kiwiSchema?.invokeMethod(
-      objectId,
-      methodName,
-      parameters
-    )
+    await kiwiApp?.createObject(payload)
     emit('refresh')
     Message.success('Done')
     return true
@@ -58,25 +57,25 @@ async function handleExcuteMethod() {
 <template>
   <a-modal
     unmount-on-close
-    :visible="visible"
+    v-model:visible="visible"
     :title-align="hasParameters ? 'start' : void 0"
     :closable="false"
     :mask-closable="false"
     :simple="!hasParameters"
-    :ok-text="$t(i18nKey.excuteLabel)"
-    :on-before-ok="handleExcuteMethod"
+    :ok-text="$t(i18nKey.submitLabel)"
+    :on-before-ok="handleConfirmEdit"
     @ok="handleCloseModal"
     @cancel="handleCloseModal"
     @close="emit('close')"
   >
-    <template #title>
-      {{ targetMethod?.label || targetMethod?.name }}
-    </template>
+    <template #title>{{
+      $t(objectId ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
+    }}</template>
     <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div>
     <div v-else>
       <ParameterEditor
         ref="$parameterEditor"
-        :parameters="targetMethod!.parameters"
+        :parameters="targetSchema!.constructorParameters"
         :data="data"
       />
     </div>
