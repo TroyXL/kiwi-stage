@@ -56,7 +56,7 @@ const columns = computed<TableColumnData[]>(() => {
 
 const showObjectEditor = ref(false)
 
-let newlyCreated: string | undefined = void 0
+let newlyCreatedId: string | undefined = void 0
 
 const {
   loading,
@@ -72,9 +72,9 @@ const {
       page,
       pageSize,
       type: props.qualifiedName,
-      newlyCreated,
+      newlyCreatedId,
     })
-    newlyCreated = void 0
+    newlyCreatedId = void 0
     return requestInstance
   },
   {
@@ -95,8 +95,8 @@ function handleSelectRow(_: any, __: any, record: KiwiTableRow) {
   emit('select', record)
 }
 
-function handleRefreshObjectListWithNewlyCreated(newlyCreatedId?: string) {
-  newlyCreated = newlyCreatedId
+function handleRefreshObjectListWithNewlyCreated(_newlyCreatedId?: string) {
+  newlyCreatedId = _newlyCreatedId
   handleRefreshObjectList()
 }
 
