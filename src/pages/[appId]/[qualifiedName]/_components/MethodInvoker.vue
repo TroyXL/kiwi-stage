@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { KiwiMethod, KiwiSchema } from '@/kiwi'
-import { i18nKey } from '@/lib/i18n'
+import { i18nKey, useI18nText } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
 import { computed, ref, useTemplateRef, watch } from 'vue'
@@ -16,6 +16,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
+const t = useI18nText()
 const $parameterEditor =
   useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
 const route = useRoute('/[appId]/[qualifiedName]/[objectId]/')
@@ -49,7 +50,7 @@ async function handleExcuteMethod() {
       parameters
     )
     emit('refresh')
-    Message.success('Done')
+    Message.success(t(i18nKey.successTip))
     return true
   } catch (error) {
     return false

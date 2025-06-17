@@ -87,7 +87,7 @@ export class KiwiApp {
       // refer to schema.qualifiedName
       type?: string
       criteria?: Dict
-      newlyCreated?: string
+      newlyCreatedId?: string
     }> = {
       page: 1,
       pageSize: 10,

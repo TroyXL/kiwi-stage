@@ -33,7 +33,7 @@ const { loading: deleteLoading, send: handleDeleteApp } = useRequest(
         await showConfirm(t(i18nKey.confirmDeleteApp), t(i18nKey.actionUndoTip))
       ) {
         await next()
-        Message.success(`App <${props.appInfo!.name}> deleted`)
+        Message.success(t(i18nKey.appDeletedTip, [props.appInfo!.name]))
         handleSwitchApp()
       }
     },

@@ -2,6 +2,9 @@ import { mapValues } from 'lodash'
 import { createI18n, useI18n } from 'vue-i18n'
 
 const i18nText = {
+  successTip: 'Done',
+  deletedTip: 'Deleted',
+  appDeletedTip: 'App <{0}> Deleted',
   actionUndoTip: 'This action cannot be undo.',
   selectKiwiApp: 'Select a Kiwi App',
   logoutTip: 'Confirm logout?',
@@ -35,6 +38,7 @@ export const i18nKey = mapValues(i18nText, (_, key) => key) as Record<
 >
 
 export const i18n = createI18n({
+  legacy: false,
   fallbackLocale: 'en',
   messages: {
     en: i18nText,

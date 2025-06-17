@@ -40,7 +40,7 @@ const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
         return
       await next()
       emit('deleted')
-      Message.success('Deleted')
+      Message.success(t(i18nKey.deletedTip))
     },
   }
 )
