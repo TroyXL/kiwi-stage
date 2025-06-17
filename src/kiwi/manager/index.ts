@@ -1,4 +1,4 @@
-import { createKiwiRequest } from '../createKiwiRequest'
+import { createKiwiRequest } from '../lib/createKiwiRequest'
 
 const KIWI_MANAGER_APP_ID = 2
 

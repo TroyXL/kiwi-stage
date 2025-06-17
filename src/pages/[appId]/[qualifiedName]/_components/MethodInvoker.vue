@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { KiwiMethod } from '@/kiwi'
+import type { KiwiMethod, KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
@@ -33,17 +33,19 @@ function handleCloseModal() {
 }
 
 async function handleExcuteMethod() {
+  const kiwiSchema = kiwiAppAndSchemaStore.kiwiSchema as KiwiSchema
   const objectId = route.params.objectId
   const methodName = props.targetMethod?.name
-  if (!objectId || !methodName) return false
+  if (!kiwiSchema || !objectId || !methodName) return false
   const errors = await $parameterEditor.value?.validate()
   if (errors) return false
   const parameters = $parameterEditor.value?.getParameters()
 
   try {
-    await kiwiAppAndSchemaStore.kiwiSchema?.invokeMethod(
-      objectId,
+    await kiwiAppAndSchemaStore.kiwiApp?.invokeMethod(
+      kiwiSchema,
       methodName,
+      objectId,
       parameters
     )
     emit('refresh')

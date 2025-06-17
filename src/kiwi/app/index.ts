@@ -1,4 +1,5 @@
-import { createKiwiRequest } from '../createKiwiRequest'
+import { createKiwiRequest } from '../lib/createKiwiRequest'
+import { trimStringInData } from '../lib/utils'
 import { KiwiManager } from '../manager'
 import { KiwiSchema } from '../schema'
 import type { KiwiParameter } from '../schema/parameter'
@@ -106,8 +107,31 @@ export class KiwiApp {
     return this.request.Delete(`/object/${id}`)
   }
 
-  createObject(data: Dict) {
-    return this.request.Post('/object', data)
+  createOrUpdateObject(data: KiwiCreateOrUpdateObject) {
+    return this.request.Post<string | undefined>(
+      '/object',
+      trimStringInData(data)
+    )
+  }
+
+  invokeMethod(
+    schema: KiwiSchema,
+    methodName: string,
+    objectId: string,
+    parameters?: Dict
+  ) {
+    if (!objectId) throw new Error('Object id is required to invoke method')
+    if (!methodName) throw new Error('Method name is required to invoke method')
+    if (!schema.validMethodNames.includes(methodName))
+      throw new Error(`Method <${methodName}> not found`)
+
+    return KiwiApp.current?.request.Post('/object/invoke', {
+      receiver: {
+        id: objectId,
+      },
+      method: methodName,
+      arguments: parameters,
+    })
   }
 
   transformParametersToFormData(

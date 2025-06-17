@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { KiwiSchema } from '@/kiwi'
 import type { KiwiMethod } from '@/kiwi/schema/method'
 import { i18nKey, useI18nText } from '@/lib/i18n'
 import { showConfirm } from '@/lib/userInterface'
@@ -7,8 +8,10 @@ import { Message } from '@arco-design/web-vue'
 import { useRequest } from 'alova/client'
 import { ref } from 'vue'
 import MethodInvoker from './MethodInvoker.vue'
+import ObjectEditor from './ObjectEditor.vue'
 
 const props = defineProps<{
+  schema: KiwiSchema
   data: KiwiObject
 }>()
 const emit = defineEmits(['refresh', 'deleted'])
@@ -17,6 +20,7 @@ const t = useI18nText()
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const methods = kiwiAppAndSchemaStore.kiwiSchema?.methods || []
 const targetMethod = ref<KiwiMethod | null>(null)
+const showObjectEditor = ref(false)
 
 function handleInvokeMethod(method: KiwiMethod) {
   targetMethod.value = method
@@ -77,7 +81,7 @@ const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
     {{ method.label || method.name }}
   </a-button>
 
-  <a-button type="outline">
+  <a-button type="outline" @click="showObjectEditor = true">
     <template #icon>
       <icon-pen />
     </template>
@@ -99,5 +103,13 @@ const { loading: deleteLoading, send: handleDeleteObject } = useRequest(
     :data="data"
     @refresh="emit('refresh')"
     @close="targetMethod = null"
+  />
+
+  <ObjectEditor
+    v-if="schema && data"
+    v-model:visible="showObjectEditor"
+    :target-schema="schema"
+    :data="data"
+    @refresh="emit('refresh')"
   />
 </template>

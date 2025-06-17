@@ -2,7 +2,7 @@ import mitt from 'mitt'
 import { onMounted, onUnmounted } from 'vue'
 
 export type EmitterEvents = {
-  refreshObjectList: void
+  refreshObjectList: any
 }
 
 const emitter = mitt<EmitterEvents>()

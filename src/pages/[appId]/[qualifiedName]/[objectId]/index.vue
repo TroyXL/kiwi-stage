@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { KiwiSchema } from '@/kiwi'
 import emitter from '@/lib/emitter'
 import { i18nKey } from '@/lib/i18n'
 import Scaffold from '@/pages/_components/Scaffold.vue'
@@ -51,7 +52,8 @@ function handleDeleteRecord() {
     <template #actions v-if="!loading">
       <div class="flex gap-2">
         <ObjectTriggers
-          v-if="data"
+          v-if="kiwiAppAndSchemaStore.kiwiSchema && data"
+          :schema="kiwiAppAndSchemaStore.kiwiSchema as KiwiSchema"
           :data="data"
           @refresh="handleRefreshDetail"
           @deleted="handleDeleteRecord"
