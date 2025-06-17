@@ -5,6 +5,11 @@ import { KiwiMethod } from './method'
 import { KiwiParameter } from './parameter'
 import type { KiwiPrimitiveType } from './type'
 
+export * from './field'
+export * from './method'
+export * from './parameter'
+export * from './type'
+
 export class KiwiSchema {
   readonly access: KiwiAccess = 'public'
   readonly isAbstract: boolean

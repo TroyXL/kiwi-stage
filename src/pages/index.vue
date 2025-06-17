@@ -23,7 +23,7 @@ const {
     KiwiManager.shared.listApps({
       page,
       pageSize,
-      searchText: searchText.value,
+      searchText: searchText.value.trim(),
     }),
   {
     total: response => response.total,
@@ -73,7 +73,7 @@ function handleCreateModeChange(createMode: boolean) {
       <a-input-search
         search-button
         allow-clear
-        v-model.trim="searchText"
+        v-model="searchText"
         :placeholder="$t(i18nKey.placeholderSearchKeyword)"
         @clear="reloadAppList"
         @search="reloadAppList"

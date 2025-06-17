@@ -2,12 +2,13 @@
 import { KiwiApp } from '@/kiwi'
 import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { useEmitter } from '@/lib/emitter'
-import { i18nKey, useI18nText } from '@/lib/i18n'
+import { i18nKey } from '@/lib/i18n'
 
 import Scaffold from '@/pages/_components/Scaffold.vue'
 import type { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import ObjectEditor from './ObjectEditor.vue'
 
 const props = defineProps<{
   qualifiedName: string
@@ -28,8 +29,6 @@ const ACTION_COLUMN: TableColumnData = {
   width: 60,
   slotName: 'actions',
 }
-
-const t = useI18nText()
 
 const kiwiSchema = computed(() =>
   KiwiApp.current?.getSchemaByQualifiedName(props.qualifiedName)
@@ -54,6 +53,9 @@ const columns = computed<TableColumnData[]>(() => {
   }))
   return props.isSelectMode ? tableColumns : tableColumns.concat(ACTION_COLUMN)
 })
+
+const showObjectEditor = ref(false)
+const editObjectId = ref<string | undefined>(void 0)
 
 const {
   loading,
@@ -99,7 +101,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
   >
     <template #actions>
       <a-space>
-        <a-button type="primary">
+        <a-button type="primary" @click="showObjectEditor = true">
           <template #icon>
             <icon-plus />
           </template>
@@ -155,4 +157,11 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
       <slot name="footer" v-if="isSelectMode" />
     </div>
   </Scaffold>
+
+  <ObjectEditor
+    v-if="kiwiSchema"
+    v-model:visible="showObjectEditor"
+    :target-schema="kiwiSchema"
+    :object-id="editObjectId"
+  />
 </template>
