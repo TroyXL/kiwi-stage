@@ -104,7 +104,7 @@ type KiwiObject = {
   summary: string
   fields?: Dict
   children?: {
-    [key: string]: KiwiObject
+    [key: string]: KiwiObject[]
   }
 }
 
