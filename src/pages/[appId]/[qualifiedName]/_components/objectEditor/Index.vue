@@ -4,7 +4,7 @@ import { i18nKey, useI18nText } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
 import { computed, useTemplateRef } from 'vue'
-import ParameterEditor from '../parameterEditor/Index.vue'
+import ObjectEditor from './ObjectEditor.vue'
 
 const props = defineProps<{
   targetSchema: KiwiSchema
@@ -17,12 +17,12 @@ const emit = defineEmits<{
 }>()
 
 const t = useI18nText()
-const $parameterEditor =
-  useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
+const $objectEditor =
+  useTemplateRef<InstanceType<typeof ObjectEditor>>('$objectEditor')
 const { kiwiApp } = useKiwiAppAndSchemaStore()
-const hasParameters = computed(() => {
-  if (props.targetSchema?.constructorParameters.length) return true
-})
+const hasParameters = computed(
+  () => !!props.targetSchema?.constructorParameters.length
+)
 
 function handleCloseModal() {
   visible.value = false
@@ -30,18 +30,13 @@ function handleCloseModal() {
 
 async function handleConfirmEdit() {
   if (!kiwiApp) return false
-  const errors = await $parameterEditor.value?.validate()
-  if (errors) return false
-  const parameters = $parameterEditor.value?.getParameters()
-  const payload: KiwiCreateOrUpdateObject = {
-    object: {
-      id: props.data?.id,
-      type: props.targetSchema.qualifiedName,
-      fields: parameters,
-    },
-  }
+  const payload = await $objectEditor.value?.getObjectPaylod()
+  if (!payload) return false
+
   try {
-    const newObjectId = await kiwiApp?.createOrUpdateObject(payload)
+    const newObjectId = await kiwiApp?.createOrUpdateObject(
+      payload as KiwiCreateOrUpdateObject
+    )
     emit('refresh', newObjectId)
     Message.success(t(i18nKey.successTip))
     return true
@@ -69,12 +64,11 @@ async function handleConfirmEdit() {
       $t(data?.id ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
     }}</template>
     <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div>
-    <div v-else>
-      <ParameterEditor
-        ref="$parameterEditor"
-        :parameters="targetSchema!.constructorParameters"
-        :data="data"
-      />
-    </div>
+    <ObjectEditor
+      v-else
+      ref="$objectEditor"
+      :schema="targetSchema"
+      :data="data"
+    />
   </a-modal>
 </template>
