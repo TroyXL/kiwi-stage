@@ -8,7 +8,7 @@ import Scaffold from '@/pages/_components/Scaffold.vue'
 import type { TableColumnData } from '@arco-design/web-vue'
 import { usePagination } from 'alova/client'
 import { computed, ref } from 'vue'
-import ObjectEditor from './ObjectEditor.vue'
+import ObjectEditor from './objectEditor/Index.vue'
 
 const props = defineProps<{
   qualifiedName: string

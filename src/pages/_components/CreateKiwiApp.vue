@@ -2,11 +2,10 @@
 import { useEditKiwiAppName } from '@/hooks/useEditKiwiAppName'
 import { KiwiManager } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
-import { sleep } from '@/lib/utils'
 import { nextTick, ref, useTemplateRef } from 'vue'
 
 const emit = defineEmits<{
-  created: []
+  created: [newlyCreatedId?: string]
   modeChanged: [isCreateMode: boolean]
 }>()
 
@@ -32,16 +31,14 @@ async function handleConfirmCreate() {
   const comfirmedAppName = appName.value.trim()
   if (comfirmedAppName) {
     loading.value = true
-    await KiwiManager.shared
+    const newlyCreatedId = await KiwiManager.shared
       .createOrUpdateApp({
         name: comfirmedAppName,
       })
-      // 延迟1秒，否则列表接口无法立即查询到新创建的应用
-      .then(() => sleep(1000))
       .finally(() => {
         loading.value = false
       })
-    emit('created')
+    emit('created', newlyCreatedId)
   }
   handleCancelCreate()
 }
