@@ -2,7 +2,8 @@
 import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
-import { onMounted, ref } from 'vue'
+import { useRequest } from 'alova/client'
+import { ref } from 'vue'
 import ObjectList from '../../ObjectList.vue'
 
 defineProps<{
@@ -16,21 +17,23 @@ const showSelector = ref(false)
 const selectedRow = ref<KiwiTableRow | null>(null)
 const tempSelectedRow = ref<KiwiTableRow | null>(null)
 
-onMounted(async () => {
-  if (model.value) {
-    const object = await kiwiAppAndSchemaStore.kiwiApp?.fetchObjectById(
-      model.value
-    )
-    if (object) {
+const { loading } = useRequest(
+  () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectById(model.value!),
+  {
+    immediate: !!model.value,
+    async middleware(_ctx, next) {
+      const object = await next()
+      if (!object) return
       selectedRow.value =
         kiwiAppAndSchemaStore.kiwiSchema?.transformObjectsToTableRows([
           object,
         ])[0]!
-    }
+    },
   }
-})
+)
 
 function handleOpenSelector() {
+  if (loading.value) return
   showSelector.value = true
   tempSelectedRow.value = selectedRow.value
 }
@@ -62,7 +65,11 @@ function handleSelectItem(row: KiwiTableRow) {
       :placeholder="$t(i18nKey.placeholderSelect)"
       :model-value="selectedRow?.__summary__"
       @click="handleOpenSelector"
-    />
+    >
+      <template #suffix v-if="loading">
+        <icon-loading />
+      </template>
+    </a-input>
     <a-button v-if="selectedRow" @click="handleClearSelect">
       <template #icon>
         <icon-close />
