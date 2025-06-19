@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { KiwiSchema } from '@/kiwi'
-import { useI18nText } from '@/lib/i18n'
 import { useTemplateRef } from 'vue'
 import ParameterEditor from '../parameterEditor/Index.vue'
+import SubObjectEditor from './SubObjectEditor.vue'
 
 const props = defineProps<{
   schema: KiwiSchema
@@ -10,10 +10,10 @@ const props = defineProps<{
   asChild?: boolean
 }>()
 
-const t = useI18nText()
 const $parameterEditor =
   useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
 const hasParameters = !!props.schema?.constructorParameters.length
+const hasSubSchemas = !!props.schema.subSchemas.length
 
 async function getObjectPaylod() {
   const errors = await $parameterEditor.value?.validate()
@@ -46,4 +46,12 @@ defineExpose({
     :parameters="schema!.constructorParameters"
     :data="data"
   />
+  <template v-if="hasSubSchemas">
+    <SubObjectEditor
+      v-for="subSchema in schema.subSchemas"
+      :key="subSchema.qualifiedName"
+      :schema="subSchema"
+      :data="data?.children?.[subSchema.name]"
+    />
+  </template>
 </template>

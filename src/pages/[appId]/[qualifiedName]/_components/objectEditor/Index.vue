@@ -50,7 +50,9 @@ async function handleConfirmEdit() {
   <a-modal
     unmount-on-close
     v-model:visible="visible"
+    :body-class="data ? 'relative !pt-16' : void 0"
     :title-align="hasParameters ? 'start' : void 0"
+    :width="720"
     :closable="false"
     :mask-closable="false"
     :simple="!hasParameters"
@@ -63,9 +65,19 @@ async function handleConfirmEdit() {
     <template #title>{{
       $t(data?.id ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
     }}</template>
-    <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div>
+    <!-- <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div> -->
+    <a-alert
+      v-if="data"
+      class="absolute top-0 left-0 right-0 !rounded-none"
+      type="warning"
+      banner
+      center
+    >
+      {{ $t(i18nKey.actionUndoTip) }}
+    </a-alert>
+
     <ObjectEditor
-      v-else
+      v-if="hasParameters"
       ref="$objectEditor"
       :schema="targetSchema"
       :data="data"
