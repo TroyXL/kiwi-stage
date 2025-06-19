@@ -4,7 +4,7 @@ import { i18nKey, useI18nText } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { Message } from '@arco-design/web-vue'
 import { computed, useTemplateRef } from 'vue'
-import ParameterEditor from './parameterEditor/Index.vue'
+import ParameterEditor from '../parameterEditor/Index.vue'
 
 const props = defineProps<{
   targetSchema: KiwiSchema

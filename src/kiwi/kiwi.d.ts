@@ -103,13 +103,16 @@ type KiwiObject = {
   type: string
   summary: string
   fields?: Dict
+  children?: {
+    [key: string]: KiwiObject
+  }
 }
 
 type KiwiCreateOrUpdateObjectChildren = {
   [type: string]: {
     fields: Dict
     children?: KiwiCreateOrUpdateObjectChildren
-  }
+  }[]
 }
 type KiwiCreateOrUpdateObject = {
   object: {

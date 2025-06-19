@@ -8,7 +8,7 @@ import { Message } from '@arco-design/web-vue'
 import { useRequest } from 'alova/client'
 import { ref } from 'vue'
 import MethodInvoker from './MethodInvoker.vue'
-import ObjectEditor from './ObjectEditor.vue'
+import ObjectEditor from './objectEditor/Index.vue'
 
 const props = defineProps<{
   schema: KiwiSchema

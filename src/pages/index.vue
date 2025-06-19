@@ -4,12 +4,13 @@ import { KiwiManager } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import CreateKiwiApp from '@/pages/_components/CreateKiwiApp.vue'
 import { usePagination } from 'alova/client'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const isCreateMode = ref(false)
 const searchText = ref('')
+let newlyCreatedId: string | undefined = void 0
 
 const {
   loading,
@@ -19,12 +20,16 @@ const {
   total,
   reload: reloadAppList,
 } = usePagination(
-  (page, pageSize) =>
-    KiwiManager.shared.listApps({
+  (page, pageSize) => {
+    const request = KiwiManager.shared.listApps({
       page,
       pageSize,
       searchText: searchText.value.trim(),
-    }),
+      newlyCreatedId,
+    })
+    newlyCreatedId = void 0
+    return request
+  },
   {
     total: response => response.total,
     data: response => response.items,
@@ -37,16 +42,17 @@ const {
   }
 )
 
-onMounted(async () => {
-  const {} = await KiwiManager.shared.listApps()
-})
-
 function openApp(appId: number) {
   router.replace(`/${appId}`)
 }
 
 function handleCreateModeChange(createMode: boolean) {
   isCreateMode.value = createMode
+}
+
+function handleCreatedKiwiApp(_newlyCreatedId?: string) {
+  newlyCreatedId = _newlyCreatedId
+  reloadAppList()
 }
 </script>
 
@@ -60,7 +66,7 @@ function handleCreateModeChange(createMode: boolean) {
       <template #extra>
         <CreateKiwiApp
           @mode-changed="handleCreateModeChange"
-          @created="reloadAppList"
+          @created="handleCreatedKiwiApp"
         />
         <LogoutButton
           v-if="!isCreateMode"

@@ -46,14 +46,15 @@ export class KiwiManager {
       page,
       pageSize,
       searchText,
+      newlyCreatedId,
     }: KiwiPaginationRequest<{
       searchText?: string
+      newlyCreatedId?: string
     }> = {
       page: 1,
       pageSize: 5,
     }
   ) {
-    searchText = searchText?.trim()
     return this.request.Get<
       KiwiPaginationResponse<{
         items: KiwiAppInfo[]
@@ -62,7 +63,8 @@ export class KiwiManager {
       params: {
         page,
         pageSize,
-        searchText: searchText || void 0,
+        searchText: searchText?.trim() || void 0,
+        newlyCreatedId,
       },
     })
   }
@@ -72,7 +74,7 @@ export class KiwiManager {
   }
 
   createOrUpdateApp(data: { id?: number; name: string }) {
-    return this.request.Post(`/app`, data)
+    return this.request.Post<string | undefined>(`/app`, data)
   }
 
   deleteApp(appId: number) {
