@@ -1,16 +1,34 @@
 <script setup lang="ts">
 import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { i18nKey } from '@/lib/i18n'
-import { ref } from 'vue'
+import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
+import { onMounted, ref } from 'vue'
 import ObjectList from '../../ObjectList.vue'
 
 defineProps<{
   qualifiedName: string
 }>()
+const model = defineModel<string>()
+
+const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 
 const showSelector = ref(false)
 const selectedRow = ref<KiwiTableRow | null>(null)
 const tempSelectedRow = ref<KiwiTableRow | null>(null)
+
+onMounted(async () => {
+  if (model.value) {
+    const object = await kiwiAppAndSchemaStore.kiwiApp?.fetchObjectById(
+      model.value
+    )
+    if (object) {
+      selectedRow.value =
+        kiwiAppAndSchemaStore.kiwiSchema?.transformObjectsToTableRows([
+          object,
+        ])[0]!
+    }
+  }
+})
 
 function handleOpenSelector() {
   showSelector.value = true
@@ -37,9 +55,10 @@ function handleSelectItem(row: KiwiTableRow) {
 </script>
 
 <template>
-  <a-space>
+  <div class="w-full flex gap-2">
     <a-input
       readonly
+      class="w-0 flex-1"
       :placeholder="$t(i18nKey.placeholderSelect)"
       :model-value="selectedRow?.__summary__"
       @click="handleOpenSelector"
@@ -49,11 +68,10 @@ function handleSelectItem(row: KiwiTableRow) {
         <icon-close />
       </template>
     </a-button>
-  </a-space>
+  </div>
 
   <a-drawer
     unmount-on-close
-    class="clear-mask-layer"
     body-class="!p-0"
     width="calc(100% - 256px)"
     v-model:visible="showSelector"

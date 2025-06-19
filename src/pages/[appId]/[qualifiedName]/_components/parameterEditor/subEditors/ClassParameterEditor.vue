@@ -30,9 +30,8 @@ const typeAssert = (() => {
   const isClass = kiwiSchema.tag === 'class'
   const isEnum = kiwiSchema.tag === 'enum'
 
-  const hideLabel = isValue || isClass
   const parameter = props.parameter
-  const rules: FieldRule[] = hideLabel
+  const rules: FieldRule[] = isValue
     ? []
     : [
         {
@@ -47,7 +46,6 @@ const typeAssert = (() => {
     isEnum,
     constructorParameters: kiwiSchema.constructorParameters,
     enumOptions: kiwiSchema.enumConstants,
-    hideLabel,
     rules,
     fieldName: props.parentFieldName
       ? `${props.parentFieldName}.${parameter.name}`
@@ -68,7 +66,6 @@ const typeAssert = (() => {
       v-else
       :label="parameter.label"
       :field="typeAssert.fieldName"
-      :hide-label="typeAssert.hideLabel"
       :rules="typeAssert.rules"
     >
       <a-select
@@ -87,6 +84,7 @@ const typeAssert = (() => {
       </a-select>
       <ObjectSelector
         v-else-if="typeAssert.isClass"
+        v-model="model"
         :qualified-name="(parameter.type as KiwiClassType).qualifiedName"
       />
     </a-form-item>
