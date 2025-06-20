@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
-import { computed } from 'vue'
+import { generateRandomString } from '@/lib/utils'
+import { computed, ref } from 'vue'
 import ObjectEditor from './ObjectEditor.vue'
 
 const props = defineProps<{
@@ -10,8 +11,43 @@ const props = defineProps<{
 }>()
 
 const hasParameters = !!props.schema?.constructorParameters.length
-const type = props.schema.qualifiedName
-const itemsCount = computed(() => props.data?.length || 0)
+
+const $objectEditors = ref<InstanceType<typeof ObjectEditor>[]>([])
+
+const displayedData = ref(
+  props.data?.map(item => ({
+    ...item,
+    __tempKey__: generateRandomString(),
+  })) || []
+)
+const dataMaxIndex = computed(() => displayedData.value.length - 1)
+
+function handleRemoveData(tempKey: string) {
+  displayedData.value = displayedData.value.filter(
+    item => item.__tempKey__ !== tempKey
+  )
+}
+
+function handleAddData() {
+  displayedData.value.push({
+    ...props.schema.createEmptyObject(),
+    __tempKey__: generateRandomString(),
+  })
+}
+
+async function getObjectPayload() {
+  const payloads = await Promise.all(
+    $objectEditors.value.map(editor => editor.getObjectPaylod())
+  )
+  if (!payloads.length) return
+  return {
+    [props.schema.name]: payloads,
+  } as KiwiCreateOrUpdateObjectChildren
+}
+
+defineExpose({
+  getObjectPayload,
+})
 </script>
 
 <template>
@@ -23,25 +59,44 @@ const itemsCount = computed(() => props.data?.length || 0)
         <span class="text-muted-foreground">{{ schema.name }}</span>
       </a-col>
       <a-col :span="16" class="text-right">
-        <a-button v-if="!itemsCount" type="primary" size="mini">
+        <a-button
+          v-if="dataMaxIndex < 0"
+          type="primary"
+          size="mini"
+          @click="handleAddData"
+        >
           <template #icon>
             <icon-plus />
           </template>
+          {{ $t(i18nKey.addLabel) }}
         </a-button>
       </a-col>
     </a-row>
-    <div v-if="data?.length" class="border-t py-5">
-      <div v-for="(item, index) in data" :key="item.id">
-        <ObjectEditor :schema="schema" :data="item" />
+    <div v-if="displayedData?.length" class="border-t py-5">
+      <div v-for="(item, index) in displayedData" :key="item.__tempKey__">
+        <ObjectEditor
+          ref="$objectEditors"
+          :schema="schema"
+          :data="item"
+          as-child
+        />
         <a-row class="pb-5">
           <a-col class="flex justify-end gap-2" :span="21">
-            <a-button v-if="index === itemsCount - 1" type="primary">
+            <a-button
+              v-if="index === dataMaxIndex"
+              type="primary"
+              @click="handleAddData"
+            >
               <template #icon>
                 <icon-plus />
               </template>
               {{ $t(i18nKey.addLabel) }}
             </a-button>
-            <a-button type="secondary" status="danger">
+            <a-button
+              type="secondary"
+              status="danger"
+              @click="handleRemoveData(item.__tempKey__)"
+            >
               <template #icon>
                 <icon-delete />
               </template>

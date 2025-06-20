@@ -67,6 +67,7 @@ const typeAssert = (() => {
       :label="parameter.label"
       :field="typeAssert.fieldName"
       :rules="typeAssert.rules"
+      :validate-trigger="typeAssert.isClass ? 'input' : void 0"
     >
       <a-select
         v-if="typeAssert.isEnum"
