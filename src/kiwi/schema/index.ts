@@ -94,4 +94,13 @@ export class KiwiSchema {
       return row
     })
   }
+
+  createEmptyObject(): KiwiObject {
+    return {
+      type: this.qualifiedName,
+      summary: '',
+      fields: {},
+      children: this.subSchemas ? {} : void 0,
+    }
+  }
 }

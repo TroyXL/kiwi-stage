@@ -3,7 +3,7 @@ import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { useRequest } from 'alova/client'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ObjectList from '../../ObjectList.vue'
 
 defineProps<{
@@ -16,6 +16,10 @@ const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const showSelector = ref(false)
 const selectedRow = ref<KiwiTableRow | null>(null)
 const tempSelectedRow = ref<KiwiTableRow | null>(null)
+
+watch(selectedRow, () => {
+  model.value = selectedRow.value?.__id__
+})
 
 const { loading } = useRequest(
   () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectById(model.value!),
@@ -44,7 +48,6 @@ function handleCloseSelector() {
 
 function handleClearSelect() {
   selectedRow.value = null
-  handleCloseSelector()
 }
 
 function handleConfirmSelect() {
@@ -61,10 +64,10 @@ function handleSelectItem(row: KiwiTableRow) {
   <div class="w-full flex gap-2">
     <a-input
       readonly
-      class="w-0 flex-1"
+      class="relative w-0 flex-1"
       :placeholder="$t(i18nKey.placeholderSelect)"
       :model-value="selectedRow?.__summary__"
-      @click="handleOpenSelector"
+      @click.stop="handleOpenSelector"
     >
       <template #suffix v-if="loading">
         <icon-loading />

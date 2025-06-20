@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { KiwiSchema } from '@/kiwi'
-import { useTemplateRef } from 'vue'
+import { ref } from 'vue'
 import ParameterEditor from '../parameterEditor/Index.vue'
 import SubObjectEditor from './SubObjectEditor.vue'
 
@@ -10,15 +10,28 @@ const props = defineProps<{
   asChild?: boolean
 }>()
 
-const $parameterEditor =
-  useTemplateRef<InstanceType<typeof ParameterEditor>>('$parameterEditor')
+const $parameterEditor = ref<InstanceType<typeof ParameterEditor>>()
+const $subObjectEditors = ref<InstanceType<typeof SubObjectEditor>[]>([])
 const hasParameters = !!props.schema?.constructorParameters.length
 const hasSubSchemas = !!props.schema.subSchemas.length
 
 async function getObjectPaylod() {
   const errors = await $parameterEditor.value?.validate()
-  if (errors) return
+  if (errors) throw new Error('Object parameter validate failed')
   const parameters = $parameterEditor.value?.getParameters()
+
+  const _children = (await Promise.all(
+    $subObjectEditors.value.map(editor => editor.getObjectPayload())
+  )) as KiwiCreateOrUpdateObjectChildren[]
+  const children = _children.length
+    ? _children.reduce(
+        (acc, child) => ({
+          ...acc,
+          ...child,
+        }),
+        {} as KiwiCreateOrUpdateObjectChildren
+      )
+    : void 0
 
   if (!props.asChild)
     return {
@@ -26,12 +39,14 @@ async function getObjectPaylod() {
         id: props.data?.id,
         type: props.schema.qualifiedName,
         fields: parameters,
+        children,
       },
     } as KiwiCreateOrUpdateObject
 
   return {
-    [props.schema.qualifiedName]: [{ fields: parameters }],
-  } as KiwiCreateOrUpdateObjectChildren
+    fields: parameters,
+    children,
+  } as KiwiCreateOrUpdateChildObject
 }
 
 defineExpose({
@@ -48,6 +63,7 @@ defineExpose({
   />
   <template v-if="hasSubSchemas">
     <SubObjectEditor
+      ref="$subObjectEditors"
       v-for="subSchema in schema.subSchemas"
       :key="subSchema.qualifiedName"
       :schema="subSchema"
