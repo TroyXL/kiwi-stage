@@ -31,11 +31,16 @@ const subObjects = Object.values(props.data?.children || {}).flat()
     </p>
     <a-descriptions
       v-if="row"
+      bordered
       class="p-4"
       table-layout="fixed"
-      layout="inline-vertical"
+      layout="vertical"
     >
-      <a-descriptions-item v-for="column of columns" :label="column.title">
+      <a-descriptions-item
+        v-for="column of columns"
+        :key="column.dataIndex"
+        :label="column.title"
+      >
         <span>{{ row[column.dataIndex] ?? '-' }}</span>
       </a-descriptions-item>
     </a-descriptions>
