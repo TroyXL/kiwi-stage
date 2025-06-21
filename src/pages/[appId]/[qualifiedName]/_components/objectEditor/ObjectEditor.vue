@@ -18,6 +18,7 @@ const hasSubSchemas = !!props.schema.subSchemas.length
 async function getObjectPaylod() {
   const errors = await $parameterEditor.value?.validate()
   if (errors) throw new Error('Object parameter validate failed')
+  const id = props.data?.id
   const parameters = $parameterEditor.value?.getParameters()
 
   const _children = (await Promise.all(
@@ -36,7 +37,7 @@ async function getObjectPaylod() {
   if (!props.asChild)
     return {
       object: {
-        id: props.data?.id,
+        id,
         type: props.schema.qualifiedName,
         fields: parameters,
         children,
@@ -44,6 +45,7 @@ async function getObjectPaylod() {
     } as KiwiCreateOrUpdateObject
 
   return {
+    id,
     fields: parameters,
     children,
   } as KiwiCreateOrUpdateChildObject
