@@ -109,6 +109,7 @@ type KiwiObject = {
 }
 
 type KiwiCreateOrUpdateChildObject = {
+  id?: string
   fields: Dict
   children?: KiwiCreateOrUpdateObjectChildren
 }
