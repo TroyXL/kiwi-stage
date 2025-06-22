@@ -31,6 +31,14 @@ const i18nText = {
   placeholderSearchKeyword: 'Input keyword to search',
   placeholderSelect: 'Please select',
   placeholderEnter: 'Please enter',
+  aiGenerateLabel: 'AI Generate',
+  generateLabel: 'Generate',
+  generateLongTimeTip:
+    'This is a long-running operation and may take 1-2 minutes to complete.',
+  generateProcessingTip:
+    'AI generation is underway, please refresh in a few minutes...',
+  generateCompletedTip: 'AI generation completed, kiwi will be refresh...',
+  placeholderPrompt: 'Please enter prompt...',
 }
 
 export type I18nKey = keyof typeof i18nText
