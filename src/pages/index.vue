@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import KiwiLogo from '@/components/KiwiLogo.vue'
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
@@ -60,9 +61,16 @@ function handleCreatedKiwiApp(_newlyCreatedId?: string) {
   <div class="flex justify-center items-center full-screen bg-muted">
     <a-page-header
       class="w-[640px] rounded-md bg-background shadow-2xl !pb-0"
-      :title="$t(i18nKey.selectKiwiApp)"
       :show-back="false"
     >
+      <template #title>
+        <div class="flex items-center gap-2">
+          <KiwiLogo />
+          <h1 class="!text-xl pl-2 leading-none">
+            {{ $t(i18nKey.selectKiwiApp) }}
+          </h1>
+        </div>
+      </template>
       <template #extra>
         <CreateKiwiApp
           @mode-changed="handleCreateModeChange"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import KiwiLogo from '@/components/KiwiLogo.vue'
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
@@ -46,7 +47,8 @@ function handleClickMenuItem(selectedQualifiedName: string) {
       class="h-14 border-b flex justify-between items-center px-4"
     >
       <div class="flex items-center gap-2">
-        <h1 class="!text-xl">Kiwi App</h1>
+        <KiwiLogo />
+        <h1 class="!text-xl pl-2">Kiwi App</h1>
         <KiwiAppInfo v-model:app-info="appInfo" />
       </div>
       <a-space>
