@@ -49,13 +49,13 @@ function handleClickMenuItem(selectedQualifiedName: string) {
         <h1 class="!text-xl">Kiwi App</h1>
         <KiwiAppInfo v-model:app-info="appInfo" />
       </div>
-      <div class="flex items-center gap-2">
+      <a-space>
+        <AiGenerateButton />
         <LogoutButton only-icon />
-      </div>
+      </a-space>
     </a-layout-header>
     <a-layout class="h-0">
       <a-layout-sider class="!w-60 border-r !shadow-none">
-        <AiGenerateButton />
         <a-menu
           class="w-full py-1"
           :default-selected-keys="[params.qualifiedName]"

@@ -33,18 +33,16 @@ async function handleExcuteAiGenerate() {
 </script>
 
 <template>
-  <div class="p-2">
-    <a-button
-      class="w-full gap-1 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:opacity-80"
-      type="primary"
-      @click="visible = true"
-    >
-      <template #icon>
-        <Sparkles :size="16" />
-      </template>
-      <span>{{ $t(i18nKey.aiGenerateLabel) }}</span>
-    </a-button>
-  </div>
+  <a-button
+    class="w-full gap-1 bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:opacity-80"
+    type="primary"
+    @click="visible = true"
+  >
+    <template #icon>
+      <Sparkles :size="16" />
+    </template>
+    <span>{{ $t(i18nKey.aiGenerateLabel) }}</span>
+  </a-button>
 
   <a-modal
     v-model:visible="visible"
