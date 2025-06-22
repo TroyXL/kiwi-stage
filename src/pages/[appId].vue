@@ -7,6 +7,7 @@ import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { toInteger } from 'lodash'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import AiGenerateButton from './[appId]/_components/AiGenerateButton.vue'
 import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 
 const router = useRouter()
@@ -54,6 +55,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
     </a-layout-header>
     <a-layout class="h-0">
       <a-layout-sider class="!w-60 border-r !shadow-none">
+        <AiGenerateButton />
         <a-menu
           class="w-full py-1"
           :default-selected-keys="[params.qualifiedName]"

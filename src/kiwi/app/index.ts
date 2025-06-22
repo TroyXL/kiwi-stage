@@ -134,6 +134,13 @@ export class KiwiApp {
     })
   }
 
+  generateByAI(prompt: string) {
+    return this.request.Post('/aigc/generate', {
+      appId: this.appId,
+      prompt,
+    })
+  }
+
   transformParametersToFormData(
     parameters: KiwiParameter[],
     data?: KiwiObject
