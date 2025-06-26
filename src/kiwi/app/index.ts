@@ -3,7 +3,12 @@ import { trimStringInData } from '../lib/utils'
 import { KiwiManager } from '../manager'
 import { KiwiSchema } from '../schema'
 import type { KiwiParameter } from '../schema/parameter'
-import type { KiwiClassType, KiwiPrimitiveType } from '../schema/type'
+import type {
+  KiwiArrayType,
+  KiwiClassType,
+  KiwiPrimitiveType,
+  KiwiUnionType,
+} from '../schema/type'
 
 export class KiwiApp {
   private static _current: KiwiApp | null = null
@@ -173,6 +178,17 @@ export class KiwiApp {
                 )
               : void 0
         }
+      } else if (param.type.kind === 'array') {
+        const elementType = (param.type as KiwiArrayType).elementType
+        if (elementType.kind === 'primitive') {
+          formData[param.name] = value ?? []
+        } else if (elementType.kind === 'class') {
+          formData[param.name] = value?.map((item: KiwiObject) =>
+            this.transformParametersToFormData([param], item)
+          )
+        }
+      } else if (param.type.kind === 'union') {
+        const types = (param.type as KiwiUnionType).alternatives
       }
       // console.log('=== formData =', formData)
       return formData
