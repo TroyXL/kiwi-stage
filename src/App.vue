@@ -14,7 +14,6 @@ import { KIWI_APP_RECENT } from './lib/storageKeys'
     }
   })
 })(enUS)
-// console.log('enUS', enUS)
 
 const router = useRouter()
 const loading = ref(true)

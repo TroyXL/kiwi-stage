@@ -5,8 +5,9 @@ import type {
   KiwiParameter,
   KiwiPrimitiveType,
 } from '@/kiwi'
+import { i18nKey } from '@/lib/i18n'
 import { generateRandomString } from '@/lib/utils'
-import { ref } from 'vue'
+import { computed, watch } from 'vue'
 import ClassParameterEditor from './ClassParameterEditor.vue'
 import PrimitiveParameterEditor from './PrimitiveParameterEditor.vue'
 
@@ -19,39 +20,82 @@ const model = defineModel<any[]>({
 })
 
 const elementType = (props.parameter.type as KiwiArrayType).elementType
-const modelValues = ref(
-  model.value.map(value => ({
-    __key__: generateRandomString(),
-    value,
-  }))
-)
+const fieldName = props.parentFieldName
+  ? `${props.parentFieldName}.${props.parameter.name}`
+  : props.parameter.name
+
+const modelMaxIndex = computed(() => model.value.length - 1)
 
 function handleAddItem() {
-  modelValues.value.push({
+  model.value.push({
     __key__: generateRandomString(),
-    value: {
-      [props.parameter.name]: void 0,
-    },
+    value: void 0,
+    // {
+    //   [props.parameter.name]: void 0,
+    // },
   })
 }
+
+function handleRemoveItem(key: string) {
+  model.value = model.value.filter(item => item.__key__ !== key)
+}
+
+function getFieldNameByIndex(index: number) {
+  return fieldName + `[${index}]`
+}
+
+watch(
+  modelMaxIndex,
+  index => {
+    if (index < 0) handleAddItem()
+  },
+  {
+    immediate: true,
+  }
+)
 </script>
 
 <template>
-  <template v-for="modelItem in modelValues" :key="modelItem.__key__">
+  <template v-for="(modelItem, index) in model" :key="modelItem.__key__">
     <PrimitiveParameterEditor
       v-if="elementType.kind === 'primitive'"
       v-model="modelItem.value"
-      :parent-field-name="parentFieldName"
+      field-name="value"
+      :parent-field-name="getFieldNameByIndex(index)"
       :parameter="parameter"
       :type="elementType as KiwiPrimitiveType"
     />
     <ClassParameterEditor
       v-else-if="elementType.kind === 'class'"
       v-model="modelItem.value"
-      :parent-field-name="parentFieldName"
+      field-name="value"
+      :parent-field-name="getFieldNameByIndex(index)"
       :parameter="parameter"
       :type="elementType as KiwiClassType"
     />
+
+    <div class="pb-5 flex justify-end gap-2">
+      <a-button
+        v-if="index === modelMaxIndex"
+        type="primary"
+        @click="handleAddItem"
+      >
+        <template #icon>
+          <icon-plus />
+        </template>
+        {{ $t(i18nKey.addLabel) }}
+      </a-button>
+      <a-button
+        v-if="modelMaxIndex > 0"
+        type="secondary"
+        status="danger"
+        @click="handleRemoveItem(modelItem.__key__)"
+      >
+        <template #icon>
+          <icon-delete />
+        </template>
+        {{ $t(i18nKey.removeLabel) }}
+      </a-button>
+    </div>
   </template>
-  <a-button @click="handleAddItem">Add</a-button>
 </template>

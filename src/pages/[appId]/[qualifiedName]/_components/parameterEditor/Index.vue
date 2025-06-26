@@ -35,7 +35,12 @@ defineExpose({
 </script>
 
 <template>
-  <a-form ref="$form" :model="formModel" :wrapper-col-props="{ span: 16 }">
+  <a-form
+    ref="$form"
+    layout="vertical"
+    :model="formModel"
+    :wrapper-col-props="{ span: 16 }"
+  >
     <ParameterEditor v-model="formModel" :parameters="parameters" />
   </a-form>
 </template>

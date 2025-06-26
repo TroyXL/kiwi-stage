@@ -154,7 +154,6 @@ export class KiwiApp {
       if (param.ignore) return formData
 
       const value = data?.fields?.[param.name]
-      // console.log('param.name =', param.name, data?.fields, value)
 
       if (param.type.kind === 'primitive') {
         const typeName = (param.type as KiwiPrimitiveType).name
@@ -181,11 +180,17 @@ export class KiwiApp {
       } else if (param.type.kind === 'array') {
         const elementType = (param.type as KiwiArrayType).elementType
         if (elementType.kind === 'primitive') {
-          formData[param.name] = value ?? []
+          formData[param.name] =
+            (value as [])?.map((item, index) => ({
+              __key__: index,
+              value: item,
+            })) ?? []
         } else if (elementType.kind === 'class') {
-          formData[param.name] = value?.map((item: KiwiObject) =>
-            this.transformParametersToFormData([param], item)
-          )
+          formData[param.name] =
+            (value as [])?.map((item: KiwiObject, index) => ({
+              __key__: index,
+              value: this.transformParametersToFormData([param], item),
+            })) ?? []
         }
       } else if (param.type.kind === 'union') {
         const types = (param.type as KiwiUnionType).alternatives
@@ -231,6 +236,19 @@ export class KiwiApp {
                 }
               : void 0
         }
+      } else if (param.type.kind === 'array') {
+        const elementType = (param.type as KiwiArrayType).elementType
+        if (elementType.kind === 'primitive') {
+          formatted[param.name] =
+            (value as [])?.map((item: { value: any }) => item.value) ?? []
+        } else if (elementType.kind === 'class') {
+          formatted[param.name] =
+            (value as [])?.map((item: Dict) =>
+              this.transformFormDataToFormattedParameters([param], item)
+            ) ?? []
+        }
+      } else if (param.type.kind === 'union') {
+        const types = (param.type as KiwiUnionType).alternatives
       }
 
       return formatted

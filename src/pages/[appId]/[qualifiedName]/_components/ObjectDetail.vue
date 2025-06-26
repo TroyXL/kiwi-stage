@@ -10,8 +10,6 @@ const props = defineProps<{
   asChild?: boolean
 }>()
 
-console.log('===== data =', props.data)
-
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 const kiwiSchema = kiwiAppAndSchemaStore.kiwiApp?.getSchemaByQualifiedName(
   props.data.type
