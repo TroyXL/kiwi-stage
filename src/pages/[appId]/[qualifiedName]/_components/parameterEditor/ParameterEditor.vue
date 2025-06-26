@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { KiwiParameter } from '@/kiwi/schema/parameter'
+import ArrayParameterEditor from './subEditors/ArrayParameterEditor.vue'
 import ClassParameterEditor from './subEditors/ClassParameterEditor.vue'
 import PrimitiveParameterEditor from './subEditors/PrimitiveParameterEditor.vue'
 
@@ -11,23 +12,35 @@ defineProps<{
 const model = defineModel<Dict>({
   required: true,
 })
+
+console.log('=== model =', model.value)
 </script>
 
 <template>
   <template v-for="parameter in parameters">
-    <PrimitiveParameterEditor
-      v-if="!parameter.ignore && parameter.type.kind === 'primitive'"
-      v-model="model[parameter.name]"
-      :parent-field-name="parentFieldName"
-      :parameter="parameter"
-    />
+    <template v-if="!parameter.ignore">
+      <PrimitiveParameterEditor
+        v-if="parameter.type.kind === 'primitive'"
+        v-model="model[parameter.name]"
+        :parent-field-name="parentFieldName"
+        :parameter="parameter"
+      />
 
-    <ClassParameterEditor
-      v-if="!parameter.ignore && parameter.type.kind === 'class'"
-      v-model="model[parameter.name]"
-      ref="$classParameterEditors"
-      :parent-field-name="parentFieldName"
-      :parameter="parameter"
-    />
+      <ClassParameterEditor
+        v-if="parameter.type.kind === 'class'"
+        v-model="model[parameter.name]"
+        ref="$classParameterEditors"
+        :parent-field-name="parentFieldName"
+        :parameter="parameter"
+      />
+
+      <ArrayParameterEditor
+        v-if="parameter.type.kind === 'array'"
+        v-model="model[parameter.name]"
+        ref="$classParameterEditors"
+        :parent-field-name="parentFieldName"
+        :parameter="parameter"
+      />
+    </template>
   </template>
 </template>

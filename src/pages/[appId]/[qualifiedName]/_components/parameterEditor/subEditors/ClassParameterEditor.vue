@@ -9,6 +9,7 @@ import ObjectSelector from './ObjectSelector.vue'
 
 const props = defineProps<{
   parameter: KiwiParameter
+  type?: KiwiClassType
   parentFieldName?: string
 }>()
 const model = defineModel<any>({
@@ -17,7 +18,9 @@ const model = defineModel<any>({
 
 const t = useI18nText()
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
-const qualifiedName = (props.parameter.type as KiwiClassType).qualifiedName
+
+const qualifiedName = (props.type || (props.parameter.type as KiwiClassType))
+  .qualifiedName
 const kiwiSchema =
   kiwiAppAndSchemaStore.kiwiApp?.getSchemaByQualifiedName(qualifiedName)
 
@@ -86,7 +89,7 @@ const typeAssert = (() => {
       <ObjectSelector
         v-else-if="typeAssert.isClass"
         v-model="model"
-        :qualified-name="(parameter.type as KiwiClassType).qualifiedName"
+        :qualified-name="qualifiedName"
       />
     </a-form-item>
   </template>

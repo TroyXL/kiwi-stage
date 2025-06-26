@@ -8,6 +8,7 @@ const FLOAT_TYPES: KiwiPrimitiveTypeEnum[] = ['long', 'float', 'double']
 
 const props = defineProps<{
   parameter: KiwiParameter
+  type?: KiwiPrimitiveType
   parentFieldName?: string
 }>()
 const model = defineModel<any>({
@@ -17,7 +18,7 @@ const model = defineModel<any>({
 const t = useI18nText()
 const typeAsserts = (() => {
   const parameter = props.parameter
-  const typeName = (parameter.type as KiwiPrimitiveType).name
+  const typeName = (props.type || (parameter.type as KiwiPrimitiveType)).name
   const isInteger = typeName === 'int'
   const isFloat = FLOAT_TYPES.includes(typeName)
   const isBoolean = typeName === 'boolean'

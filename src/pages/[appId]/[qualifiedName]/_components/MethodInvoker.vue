@@ -80,7 +80,6 @@ async function handleExcuteMethod() {
       <ParameterEditor
         ref="$parameterEditor"
         :parameters="targetMethod!.parameters"
-        :data="data"
       />
     </div>
   </a-modal>
