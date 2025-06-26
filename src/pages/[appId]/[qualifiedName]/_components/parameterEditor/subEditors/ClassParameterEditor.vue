@@ -11,6 +11,7 @@ const props = defineProps<{
   parameter: KiwiParameter
   type?: KiwiClassType
   parentFieldName?: string
+  fieldName?: string
 }>()
 const model = defineModel<any>({
   required: true,
@@ -43,6 +44,7 @@ const typeAssert = (() => {
         },
       ]
 
+  const fieldName = props.fieldName || parameter.name
   return {
     isValue,
     isClass,
@@ -51,8 +53,8 @@ const typeAssert = (() => {
     enumOptions: kiwiSchema.enumConstants,
     rules,
     fieldName: props.parentFieldName
-      ? `${props.parentFieldName}.${parameter.name}`
-      : parameter.name,
+      ? `${props.parentFieldName}.${fieldName}`
+      : fieldName,
   }
 })()
 </script>

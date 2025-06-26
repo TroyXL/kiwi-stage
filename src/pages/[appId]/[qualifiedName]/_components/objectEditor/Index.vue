@@ -33,7 +33,6 @@ async function handleConfirmEdit() {
   if (!kiwiApp) return false
   try {
     const payload = await $objectEditor.value?.getObjectPaylod()
-    console.log('=== payload =', payload)
     if (!payload) return false
     const newObjectId = await kiwiApp?.createOrUpdateObject(
       payload as KiwiCreateOrUpdateObject

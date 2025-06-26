@@ -52,26 +52,25 @@ defineExpose({
 
 <template>
   <template v-if="hasParameters">
-    <a-row class="mb-2 flex !items-center">
-      <a-col class="text-right pr-4" :span="5">
+    <div class="mb-2 flex items-center justify-between">
+      <p>
         <span class="font-medium">{{ schema.label }}</span>
         <a-divider direction="vertical" />
         <span class="text-muted-foreground">{{ schema.name }}</span>
-      </a-col>
-      <a-col :span="16" class="text-right">
-        <a-button
-          v-if="dataMaxIndex < 0"
-          type="primary"
-          size="mini"
-          @click="handleAddData"
-        >
-          <template #icon>
-            <icon-plus />
-          </template>
-          {{ $t(i18nKey.addLabel) }}
-        </a-button>
-      </a-col>
-    </a-row>
+      </p>
+      <a-button
+        v-if="dataMaxIndex < 0"
+        type="primary"
+        size="mini"
+        @click="handleAddData"
+      >
+        <template #icon>
+          <icon-plus />
+        </template>
+        {{ $t(i18nKey.addLabel) }}
+      </a-button>
+    </div>
+
     <div v-if="displayedData?.length" class="border-t py-5">
       <div v-for="(item, index) in displayedData" :key="item.__tempKey__">
         <ObjectEditor
@@ -80,30 +79,28 @@ defineExpose({
           :data="item"
           as-child
         />
-        <a-row class="pb-5">
-          <a-col class="flex justify-end gap-2" :span="21">
-            <a-button
-              v-if="index === dataMaxIndex"
-              type="primary"
-              @click="handleAddData"
-            >
-              <template #icon>
-                <icon-plus />
-              </template>
-              {{ $t(i18nKey.addLabel) }}
-            </a-button>
-            <a-button
-              type="secondary"
-              status="danger"
-              @click="handleRemoveData(item.__tempKey__)"
-            >
-              <template #icon>
-                <icon-delete />
-              </template>
-              {{ $t(i18nKey.removeLabel) }}
-            </a-button>
-          </a-col>
-        </a-row>
+        <div class="pb-5 flex justify-end gap-2">
+          <a-button
+            v-if="index === dataMaxIndex"
+            type="primary"
+            @click="handleAddData"
+          >
+            <template #icon>
+              <icon-plus />
+            </template>
+            {{ $t(i18nKey.addLabel) }}
+          </a-button>
+          <a-button
+            type="secondary"
+            status="danger"
+            @click="handleRemoveData(item.__tempKey__)"
+          >
+            <template #icon>
+              <icon-delete />
+            </template>
+            {{ $t(i18nKey.removeLabel) }}
+          </a-button>
+        </div>
       </div>
     </div>
   </template>

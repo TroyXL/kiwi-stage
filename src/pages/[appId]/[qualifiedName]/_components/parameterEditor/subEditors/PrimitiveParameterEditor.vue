@@ -10,6 +10,8 @@ const props = defineProps<{
   parameter: KiwiParameter
   type?: KiwiPrimitiveType
   parentFieldName?: string
+  fieldName?: string
+  hideLabel?: boolean
 }>()
 const model = defineModel<any>({
   required: true,
@@ -31,6 +33,7 @@ const typeAsserts = (() => {
     },
   ]
 
+  const fieldName = props.fieldName || parameter.name
   return {
     isInteger,
     isFloat,
@@ -38,8 +41,8 @@ const typeAsserts = (() => {
     isString,
     rules,
     fieldName: props.parentFieldName
-      ? `${props.parentFieldName}.${parameter.name}`
-      : parameter.name,
+      ? `${props.parentFieldName}.${fieldName}`
+      : fieldName,
   }
 })()
 </script>

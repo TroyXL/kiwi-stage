@@ -12,8 +12,6 @@ defineProps<{
 const model = defineModel<Dict>({
   required: true,
 })
-
-console.log('=== model =', model.value)
 </script>
 
 <template>
