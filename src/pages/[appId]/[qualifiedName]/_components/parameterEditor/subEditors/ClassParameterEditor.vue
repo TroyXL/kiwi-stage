@@ -64,7 +64,7 @@ const typeAssert = (() => {
     <ParameterEditor
       v-if="typeAssert.isValue"
       v-model="model"
-      :parent-field-name="parameter.name"
+      :parent-field-name="typeAssert.fieldName"
       :parameters="typeAssert.constructorParameters"
     />
     <a-form-item

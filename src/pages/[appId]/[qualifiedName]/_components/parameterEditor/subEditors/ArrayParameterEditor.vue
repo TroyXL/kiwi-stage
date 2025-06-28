@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type {
-  KiwiArrayType,
-  KiwiClassType,
-  KiwiParameter,
-  KiwiPrimitiveType,
+import {
+  KiwiApp,
+  type KiwiArrayType,
+  type KiwiClassType,
+  type KiwiParameter,
+  type KiwiPrimitiveType,
 } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { generateRandomString } from '@/lib/utils'
@@ -19,6 +20,7 @@ const model = defineModel<any[]>({
   required: true,
 })
 
+const kiwiApp = KiwiApp.current
 const elementType = (props.parameter.type as KiwiArrayType).elementType
 const fieldName = props.parentFieldName
   ? `${props.parentFieldName}.${props.parameter.name}`
@@ -27,12 +29,17 @@ const fieldName = props.parentFieldName
 const modelMaxIndex = computed(() => model.value.length - 1)
 
 function handleAddItem() {
+  const kiwiApp = KiwiApp.current
+  if (!kiwiApp) return
+  let value: any = void 0
+  if (elementType.kind === 'primitive') {
+    value = kiwiApp.getValueByPrimitiveType(elementType as KiwiPrimitiveType)
+  } else if (elementType.kind === 'class') {
+    value = kiwiApp.getValueByClassType(elementType as KiwiClassType)
+  }
   model.value.push({
     __key__: generateRandomString(),
-    value: void 0,
-    // {
-    //   [props.parameter.name]: void 0,
-    // },
+    value,
   })
 }
 
