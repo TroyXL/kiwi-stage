@@ -156,48 +156,52 @@ export class KiwiApp {
       const value = data?.fields?.[param.name]
 
       if (param.type.kind === 'primitive') {
-        const typeName = (param.type as KiwiPrimitiveType).name
-        formData[param.name] =
-          value ??
-          (typeName === 'string' ? '' : typeName === 'boolean' ? false : 0)
+        formData[param.name] = this.getValueByPrimitiveType(
+          param.type as KiwiPrimitiveType,
+          value
+        )
       } else if (param.type.kind === 'class') {
-        const qualifiedName = (param.type as KiwiClassType).qualifiedName
-        const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
-        const kiwiSchemaTag = kiwiSchema?.tag
-        if (kiwiSchemaTag) {
-          formData[param.name] =
-            kiwiSchemaTag === 'enum'
-              ? value?.name
-              : kiwiSchemaTag === 'class'
-              ? value?.id
-              : kiwiSchemaTag === 'value'
-              ? this.transformParametersToFormData(
-                  kiwiSchema.constructorParameters,
-                  value
-                )
-              : void 0
-        }
+        formData[param.name] = this.getValueByClassType(
+          param.type as KiwiClassType,
+          value
+        )
       } else if (param.type.kind === 'array') {
-        const elementType = (param.type as KiwiArrayType).elementType
-        if (elementType.kind === 'primitive') {
-          formData[param.name] =
-            (value as [])?.map((item, index) => ({
-              __key__: index,
-              value: item,
-            })) ?? []
-        } else if (elementType.kind === 'class') {
-          formData[param.name] =
-            (value as [])?.map((item: KiwiObject, index) => ({
-              __key__: index,
-              value: this.transformParametersToFormData([param], item),
-            })) ?? []
-        }
+        formData[param.name] =
+          (value as [])?.map((item: KiwiObject, index) => ({
+            __key__: index,
+            value: this.transformParametersToFormData([param], item),
+          })) ?? []
       } else if (param.type.kind === 'union') {
         const types = (param.type as KiwiUnionType).alternatives
       }
       // console.log('=== formData =', formData)
       return formData
     }, {} as Dict)
+  }
+
+  getValueByPrimitiveType(type: KiwiPrimitiveType, value?: any) {
+    const typeName = (type as KiwiPrimitiveType).name
+    return (
+      value ?? (typeName === 'string' ? '' : typeName === 'boolean' ? false : 0)
+    )
+  }
+
+  getValueByClassType(type: KiwiClassType, value?: any) {
+    const qualifiedName = (type as KiwiClassType).qualifiedName
+    const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
+    const kiwiSchemaTag = kiwiSchema?.tag
+    if (kiwiSchemaTag) {
+      return kiwiSchemaTag === 'enum'
+        ? value?.name
+        : kiwiSchemaTag === 'class'
+        ? value?.id
+        : kiwiSchemaTag === 'value'
+        ? this.transformParametersToFormData(
+            kiwiSchema.constructorParameters,
+            value
+          )
+        : void 0
+    }
   }
 
   transformFormDataToFormattedParameters(
@@ -211,41 +215,23 @@ export class KiwiApp {
       if (param.type.kind === 'primitive') {
         formatted[param.name] = value
       } else if (param.type.kind === 'class') {
-        const qualifiedName = (param.type as KiwiClassType).qualifiedName
-        const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
-        const kiwiSchemaTag = kiwiSchema?.tag
-        if (kiwiSchemaTag) {
-          formatted[param.name] =
-            kiwiSchemaTag === 'enum'
-              ? {
-                  type: qualifiedName,
-                  name: value,
-                }
-              : kiwiSchemaTag === 'class'
-              ? {
-                  type: qualifiedName,
-                  id: value,
-                }
-              : kiwiSchemaTag === 'value'
-              ? {
-                  type: qualifiedName,
-                  fields: this.transformFormDataToFormattedParameters(
-                    kiwiSchema.constructorParameters,
-                    value
-                  ),
-                }
-              : void 0
-        }
+        formatted[param.name] = this.getFormattedClassParameterByType(
+          param.type as KiwiClassType,
+          value
+        )
       } else if (param.type.kind === 'array') {
         const elementType = (param.type as KiwiArrayType).elementType
+        const values =
+          (value as [])?.map((item: { value: any }) => item.value) ?? []
         if (elementType.kind === 'primitive') {
-          formatted[param.name] =
-            (value as [])?.map((item: { value: any }) => item.value) ?? []
+          formatted[param.name] = values
         } else if (elementType.kind === 'class') {
-          formatted[param.name] =
-            (value as [])?.map((item: Dict) =>
-              this.transformFormDataToFormattedParameters([param], item)
-            ) ?? []
+          formatted[param.name] = values.map((item: any) =>
+            this.getFormattedClassParameterByType(
+              elementType as KiwiClassType,
+              item
+            )
+          )
         }
       } else if (param.type.kind === 'union') {
         const types = (param.type as KiwiUnionType).alternatives
@@ -253,5 +239,32 @@ export class KiwiApp {
 
       return formatted
     }, {} as Dict)
+  }
+
+  getFormattedClassParameterByType(type: KiwiClassType, value: any) {
+    const qualifiedName = type.qualifiedName
+    const kiwiSchema = this.getSchemaByQualifiedName(qualifiedName)
+    const kiwiSchemaTag = kiwiSchema?.tag
+    if (kiwiSchemaTag) {
+      return kiwiSchemaTag === 'enum'
+        ? {
+            type: qualifiedName,
+            name: value,
+          }
+        : kiwiSchemaTag === 'class'
+        ? {
+            type: qualifiedName,
+            id: value,
+          }
+        : kiwiSchemaTag === 'value'
+        ? {
+            type: qualifiedName,
+            fields: this.transformFormDataToFormattedParameters(
+              kiwiSchema.constructorParameters,
+              value
+            ),
+          }
+        : void 0
+    }
   }
 }
