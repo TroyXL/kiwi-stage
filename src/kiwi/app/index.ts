@@ -108,6 +108,10 @@ export class KiwiApp {
     return this.request.Get<KiwiObject>(`/object/${id}`)
   }
 
+  fetchObjectByIds(ids: string[]) {
+    return Promise.all(ids.map(id => this.fetchObjectById(id)))
+  }
+
   deleteObjectById(id: string) {
     return this.request.Delete(`/object/${id}`)
   }
@@ -221,12 +225,13 @@ export class KiwiApp {
         )
       } else if (param.type.kind === 'array') {
         const elementType = (param.type as KiwiArrayType).elementType
-        const values =
-          (value as [])?.map((item: { value: any }) => item.value) ?? []
+        const values = (value as [])?.map(
+          (item: { value: any }) => item.value ?? item
+        )
         if (elementType.kind === 'primitive') {
           formatted[param.name] = values
         } else if (elementType.kind === 'class') {
-          formatted[param.name] = values.map((item: any) =>
+          formatted[param.name] = values?.map((item: any) =>
             this.getFormattedClassParameterByType(
               elementType as KiwiClassType,
               item

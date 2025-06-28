@@ -12,6 +12,7 @@ const props = defineProps<{
   type?: KiwiClassType
   parentFieldName?: string
   fieldName?: string
+  multiple?: boolean
 }>()
 const model = defineModel<any>({
   required: true,
@@ -44,7 +45,11 @@ const typeAssert = (() => {
         },
       ]
 
-  const fieldName = props.fieldName || parameter.name
+  const currentFieldName = props.fieldName || parameter.name
+  const fullFieldName = props.parentFieldName
+    ? `${props.parentFieldName}.${currentFieldName}`
+    : currentFieldName
+
   return {
     isValue,
     isClass,
@@ -52,9 +57,7 @@ const typeAssert = (() => {
     constructorParameters: kiwiSchema.constructorParameters,
     enumOptions: kiwiSchema.enumConstants,
     rules,
-    fieldName: props.parentFieldName
-      ? `${props.parentFieldName}.${fieldName}`
-      : fieldName,
+    fullFieldName,
   }
 })()
 </script>
@@ -64,13 +67,13 @@ const typeAssert = (() => {
     <ParameterEditor
       v-if="typeAssert.isValue"
       v-model="model"
-      :parent-field-name="typeAssert.fieldName"
+      :parent-field-name="typeAssert.fullFieldName"
       :parameters="typeAssert.constructorParameters"
     />
     <a-form-item
       v-else
       :label="parameter.label"
-      :field="typeAssert.fieldName"
+      :field="typeAssert.fullFieldName"
       :rules="typeAssert.rules"
       :validate-trigger="typeAssert.isClass ? 'input' : void 0"
     >
@@ -78,6 +81,7 @@ const typeAssert = (() => {
         v-if="typeAssert.isEnum"
         v-model="model"
         allow-clear
+        :multiple="multiple"
         :placeholder="$t(i18nKey.placeholderSelect)"
       >
         <a-option
@@ -91,6 +95,7 @@ const typeAssert = (() => {
       <ObjectSelector
         v-else-if="typeAssert.isClass"
         v-model="model"
+        :multiple="multiple"
         :qualified-name="qualifiedName"
       />
     </a-form-item>

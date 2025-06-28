@@ -125,3 +125,8 @@ type KiwiCreateOrUpdateObject = {
     children?: KiwiCreateOrUpdateObjectChildren
   }
 }
+
+type KiwiArrayTypeFormattedValue<V = any> = {
+  __key__: string
+  value: V
+}

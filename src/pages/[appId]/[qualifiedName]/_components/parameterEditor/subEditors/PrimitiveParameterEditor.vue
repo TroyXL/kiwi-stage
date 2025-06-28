@@ -33,16 +33,18 @@ const typeAsserts = (() => {
     },
   ]
 
-  const fieldName = props.fieldName || parameter.name
+  const currentFieldName = props.fieldName || parameter.name
+  const fullFieldName = props.parentFieldName
+    ? `${props.parentFieldName}.${currentFieldName}`
+    : currentFieldName
+
   return {
     isInteger,
     isFloat,
     isBoolean,
     isString,
     rules,
-    fieldName: props.parentFieldName
-      ? `${props.parentFieldName}.${fieldName}`
-      : fieldName,
+    fullFieldName,
   }
 })()
 </script>
@@ -50,7 +52,7 @@ const typeAsserts = (() => {
 <template>
   <a-form-item
     :label="parameter.label"
-    :field="typeAsserts.fieldName"
+    :field="typeAsserts.fullFieldName"
     :rules="typeAsserts.rules"
   >
     <a-input-number
