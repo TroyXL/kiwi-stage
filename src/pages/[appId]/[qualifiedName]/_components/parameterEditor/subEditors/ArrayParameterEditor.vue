@@ -16,26 +16,47 @@ const props = defineProps<{
   parameter: KiwiParameter
   parentFieldName?: string
 }>()
-const model = defineModel<any[]>({
+const model = defineModel<KiwiArrayTypeFormattedValue[]>({
   required: true,
 })
-
-const kiwiApp = KiwiApp.current
-const elementType = (props.parameter.type as KiwiArrayType).elementType
-const fieldName = props.parentFieldName
-  ? `${props.parentFieldName}.${props.parameter.name}`
-  : props.parameter.name
-
 const modelMaxIndex = computed(() => model.value.length - 1)
+
+const typeAssert = (() => {
+  const elementType = (props.parameter.type as KiwiArrayType).elementType
+  const isPrimitiveType = elementType.kind === 'primitive'
+  const isClassType = elementType.kind === 'class'
+
+  let isMultipleClass = false
+  if (isClassType) {
+    const qualifiedName = (elementType as KiwiClassType).qualifiedName
+    const schemaTag =
+      KiwiApp.current?.getSchemaByQualifiedName(qualifiedName)?.tag
+    isMultipleClass = schemaTag === 'enum' || schemaTag === 'class'
+  }
+
+  const fullFieldName = props.parentFieldName
+    ? `${props.parentFieldName}.${props.parameter.name}`
+    : props.parameter.name
+
+  return {
+    elementType,
+    isPrimitiveType,
+    isClassType,
+    isMultipleClass,
+    fullFieldName,
+  }
+})()
 
 function handleAddItem() {
   const kiwiApp = KiwiApp.current
   if (!kiwiApp) return
   let value: any = void 0
-  if (elementType.kind === 'primitive') {
-    value = kiwiApp.getValueByPrimitiveType(elementType as KiwiPrimitiveType)
-  } else if (elementType.kind === 'class') {
-    value = kiwiApp.getValueByClassType(elementType as KiwiClassType)
+  if (typeAssert.isPrimitiveType) {
+    value = kiwiApp.getValueByPrimitiveType(
+      typeAssert.elementType as KiwiPrimitiveType
+    )
+  } else if (typeAssert.isClassType) {
+    value = kiwiApp.getValueByClassType(typeAssert.elementType as KiwiClassType)
   }
   model.value.push({
     __key__: generateRandomString(),
@@ -48,12 +69,13 @@ function handleRemoveItem(key: string) {
 }
 
 function getFieldNameByIndex(index: number) {
-  return fieldName + `[${index}]`
+  return typeAssert.fullFieldName + `[${index}]`
 }
 
 watch(
   modelMaxIndex,
   index => {
+    if (typeAssert.isMultipleClass) return
     if (index < 0) handleAddItem()
   },
   {
@@ -63,46 +85,57 @@ watch(
 </script>
 
 <template>
-  <template v-for="(modelItem, index) in model" :key="modelItem.__key__">
-    <PrimitiveParameterEditor
-      v-if="elementType.kind === 'primitive'"
-      v-model="modelItem.value"
-      field-name="value"
-      :parent-field-name="getFieldNameByIndex(index)"
-      :parameter="parameter"
-      :type="elementType as KiwiPrimitiveType"
-    />
-    <ClassParameterEditor
-      v-else-if="elementType.kind === 'class'"
-      v-model="modelItem.value"
-      field-name="value"
-      :parent-field-name="getFieldNameByIndex(index)"
-      :parameter="parameter"
-      :type="elementType as KiwiClassType"
-    />
+  <template v-if="!typeAssert.isMultipleClass">
+    <template v-for="(modelItem, index) in model" :key="modelItem.__key__">
+      <PrimitiveParameterEditor
+        v-if="typeAssert.isPrimitiveType"
+        v-model="modelItem.value"
+        field-name="value"
+        :parent-field-name="getFieldNameByIndex(index)"
+        :parameter="parameter"
+        :type="typeAssert.elementType as KiwiPrimitiveType"
+      />
 
-    <div class="pb-5 flex justify-end gap-2">
-      <a-button
-        v-if="index === modelMaxIndex"
-        type="primary"
-        @click="handleAddItem"
-      >
-        <template #icon>
-          <icon-plus />
-        </template>
-        {{ $t(i18nKey.addLabel) }}
-      </a-button>
-      <a-button
-        v-if="modelMaxIndex > 0"
-        type="secondary"
-        status="danger"
-        @click="handleRemoveItem(modelItem.__key__)"
-      >
-        <template #icon>
-          <icon-delete />
-        </template>
-        {{ $t(i18nKey.removeLabel) }}
-      </a-button>
-    </div>
+      <ClassParameterEditor
+        v-if="typeAssert.isClassType"
+        v-model="modelItem.value"
+        field-name="value"
+        :parent-field-name="getFieldNameByIndex(index)"
+        :parameter="parameter"
+        :type="typeAssert.elementType as KiwiClassType"
+      />
+
+      <div class="pb-5 flex justify-end gap-2">
+        <a-button
+          v-if="index === modelMaxIndex"
+          type="primary"
+          @click="handleAddItem"
+        >
+          <template #icon>
+            <icon-plus />
+          </template>
+          {{ $t(i18nKey.addLabel) }}
+        </a-button>
+        <a-button
+          v-if="modelMaxIndex > 0"
+          type="secondary"
+          status="danger"
+          @click="handleRemoveItem(modelItem.__key__)"
+        >
+          <template #icon>
+            <icon-delete />
+          </template>
+          {{ $t(i18nKey.removeLabel) }}
+        </a-button>
+      </div>
+    </template>
   </template>
+
+  <ClassParameterEditor
+    v-else
+    v-model="model"
+    multiple
+    :parameter="parameter"
+    :type="typeAssert.elementType as KiwiClassType"
+  />
 </template>

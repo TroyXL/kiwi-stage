@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { KiwiApp } from '@/kiwi'
-import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { useEmitter } from '@/lib/emitter'
 import { i18nKey } from '@/lib/i18n'
 
@@ -12,13 +11,13 @@ import ObjectEditor from './objectEditor/Index.vue'
 
 const props = defineProps<{
   qualifiedName: string
-  isSelectMode?: boolean
-  selectedId?: string
+  selectMode?: 'single' | 'multiple'
+  selectedValue?: string[]
 }>()
 
 const emit = defineEmits<{
   showDetail: [id: string]
-  select: [row: KiwiTableRow]
+  select: [ids: string[]]
 }>()
 
 const ACTION_COLUMN: TableColumnData = {
@@ -34,12 +33,13 @@ const kiwiSchema = computed(() =>
   KiwiApp.current?.getSchemaByQualifiedName(props.qualifiedName)
 )
 
-const rowSelection = props.isSelectMode
+const isMultipleSelect = props.selectMode === 'multiple'
+const rowSelection = props.selectMode
   ? {
-      type: 'radio',
+      type: isMultipleSelect ? 'checkbox' : 'radio',
       fixed: true,
       width: 40,
-      defaultSelectedRowKeys: props.selectedId ? [props.selectedId] : void 0,
+      defaultSelectedRowKeys: props.selectedValue,
     }
   : void 0
 
@@ -51,7 +51,7 @@ const columns = computed<TableColumnData[]>(() => {
     minWidth: 200,
     // width: column.field.summary ? void 0 : 200,
   }))
-  return props.isSelectMode ? tableColumns : tableColumns.concat(ACTION_COLUMN)
+  return props.selectMode ? tableColumns : tableColumns.concat(ACTION_COLUMN)
 })
 
 const showObjectEditor = ref(false)
@@ -91,8 +91,8 @@ const {
   }
 )
 
-function handleSelectRow(_: any, __: any, record: KiwiTableRow) {
-  emit('select', record)
+function handleSelecionChange(ids: string[]) {
+  emit('select', ids)
 }
 
 function handleRefreshObjectListWithNewlyCreated(_newlyCreatedId?: string) {
@@ -137,7 +137,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
         :pagination="false"
         :sticky-header="-32"
         :row-selection="rowSelection"
-        @select="handleSelectRow"
+        @selection-change="handleSelecionChange"
       >
         <template #actions="{ record }">
           <a-button
@@ -155,7 +155,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
 
     <div
       class="flex px-8 py-4 border-t"
-      :class="isSelectMode ? 'justify-between' : 'justify-end'"
+      :class="selectMode ? 'justify-between' : 'justify-end'"
     >
       <a-pagination
         v-model:current="page"
@@ -164,7 +164,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
         show-total
       />
 
-      <slot name="footer" v-if="isSelectMode" />
+      <slot name="footer" v-if="selectMode" />
     </div>
   </Scaffold>
 

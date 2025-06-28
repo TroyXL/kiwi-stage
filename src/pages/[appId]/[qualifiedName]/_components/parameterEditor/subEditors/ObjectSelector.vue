@@ -1,45 +1,54 @@
 <script setup lang="ts">
-import type { KiwiTableRow } from '@/kiwi/schema/field'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
-import { useRequest } from 'alova/client'
+import { isArray } from 'lodash'
 import { ref, watch } from 'vue'
 import ObjectList from '../../ObjectList.vue'
 
-defineProps<{
+const props = defineProps<{
   qualifiedName: string
+  multiple?: boolean
 }>()
-const model = defineModel<string>()
-
+const model = defineModel<string | string[]>()
+const selectedIds = ref(
+  model.value ? (isArray(model.value) ? model.value : [model.value]) : []
+)
+const tempSelectedIds = ref<string[]>([])
+const showSelector = ref(false)
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
 
-const showSelector = ref(false)
-const selectedRow = ref<KiwiTableRow | null>(null)
-const tempSelectedRow = ref<KiwiTableRow | null>(null)
-
-watch(selectedRow, () => {
-  model.value = selectedRow.value?.__id__
+watch(selectedIds, () => {
+  if (!selectedIds.value.length) model.value = void 0
+  model.value = props.multiple ? [...selectedIds.value] : selectedIds.value[0]
 })
 
-const { loading } = useRequest(
-  () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectById(model.value!),
-  {
-    immediate: !!model.value,
-    async middleware(_ctx, next) {
-      const object = await next()
-      if (!object) return
-      selectedRow.value =
-        kiwiAppAndSchemaStore.kiwiSchema?.transformObjectsToTableRows([
-          object,
-        ])[0]!
-    },
-  }
-)
+const loading = ref(false)
+const summaries = ref('')
+watch(selectedIds, async ids => {
+  loading.value = true
+  const objects = await kiwiAppAndSchemaStore.kiwiApp!.fetchObjectByIds(ids)
+  summaries.value = objects.map(o => o.summary).join(', ')
+  loading.value = false
+})
+// const { loading } = useRequest(
+//   () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectByIds(model.value!),
+//   {
+//     immediate: !!model.value,
+//     async middleware(_ctx, next) {
+//       const object = await next()
+//       if (!object) return
+//       selectedValue.value =
+//         kiwiAppAndSchemaStore.kiwiSchema?.transformObjectsToTableRows([
+//           object,
+//         ])!
+//     },
+//   }
+// )
 
 function handleOpenSelector() {
   if (loading.value) return
   showSelector.value = true
-  tempSelectedRow.value = selectedRow.value
+  tempSelectedIds.value = selectedIds.value.concat()
 }
 
 function handleCloseSelector() {
@@ -47,16 +56,16 @@ function handleCloseSelector() {
 }
 
 function handleClearSelect() {
-  selectedRow.value = null
+  selectedIds.value = []
 }
 
 function handleConfirmSelect() {
-  selectedRow.value = tempSelectedRow.value
+  selectedIds.value = tempSelectedIds.value.concat()
   handleCloseSelector()
 }
 
-function handleSelectItem(row: KiwiTableRow) {
-  tempSelectedRow.value = row
+function handleSelectItems(ids: string[]) {
+  tempSelectedIds.value = ids
 }
 </script>
 
@@ -66,14 +75,14 @@ function handleSelectItem(row: KiwiTableRow) {
       readonly
       class="relative w-0 flex-1"
       :placeholder="$t(i18nKey.placeholderSelect)"
-      :model-value="selectedRow?.__summary__"
+      :model-value="summaries"
       @click.stop="handleOpenSelector"
     >
       <template #suffix v-if="loading">
         <icon-loading />
       </template>
     </a-input>
-    <a-button v-if="selectedRow" @click="handleClearSelect">
+    <a-button v-if="selectedIds.length" @click="handleClearSelect">
       <template #icon>
         <icon-close />
       </template>
@@ -90,9 +99,9 @@ function handleSelectItem(row: KiwiTableRow) {
   >
     <ObjectList
       :qualified-name="qualifiedName"
-      is-select-mode
-      :selected-id="selectedRow?.__id__"
-      @select="handleSelectItem"
+      :select-mode="multiple ? 'multiple' : 'single'"
+      :selected-value="selectedIds"
+      @select="handleSelectItems"
     >
       <template #footer>
         <a-space>
@@ -101,7 +110,7 @@ function handleSelectItem(row: KiwiTableRow) {
           </a-button>
           <a-button
             type="primary"
-            :disabled="!tempSelectedRow"
+            :disabled="!tempSelectedIds.length"
             @click="handleConfirmSelect"
           >
             {{ $t(i18nKey.okLabel) }}
