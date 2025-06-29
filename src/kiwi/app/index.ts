@@ -108,8 +108,17 @@ export class KiwiApp {
     return this.request.Get<KiwiObject>(`/object/${id}`)
   }
 
-  fetchObjectByIds(ids: string[]) {
-    return Promise.all(ids.map(id => this.fetchObjectById(id)))
+  fetchObjectByIds(
+    ids: string[],
+    config: {
+      excludeChildren?: boolean
+      excludeFields?: boolean
+    } = {}
+  ) {
+    return this.request.Post<KiwiObject[]>(`/object/multi-get`, {
+      ids,
+      ...config,
+    })
   }
 
   deleteObjectById(id: string) {
@@ -170,11 +179,22 @@ export class KiwiApp {
           value
         )
       } else if (param.type.kind === 'array') {
-        formData[param.name] =
-          (value as [])?.map((item: KiwiObject, index) => ({
-            __key__: index,
-            value: this.transformParametersToFormData([param], item),
-          })) ?? []
+        const elementType = (param.type as KiwiArrayType).elementType
+        if (elementType.kind === 'primitive') {
+          formData[param.name] =
+            (value as [])?.map((item: KiwiObject, index) => ({
+              __key__: index,
+              value: this.getValueByPrimitiveType(
+                elementType as KiwiPrimitiveType,
+                item
+              ),
+            })) ?? []
+        } else if (elementType.kind === 'class') {
+          formData[param.name] =
+            (value as [])?.map((item: KiwiObject) =>
+              this.getValueByClassType(elementType as KiwiClassType, item)
+            ) ?? []
+        }
       } else if (param.type.kind === 'union') {
         const types = (param.type as KiwiUnionType).alternatives
       }
