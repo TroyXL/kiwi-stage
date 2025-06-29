@@ -16,7 +16,6 @@ const kiwiSchema = kiwiAppAndSchemaStore.kiwiApp?.getSchemaByQualifiedName(
 )
 const columns = kiwiSchema?.tableColumns || []
 const row = kiwiSchema?.transformObjectsToTableRows([props.data])[0]
-
 const subObjects = Object.values(props.data?.children || {}).flat()
 </script>
 
@@ -39,7 +38,7 @@ const subObjects = Object.values(props.data?.children || {}).flat()
         :key="column.dataIndex"
         :label="column.title"
       >
-        <span>{{ row[column.dataIndex] ?? '-' }}</span>
+        <span>{{ row[column.dataIndex] || '-' }}</span>
       </a-descriptions-item>
     </a-descriptions>
   </div>
