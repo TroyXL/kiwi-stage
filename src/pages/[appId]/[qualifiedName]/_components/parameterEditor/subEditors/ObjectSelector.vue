@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
+import { useWatcher } from 'alova/client'
 import { isArray } from 'lodash'
 import { ref, watch } from 'vue'
 import ObjectList from '../../ObjectList.vue'
@@ -22,28 +23,18 @@ watch(selectedIds, () => {
   model.value = props.multiple ? [...selectedIds.value] : selectedIds.value[0]
 })
 
-const loading = ref(false)
 const summaries = ref('')
-watch(selectedIds, async ids => {
-  loading.value = true
-  const objects = await kiwiAppAndSchemaStore.kiwiApp!.fetchObjectByIds(ids)
-  summaries.value = objects.map(o => o.summary).join(', ')
-  loading.value = false
-})
-// const { loading } = useRequest(
-//   () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectByIds(model.value!),
-//   {
-//     immediate: !!model.value,
-//     async middleware(_ctx, next) {
-//       const object = await next()
-//       if (!object) return
-//       selectedValue.value =
-//         kiwiAppAndSchemaStore.kiwiSchema?.transformObjectsToTableRows([
-//           object,
-//         ])!
-//     },
-//   }
-// )
+const { loading } = useWatcher(
+  () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectByIds(selectedIds.value),
+  [selectedIds],
+  {
+    immediate: !!model.value,
+    async middleware(_ctx, next) {
+      const objects = await next()
+      summaries.value = objects.map(o => o.summary).join(', ')
+    },
+  }
+)
 
 function handleOpenSelector() {
   if (loading.value) return
