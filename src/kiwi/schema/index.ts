@@ -84,10 +84,16 @@ export class KiwiSchema {
         mapValues(obj.fields, (value, key) => {
           const kiwiField = this.fields.get(key)
           if (!kiwiField) return
+          const kind = kiwiField.type.kind
 
-          if (kiwiField.type.kind === 'primitive')
+          if (kind === 'primitive')
             row[key] = (kiwiField.type as KiwiPrimitiveType).formatValue(value)
-          else row[key] = (value as KiwiObject).summary
+          else if (kind === 'array') {
+            // const elementType = (kiwiField.type as KiwiArrayType).elementType
+            row[key] = (value as KiwiObject[])
+              ?.map(item => item.summary)
+              .join(', ')
+          } else row[key] = (value as KiwiObject).summary
         })
       }
 
