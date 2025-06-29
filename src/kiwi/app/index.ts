@@ -7,7 +7,6 @@ import type {
   KiwiArrayType,
   KiwiClassType,
   KiwiPrimitiveType,
-  KiwiUnionType,
 } from '../schema/type'
 
 export class KiwiApp {
@@ -196,7 +195,7 @@ export class KiwiApp {
             ) ?? []
         }
       } else if (param.type.kind === 'union') {
-        const types = (param.type as KiwiUnionType).alternatives
+        // const types = (param.type as KiwiUnionType).alternatives
       }
       // console.log('=== formData =', formData)
       return formData
@@ -259,7 +258,7 @@ export class KiwiApp {
           )
         }
       } else if (param.type.kind === 'union') {
-        const types = (param.type as KiwiUnionType).alternatives
+        // const types = (param.type as KiwiUnionType).alternatives
       }
 
       return formatted
