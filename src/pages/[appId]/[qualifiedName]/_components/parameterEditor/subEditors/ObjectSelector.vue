@@ -23,16 +23,12 @@ watch(selectedIds, () => {
   model.value = props.multiple ? [...selectedIds.value] : selectedIds.value[0]
 })
 
-const summaries = ref('')
-const { loading } = useWatcher(
+const { loading, data: selectedObjects } = useWatcher(
   () => kiwiAppAndSchemaStore.kiwiApp!.fetchObjectByIds(selectedIds.value),
   [selectedIds],
   {
     immediate: !!model.value,
-    async middleware(_ctx, next) {
-      const objects = await next()
-      summaries.value = objects.map(o => o.summary).join(', ')
-    },
+    initialData: [],
   }
 )
 
@@ -46,8 +42,12 @@ function handleCloseSelector() {
   showSelector.value = false
 }
 
-function handleClearSelect() {
+function handleClearSelected() {
   selectedIds.value = []
+}
+
+function handleRemoveSelected(data: KiwiObject) {
+  selectedIds.value = selectedIds.value.filter(id => id !== data.id)
 }
 
 function handleConfirmSelect() {
@@ -58,27 +58,37 @@ function handleConfirmSelect() {
 function handleSelectItems(ids: string[]) {
   tempSelectedIds.value = ids
 }
+
+function handleFormatObject(object: KiwiObject) {
+  return object.summary
+}
 </script>
 
 <template>
-  <div class="w-full flex gap-2">
-    <a-input
-      readonly
-      class="relative w-0 flex-1"
-      :placeholder="$t(i18nKey.placeholderSelect)"
-      :model-value="summaries"
-      @click.stop="handleOpenSelector"
-    >
-      <template #suffix v-if="loading">
-        <icon-loading />
-      </template>
-    </a-input>
-    <a-button v-if="selectedIds.length" @click="handleClearSelect">
-      <template #icon>
+  <a-input-tag
+    class="relative w-0 flex-1"
+    :placeholder="$t(i18nKey.placeholderSelect)"
+    :model-value="selectedObjects"
+    :allow-clear="!loading"
+    :format-tag="handleFormatObject"
+    @click="handleOpenSelector"
+    @clear.stop="handleClearSelected"
+  >
+    <template #tag="{ data }">
+      <span>
+        {{ data.summary }}
+      </span>
+      <span
+        class="ml-1 arco-icon-hover arco-tag-icon-hover arco-tag-close-btn"
+        @click.stop="handleRemoveSelected(data)"
+      >
         <icon-close />
-      </template>
-    </a-button>
-  </div>
+      </span>
+    </template>
+    <template #suffix v-if="loading">
+      <icon-loading />
+    </template>
+  </a-input-tag>
 
   <a-drawer
     unmount-on-close
