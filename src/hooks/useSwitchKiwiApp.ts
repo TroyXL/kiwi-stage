@@ -1,11 +1,11 @@
-import { KIWI_APP_RECENT } from '@/lib/storageKeys'
+import { removeStorage } from '@/lib/storage'
 import { useRouter } from 'vue-router'
 
 export function useSwitchKiwiApp() {
   const router = useRouter()
 
   return function () {
-    localStorage.removeItem(KIWI_APP_RECENT)
+    removeStorage('kiwi:app:recent')
     router.replace('/')
   }
 }

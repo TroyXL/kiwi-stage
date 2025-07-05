@@ -4,7 +4,7 @@ import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
 import { isInteger, isPlainObject, mapValues, toInteger } from 'lodash'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { KIWI_APP_RECENT } from './lib/storageKeys'
+import { getStorage } from './lib/storage'
 ;(function replaceOkInEnLang(obj: Record<string, any>) {
   mapValues(obj, (value, key) => {
     if (isPlainObject(value)) {
@@ -18,14 +18,21 @@ import { KIWI_APP_RECENT } from './lib/storageKeys'
 const router = useRouter()
 const loading = ref(true)
 
+function getRecentAppIdFromUrlOrStorage() {
+  const pathname = location.pathname
+  const urlAppId = toInteger(pathname.split('/')[1])
+  if (isInteger(urlAppId)) return urlAppId
+  const storageAppId = toInteger(getStorage('kiwi:app:recent'))
+  if (isInteger(storageAppId)) return storageAppId
+}
+
 onMounted(async () => {
   const hasLogin = await KiwiManager.shared.hasLogin()
   loading.value = false
   if (!hasLogin) router.replace('/login')
   else {
-    const recentAppId = toInteger(localStorage.getItem(KIWI_APP_RECENT))
-
-    if (!recentAppId || !isInteger(recentAppId)) {
+    const recentAppId = getRecentAppIdFromUrlOrStorage()
+    if (!recentAppId) {
       router.replace('/')
       return
     }

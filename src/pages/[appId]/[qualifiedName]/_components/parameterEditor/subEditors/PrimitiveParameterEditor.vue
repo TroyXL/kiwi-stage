@@ -26,12 +26,14 @@ const typeAsserts = (() => {
   const isBoolean = typeName === 'boolean'
   const isString = typeName === 'string'
 
-  const rules: FieldRule[] = [
-    {
-      required: parameter.required,
-      message: t(i18nKey.isRequired, [parameter.label || parameter.name]),
-    },
-  ]
+  const rules: FieldRule[] = parameter.required
+    ? [
+        {
+          required: parameter.required,
+          message: t(i18nKey.isRequired, [parameter.label || parameter.name]),
+        },
+      ]
+    : []
 
   const currentFieldName = props.fieldName || parameter.name
   const fullFieldName = props.parentFieldName

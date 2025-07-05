@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { KiwiApp, KiwiManager } from '@/kiwi'
 import { i18nKey, useI18nText } from '@/lib/i18n'
-import { KIWI_APP_RECENT } from '@/lib/storageKeys'
+import { removeStorage } from '@/lib/storage'
 import { showConfirm } from '@/lib/userInterface'
 import { useRequest } from 'alova/client'
 import type { PropType } from 'vue'
@@ -24,7 +24,7 @@ const { loading, send: handleLogout } = useRequest(
       if (await showConfirm(t(i18nKey.logoutTip))) {
         await next()
         KiwiApp.current?.dispose()
-        localStorage.removeItem(KIWI_APP_RECENT)
+        removeStorage('kiwi:app:recent')
         location.reload()
       }
     },
