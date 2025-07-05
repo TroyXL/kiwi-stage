@@ -142,7 +142,7 @@ useEmitter('refreshObjectList', handleRefreshObjectList)
         <template #actions="{ record }">
           <a-button
             type="text"
-            class="hover:!bg-blue-100/80"
+            class="hover:!bg-blue-100/80 dark:hover:!bg-muted"
             @click="emit('showDetail', record.__id__)"
           >
             <template #icon>
