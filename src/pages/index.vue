@@ -66,7 +66,7 @@ function handleCreatedKiwiApp(_newlyCreatedId?: string) {
       <template #title>
         <div class="flex items-center gap-2">
           <KiwiLogo />
-          <h1 class="!text-xl pl-2 leading-none">
+          <h1 class="!text-xl leading-none">
             {{ $t(i18nKey.selectKiwiApp) }}
           </h1>
         </div>

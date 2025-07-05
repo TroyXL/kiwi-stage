@@ -33,6 +33,27 @@ const useGlobalInjects = {
   },
 }
 
+;(function colorSchemeAdaptor() {
+  // 监听系统深色模式变化
+  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+  // 更新深色模式类
+  function updateDarkMode(e: MediaQueryListEvent | MediaQueryList) {
+    if (e.matches) {
+      document.body.classList.add('dark')
+      document.body.setAttribute('arco-theme', 'dark')
+    } else {
+      document.body.classList.remove('dark')
+      document.body.removeAttribute('arco-theme')
+    }
+  }
+
+  // 初始化深色模式
+  updateDarkMode(darkModeMediaQuery)
+  // 添加深色模式变化监听器
+  darkModeMediaQuery.addEventListener('change', updateDarkMode)
+})()
+
 createApp(App)
   .use(router)
   .use(createPinia())
