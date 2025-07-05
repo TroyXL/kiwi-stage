@@ -1,3 +1,4 @@
+import { isEmpty, isNil } from 'lodash'
 import { createKiwiRequest } from '../lib/createKiwiRequest'
 import { trimStringInData } from '../lib/utils'
 import { KiwiManager } from '../manager'
@@ -18,7 +19,7 @@ export class KiwiApp {
 
   static async createByAppId(appId: number) {
     KiwiApp._current = new KiwiApp(appId)
-    await Promise.allSettled([
+    await Promise.all([
       KiwiApp._current.getAppInfo(),
       KiwiApp._current.setupSchemaPool(),
     ])
@@ -235,6 +236,13 @@ export class KiwiApp {
       if (param.ignore) return formData
 
       const value = formData[param.name]
+
+      if (!param.required) {
+        if (isNil(value) || isEmpty(value)) {
+          return formatted
+        }
+      }
+
       if (param.type.kind === 'primitive') {
         formatted[param.name] = value
       } else if (param.type.kind === 'class') {
@@ -257,8 +265,6 @@ export class KiwiApp {
             )
           )
         }
-      } else if (param.type.kind === 'union') {
-        // const types = (param.type as KiwiUnionType).alternatives
       }
 
       return formatted
