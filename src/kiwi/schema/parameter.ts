@@ -5,11 +5,10 @@ const TEMPORARY_IGNORE_TYPES: KiwiPrimitiveTypeEnum[] = [
   'short',
   'char',
 ]
+const NIL_TYPES: KiwiPrimitiveTypeEnum[] = ['void', 'null', 'never']
 const IGNORE_TYPES: KiwiPrimitiveTypeEnum[] = [
   ...TEMPORARY_IGNORE_TYPES,
-  'void',
-  'null',
-  'never',
+  ...NIL_TYPES,
   'any',
 ]
 
@@ -20,7 +19,7 @@ export class KiwiParameter {
 
   // UI 相关属性
   ignore = false
-  required = false
+  required = true
 
   constructor(parameter: KiwiParameterInterface) {
     this.name = parameter.name
@@ -29,10 +28,15 @@ export class KiwiParameter {
     if (this.type.kind === 'primitive') {
       this.ignore = IGNORE_TYPES.includes((this.type as KiwiPrimitiveType).name)
     }
-    if (this.type.kind !== 'union') {
-      this.required = true
-    } else {
-      // TODO: union type
+    if (this.type.kind === 'union') {
+      this.required = false
+      const alternativeTypes = parameter.type.alternatives || []
+      const firstNotNillType = alternativeTypes.find(
+        type => !(type.kind === 'primitive' && NIL_TYPES.includes(type.name!))
+      )
+      if (firstNotNillType) {
+        this.type = KiwiType.from(firstNotNillType)
+      }
     }
   }
 }

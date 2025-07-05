@@ -36,14 +36,15 @@ const typeAssert = (() => {
   const isEnum = kiwiSchema.tag === 'enum'
 
   const parameter = props.parameter
-  const rules: FieldRule[] = isValue
-    ? []
-    : [
-        {
-          required: parameter.required,
-          message: t(i18nKey.isRequired, [parameter.label || parameter.name]),
-        },
-      ]
+  const rules: FieldRule[] =
+    isValue || !parameter.required
+      ? []
+      : [
+          {
+            required: parameter.required,
+            message: t(i18nKey.isRequired, [parameter.label || parameter.name]),
+          },
+        ]
 
   const currentFieldName = props.fieldName || parameter.name
   const fullFieldName = props.parentFieldName
