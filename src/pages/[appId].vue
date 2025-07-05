@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import KiwiLogo from '@/components/KiwiLogo.vue'
 import LogoutButton from '@/components/LogoutButton.vue'
+import { useSwitchKiwiApp } from '@/hooks/useSwitchKiwiApp'
 import { KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
@@ -13,6 +14,7 @@ import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 const router = useRouter()
 const route = useRoute('/[appId]/[qualifiedName]/')
 const kiwiAppAndSchemaStore = useKiwiAppAndSchemaStore()
+const gotoKiwiAppList = useSwitchKiwiApp()
 
 const params = computed(() => route.params)
 const loading = ref(true)
@@ -21,10 +23,15 @@ const kiwiClasses = ref<KiwiSchema[]>([])
 
 onMounted(async () => {
   const { appId } = params.value
-  const kiwiApp = await kiwiAppAndSchemaStore.switchKiwiApp(toInteger(appId))
-  appInfo.value = kiwiApp.appInfo
-  kiwiClasses.value = kiwiApp.rootClassSchemas
-  loading.value = false
+  try {
+    const kiwiApp = await kiwiAppAndSchemaStore.switchKiwiApp(toInteger(appId))
+    appInfo.value = kiwiApp.appInfo
+    kiwiClasses.value = kiwiApp.rootClassSchemas
+    loading.value = false
+  } catch (error) {
+    gotoKiwiAppList()
+    console.error(error)
+  }
 })
 
 onUnmounted(() => {
