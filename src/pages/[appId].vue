@@ -53,7 +53,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
     >
       <div class="flex items-center gap-2">
         <KiwiLogo />
-        <h1 class="!text-xl pl-2">Kiwi App</h1>
+        <h1 class="!text-xl">Kiwi App</h1>
         <KiwiAppInfo v-model:app-info="appInfo" />
       </div>
       <a-space>
