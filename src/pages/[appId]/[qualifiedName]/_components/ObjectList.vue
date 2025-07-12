@@ -49,6 +49,8 @@ const columns = computed<TableColumnData[]>(() => {
     ...column,
     fixed: column.field.summary ? 'left' : void 0,
     minWidth: 200,
+    ellipsis: true,
+    tooltip: true,
     // width: column.field.summary ? void 0 : 200,
   }))
   return props.selectMode ? tableColumns : tableColumns.concat(ACTION_COLUMN)
