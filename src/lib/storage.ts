@@ -12,7 +12,7 @@ export function getStorage(
   try {
     return JSON.parse(data) as StorageKey[keyof StorageKey]
   } catch {
-    return
+    return data
   }
 }
 
