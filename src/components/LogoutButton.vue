@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useGotoLogin } from '@/hooks/useGotoLogin'
 import { KiwiApp, KiwiManager } from '@/kiwi'
 import { i18nKey, useI18nText } from '@/lib/i18n'
 import { showConfirm } from '@/lib/userInterface'
@@ -14,6 +15,7 @@ defineProps({
 })
 
 const t = useI18nText()
+const gotoLogin = useGotoLogin()
 
 const { loading, send: handleLogout } = useRequest(
   KiwiManager.shared.logout(),
@@ -23,7 +25,7 @@ const { loading, send: handleLogout } = useRequest(
       if (await showConfirm(t(i18nKey.logoutTip))) {
         await next()
         KiwiApp.current?.dispose()
-        location.reload()
+        gotoLogin()
       }
     },
   }
