@@ -8,7 +8,6 @@ import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
 import { toInteger } from 'lodash'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AiGenerateButton from './[appId]/_components/AiGenerateButton.vue'
 import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
 
 const router = useRouter()
@@ -57,7 +56,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
         <KiwiAppInfo v-model:app-info="appInfo" />
       </div>
       <a-space>
-        <AiGenerateButton />
+        <!-- <AiGenerateButton /> -->
         <LogoutButton only-icon />
       </a-space>
     </a-layout-header>
