@@ -3,7 +3,7 @@ import { KiwiManager } from '@/kiwi'
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
 import { isPlainObject, mapValues } from 'lodash'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useGotoLogin } from './hooks/useGotoLogin'
 ;(function replaceOkInEnLang(obj: Record<string, any>) {
   mapValues(obj, (value, key) => {
     if (isPlainObject(value)) {
@@ -14,13 +14,13 @@ import { useRouter } from 'vue-router'
   })
 })(enUS)
 
-const router = useRouter()
+const gotoLogin = useGotoLogin()
 const loading = ref(true)
 
 onMounted(async () => {
   const hasLogin = await KiwiManager.shared.hasLogin()
   loading.value = false
-  if (!hasLogin) router.replace('/login')
+  if (!hasLogin) gotoLogin()
 })
 </script>
 

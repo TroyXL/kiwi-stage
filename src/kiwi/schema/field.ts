@@ -1,4 +1,4 @@
-import { KiwiType } from './type'
+import { KiwiParameter } from './parameter'
 
 export type KiwiTableColumn = {
   dataIndex: string
@@ -11,18 +11,13 @@ export type KiwiTableRow = {
   __summary__?: string
 } & Dict
 
-export class KiwiField {
+export class KiwiField extends KiwiParameter {
   access: KiwiAccess
-  name: string
-  label: string
-  type: KiwiType
   summary: boolean
 
   constructor(field: KiwiFieldInterface) {
+    super(field)
     this.access = field.access
-    this.name = field.name
-    this.label = field.label
-    this.type = KiwiType.from(field.type)
     this.summary = field.summary
   }
 

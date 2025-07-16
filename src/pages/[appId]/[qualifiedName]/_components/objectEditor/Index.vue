@@ -16,13 +16,16 @@ const emit = defineEmits<{
   refresh: [newObjectId?: string]
   close: []
 }>()
+const isEditMode = !!props.data?.id
 
 const t = useI18nText()
 const $objectEditor =
   useTemplateRef<InstanceType<typeof ObjectEditor>>('$objectEditor')
 const { kiwiApp } = useKiwiAppAndSchemaStore()
-const hasParameters = computed(
-  () => !!props.targetSchema?.constructorParameters.length
+const hasParameters = computed(() =>
+  isEditMode
+    ? !!props.targetSchema?.fields.size
+    : !!props.targetSchema?.constructorParameters.length
 )
 
 function handleCloseModal() {
@@ -51,7 +54,7 @@ async function handleConfirmEdit() {
     unmount-on-close
     v-model:visible="visible"
     :body-class="
-      cn('max-h-[640px] overflow-auto', data ? 'relative !pt-16' : void 0)
+      cn('max-h-[640px] overflow-auto', isEditMode ? 'relative !pt-16' : void 0)
     "
     :title-align="hasParameters ? 'start' : void 0"
     :width="720"
@@ -65,11 +68,11 @@ async function handleConfirmEdit() {
     @close="emit('close')"
   >
     <template #title>{{
-      $t(data?.id ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
+      $t(isEditMode ? i18nKey.editRecordTitle : i18nKey.createRecordTitle)
     }}</template>
     <!-- <div v-if="!hasParameters">{{ $t(i18nKey.actionUndoTip) }}</div> -->
     <a-alert
-      v-if="data"
+      v-if="isEditMode"
       class="absolute top-0 left-0 right-0 !rounded-none"
       type="warning"
       banner
@@ -83,6 +86,7 @@ async function handleConfirmEdit() {
       ref="$objectEditor"
       :schema="targetSchema"
       :data="data"
+      :is-edit-mode="isEditMode"
     />
   </a-modal>
 </template>

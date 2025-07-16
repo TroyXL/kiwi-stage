@@ -8,7 +8,7 @@ import {
 } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { generateRandomString } from '@/lib/utils'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ClassParameterEditor from './ClassParameterEditor.vue'
 import PrimitiveParameterEditor from './PrimitiveParameterEditor.vue'
 
@@ -46,6 +46,16 @@ const typeAssert = (() => {
     fullFieldName,
   }
 })()
+
+const modelOfMultipleClass = ref(
+  typeAssert.isMultipleClass ? model.value.map(item => item.value) : []
+)
+watch(modelOfMultipleClass, val => {
+  model.value = val.map((item, index) => ({
+    __key__: index.toString(),
+    value: item,
+  }))
+})
 
 function handleAddItem() {
   const kiwiApp = KiwiApp.current
@@ -133,7 +143,7 @@ watch(
 
   <ClassParameterEditor
     v-else
-    v-model="model"
+    v-model="modelOfMultipleClass"
     multiple
     :parameter="parameter"
     :type="typeAssert.elementType as KiwiClassType"

@@ -13,6 +13,7 @@ const props = defineProps<{
   parentFieldName?: string
   fieldName?: string
   multiple?: boolean
+  isValuedClass?: boolean
 }>()
 const model = defineModel<any>({
   required: true,

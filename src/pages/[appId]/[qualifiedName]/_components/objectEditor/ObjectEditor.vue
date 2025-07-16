@@ -7,13 +7,19 @@ import SubObjectEditor from './SubObjectEditor.vue'
 const props = defineProps<{
   schema: KiwiSchema
   data?: KiwiObject
+  isEditMode?: boolean
   asChild?: boolean
 }>()
 
 const $parameterEditor = ref<InstanceType<typeof ParameterEditor>>()
 const $subObjectEditors = ref<InstanceType<typeof SubObjectEditor>[]>([])
-const hasParameters = !!props.schema?.constructorParameters.length
-const hasSubSchemas = !!props.schema.subSchemas.length
+const parameters = props.isEditMode
+  ? Array.from(props.schema.fields.values())
+  : props.schema.constructorParameters
+const hasParameters = !!parameters.length
+const hasSubSchemas = props.isEditMode
+  ? false
+  : !!props.schema.subSchemas.length
 
 async function getObjectPaylod() {
   const errors = await $parameterEditor.value?.validate()
@@ -60,7 +66,7 @@ defineExpose({
   <ParameterEditor
     v-if="hasParameters"
     ref="$parameterEditor"
-    :parameters="schema!.constructorParameters"
+    :parameters="parameters"
     :data="data"
   />
   <template v-if="hasSubSchemas">

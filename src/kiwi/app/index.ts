@@ -180,6 +180,7 @@ export class KiwiApp {
         )
       } else if (param.type.kind === 'array') {
         const elementType = (param.type as KiwiArrayType).elementType
+        // 基础类型直接返回格式化后的数组
         if (elementType.kind === 'primitive') {
           formData[param.name] =
             (value as [])?.map((item: KiwiObject, index) => ({
@@ -191,9 +192,13 @@ export class KiwiApp {
             })) ?? []
         } else if (elementType.kind === 'class') {
           formData[param.name] =
-            (value as [])?.map((item: KiwiObject) =>
-              this.getValueByClassType(elementType as KiwiClassType, item)
-            ) ?? []
+            (value as [])?.map((item: KiwiObject, index) => ({
+              __key__: index,
+              value: this.getValueByClassType(
+                elementType as KiwiClassType,
+                item
+              ),
+            })) ?? []
         }
       } else if (param.type.kind === 'union') {
         // const types = (param.type as KiwiUnionType).alternatives
@@ -258,6 +263,7 @@ export class KiwiApp {
         if (elementType.kind === 'primitive') {
           formatted[param.name] = values
         } else if (elementType.kind === 'class') {
+          console.log(999, values)
           formatted[param.name] = values?.map((item: any) =>
             this.getFormattedClassParameterByType(
               elementType as KiwiClassType,
