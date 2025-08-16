@@ -15,7 +15,7 @@ const i18nText = {
   createRecordTitle: 'Create Record',
   editRecordTitle: 'Edit Record',
   isRequired: '{0} is required',
-  loginLabel: 'Login as Demo',
+  loginLabel: 'Login Now',
   excuteLabel: 'Excute',
   openLabel: 'Open',
   logoutLabel: 'Logout',

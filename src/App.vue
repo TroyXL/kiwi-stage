@@ -3,7 +3,6 @@ import { KiwiManager } from '@/kiwi'
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
 import { isPlainObject, mapValues } from 'lodash'
 import { onMounted, ref } from 'vue'
-import { useGotoLogin } from './hooks/useGotoLogin'
 ;(function replaceOkInEnLang(obj: Record<string, any>) {
   mapValues(obj, (value, key) => {
     if (isPlainObject(value)) {
@@ -14,13 +13,11 @@ import { useGotoLogin } from './hooks/useGotoLogin'
   })
 })(enUS)
 
-const gotoLogin = useGotoLogin()
 const loading = ref(true)
 
 onMounted(async () => {
-  const hasLogin = await KiwiManager.shared.hasLogin()
+  await KiwiManager.shared.loginByCode()
   loading.value = false
-  if (!hasLogin) gotoLogin()
 })
 </script>
 

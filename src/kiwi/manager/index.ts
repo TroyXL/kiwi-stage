@@ -1,75 +1,73 @@
-import { createKiwiRequest } from '../lib/createKiwiRequest'
+import { KIWI_MANAGEMENT_REQUEST_URL, KIWI_TOKEN_KEY } from '../lib/constants'
+import { createKiwiRequest, setDefaultHeaders } from '../lib/createKiwiRequest'
 
 const KIWI_MANAGER_APP_ID = 2
 
 export class KiwiManager {
   static shared = new KiwiManager()
 
-  private request = createKiwiRequest()
+  private request = createKiwiRequest(KIWI_MANAGEMENT_REQUEST_URL)
 
   private constructor() {
     this.request.options.beforeRequest = method => {
-      method.config.credentials = 'include'
+      setDefaultHeaders(method.config.headers)
       method.config.headers['X-App-ID'] = KIWI_MANAGER_APP_ID
     }
   }
 
-  async hasLogin() {
-    const loginInfo = await this.getLoginInfo()
-    return loginInfo.appId > -1
+  hasLogin() {
+    return Boolean(localStorage.getItem(KIWI_TOKEN_KEY))
   }
 
-  login(authorization: KiwiManagerAuthorization) {
-    return this.request.Post<KiwiManagerLoginInfo>('/login', {
-      appId: KIWI_MANAGER_APP_ID,
-      ...authorization,
-    })
-  }
-
-  loginAsDemo() {
-    return this.login({
-      loginName: 'demo',
-      password: '123456',
-    })
-  }
-
-  getLoginInfo() {
-    return this.request.Get<KiwiManagerLoginInfo>('/get-login-info')
+  async loginByCode() {
+    // 从 URL 获取 code 参数
+    const urlParams = new URLSearchParams(window.location.search)
+    const code = urlParams.get('code')
+    if (!code) return
+    const { token } = await this.request.Post<{ token: string }>(
+      '/auth/login-with-sso-code',
+      {
+        code,
+      }
+    )
+    localStorage.setItem(KIWI_TOKEN_KEY, token)
+    // 移除URL中的code参数并刷新页面
+    const url = new URL(window.location.href)
+    url.searchParams.delete('code')
+    window.location.href = url.toString()
   }
 
   logout() {
-    return this.request.Post('/logout')
+    return this.request.Post('/auth/logout')
   }
 
   listApps(
     {
       page,
       pageSize,
-      searchText,
+      name,
       newlyCreatedId,
     }: KiwiPaginationRequest<{
-      searchText?: string
+      name?: string
       newlyCreatedId?: string
     }> = {
       page: 1,
       pageSize: 5,
     }
   ) {
-    return this.request.Get<
+    return this.request.Post<
       KiwiPaginationResponse<{
         items: KiwiAppInfo[]
       }>
-    >('/app', {
-      params: {
-        page,
-        pageSize,
-        searchText: searchText?.trim() || void 0,
-        newlyCreatedId,
-      },
+    >('/app/search', {
+      page,
+      pageSize,
+      name: name?.trim() || void 0,
+      newlyCreatedId,
     })
   }
 
-  fetchAppById(appId: number) {
+  fetchAppById(appId: string) {
     return this.request.Get<KiwiAppInfo>(`/app/${appId}`)
   }
 

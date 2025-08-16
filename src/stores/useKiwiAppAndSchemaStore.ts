@@ -10,7 +10,7 @@ export const useKiwiAppAndSchemaStore = defineStore(
     const kiwiSchema = ref<KiwiSchema | null>(null)
     const qualifiedName = ref('')
 
-    async function switchKiwiApp(appId: number) {
+    async function switchKiwiApp(appId: string) {
       kiwiApp.value = await KiwiApp.createByAppId(appId)
       return kiwiApp.value
     }
