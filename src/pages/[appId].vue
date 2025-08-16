@@ -5,7 +5,6 @@ import { useSwitchKiwiApp } from '@/hooks/useSwitchKiwiApp'
 import { KiwiSchema } from '@/kiwi'
 import { i18nKey } from '@/lib/i18n'
 import { useKiwiAppAndSchemaStore } from '@/stores/useKiwiAppAndSchemaStore'
-import { toInteger } from 'lodash'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import KiwiAppInfo from './[appId]/_components/KiwiAppInfo.vue'
@@ -23,7 +22,7 @@ const kiwiClasses = ref<KiwiSchema[]>([])
 onMounted(async () => {
   const { appId } = params.value
   try {
-    const kiwiApp = await kiwiAppAndSchemaStore.switchKiwiApp(toInteger(appId))
+    const kiwiApp = await kiwiAppAndSchemaStore.switchKiwiApp(appId)
     appInfo.value = kiwiApp.appInfo
     kiwiClasses.value = kiwiApp.rootClassSchemas
     loading.value = false

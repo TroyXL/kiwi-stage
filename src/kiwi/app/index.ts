@@ -1,4 +1,5 @@
 import { isEmpty, isNil } from 'lodash'
+import { KIWI_BASE_REQUEST_URL } from '../lib/constants'
 import { createKiwiRequest } from '../lib/createKiwiRequest'
 import { trimStringInData } from '../lib/utils'
 import { KiwiManager } from '../manager'
@@ -17,7 +18,7 @@ export class KiwiApp {
     return this._current
   }
 
-  static async createByAppId(appId: number) {
+  static async createByAppId(appId: string) {
     KiwiApp._current = new KiwiApp(appId)
     await Promise.all([
       KiwiApp._current.getAppInfo(),
@@ -26,9 +27,9 @@ export class KiwiApp {
     return KiwiApp._current
   }
 
-  readonly request = createKiwiRequest()
+  readonly request = createKiwiRequest(KIWI_BASE_REQUEST_URL)
 
-  appId: number
+  appId: string
   private _appInfo!: KiwiAppInfo
   get appInfo() {
     return this._appInfo
@@ -45,10 +46,10 @@ export class KiwiApp {
     )
   }
 
-  private constructor(appId: number) {
+  private constructor(appId: string) {
     this.appId = appId
     this.request.options.beforeRequest = method => {
-      method.config.credentials = 'include'
+      // setDefaultHeaders(method.config.headers)
       method.config.headers['X-App-ID'] = appId
     }
   }

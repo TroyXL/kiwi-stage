@@ -25,7 +25,7 @@ const {
     const request = KiwiManager.shared.listApps({
       page,
       pageSize,
-      searchText: searchText.value.trim(),
+      name: searchText.value.trim(),
       newlyCreatedId,
     })
     newlyCreatedId = void 0
