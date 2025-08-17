@@ -1,7 +1,7 @@
 import { createAlova } from 'alova'
 import adapterFetch from 'alova/fetch'
 import vueHook from 'alova/vue'
-import { KIWI_TOKEN_KEY } from './constants'
+import { KIWI_BASE_REQUEST_URL, KIWI_TOKEN_KEY } from './constants'
 import { gotoKiwiLogin } from './utils'
 
 let errorHandler: KiwiErrorHandler | void = void 0
@@ -16,9 +16,9 @@ function buildAndThrowError(message: string, showError = true) {
   throw error
 }
 
-export function createKiwiRequest(baseURL: string) {
+export function createKiwiRequest() {
   return createAlova({
-    baseURL,
+    baseURL: KIWI_BASE_REQUEST_URL,
     // timeout: KIWI_REQUEST_TIMEOUT,
     cacheFor: null,
     statesHook: vueHook,

@@ -1,4 +1,4 @@
-import { KIWI_MANAGEMENT_REQUEST_URL, KIWI_TOKEN_KEY } from '../lib/constants'
+import { KIWI_TOKEN_KEY } from '../lib/constants'
 import { createKiwiRequest, setDefaultHeaders } from '../lib/createKiwiRequest'
 
 const KIWI_MANAGER_APP_ID = 2
@@ -6,7 +6,7 @@ const KIWI_MANAGER_APP_ID = 2
 export class KiwiManager {
   static shared = new KiwiManager()
 
-  private request = createKiwiRequest(KIWI_MANAGEMENT_REQUEST_URL)
+  private request = createKiwiRequest()
 
   private constructor() {
     this.request.options.beforeRequest = method => {
