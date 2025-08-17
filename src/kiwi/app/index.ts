@@ -1,6 +1,5 @@
 import { isEmpty, isNil } from 'lodash'
-import { KIWI_BASE_REQUEST_URL } from '../lib/constants'
-import { createKiwiRequest } from '../lib/createKiwiRequest'
+import { createKiwiRequest, setDefaultHeaders } from '../lib/createKiwiRequest'
 import { trimStringInData } from '../lib/utils'
 import { KiwiManager } from '../manager'
 import { KiwiSchema } from '../schema'
@@ -27,7 +26,7 @@ export class KiwiApp {
     return KiwiApp._current
   }
 
-  readonly request = createKiwiRequest(KIWI_BASE_REQUEST_URL)
+  readonly request = createKiwiRequest()
 
   appId: string
   private _appInfo!: KiwiAppInfo
@@ -49,7 +48,7 @@ export class KiwiApp {
   private constructor(appId: string) {
     this.appId = appId
     this.request.options.beforeRequest = method => {
-      // setDefaultHeaders(method.config.headers)
+      setDefaultHeaders(method.config.headers)
       method.config.headers['X-App-ID'] = appId
     }
   }

@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { KIWI_CHAT_URL } from '@/kiwi/lib/constants'
 import { i18nKey } from '@/lib/i18n'
 
 const WELCOME_TO_KIWI = 'Welcome to KIWI'
 
 async function handleLogin() {
   window.location.href =
-    'http://localhost:5173/' +
+    KIWI_CHAT_URL +
     `login?redirectUrl=${encodeURIComponent(window.location.origin)}`
 }
 </script>
