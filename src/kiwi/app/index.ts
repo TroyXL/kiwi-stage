@@ -90,13 +90,10 @@ export class KiwiApp {
   fetchObjects(
     payload: KiwiPaginationRequest<{
       // refer to schema.qualifiedName
-      type?: string
-      criteria?: Dict
+      type: string
+      criteria: Dict
       newlyCreatedId?: string
-    }> = {
-      page: 1,
-      pageSize: 10,
-    }
+    }>
   ) {
     return this.request.Post<KiwiPaginationResponse<{ items: KiwiObject[] }>>(
       '/object/search',

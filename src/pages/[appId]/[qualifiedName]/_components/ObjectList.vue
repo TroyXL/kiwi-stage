@@ -74,6 +74,7 @@ const {
       page,
       pageSize,
       type: props.qualifiedName,
+      criteria: {},
       newlyCreatedId,
     })
     newlyCreatedId = void 0
