@@ -17,9 +17,7 @@ const parameters = props.isEditMode
   ? Array.from(props.schema.fields.values())
   : props.schema.constructorParameters
 const hasParameters = !!parameters.length
-const hasSubSchemas = props.isEditMode
-  ? false
-  : !!props.schema.subSchemas.length
+const hasSubSchemas = !!props.schema.subSchemas.length
 
 async function getObjectPaylod() {
   const errors = await $parameterEditor.value?.validate()
