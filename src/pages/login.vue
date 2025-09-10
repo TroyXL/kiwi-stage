@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Beian from '@/components/Beian.vue'
 import { KIWI_CHAT_URL } from '@/kiwi/lib/constants'
 import { i18nKey } from '@/lib/i18n'
 
@@ -21,4 +22,5 @@ async function handleLogin() {
       {{ $t(i18nKey.loginLabel) }}
     </a-button>
   </div>
+  <Beian class="fixed bottom-4 left-1/2 -translate-x-1/2" />
 </template>

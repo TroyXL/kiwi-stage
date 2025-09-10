@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Beian from '@/components/Beian.vue'
 import KiwiLogo from '@/components/KiwiLogo.vue'
 import LogoutButton from '@/components/LogoutButton.vue'
 import { KiwiManager } from '@/kiwi'
@@ -120,4 +121,6 @@ function handleCreatedKiwiApp(_newlyCreatedId?: string) {
       </div>
     </a-page-header>
   </div>
+
+  <Beian class="fixed bottom-4 left-1/2 -translate-x-1/2" />
 </template>

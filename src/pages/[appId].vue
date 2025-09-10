@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Beian from '@/components/Beian.vue'
 import KiwiLogo from '@/components/KiwiLogo.vue'
 import LogoutButton from '@/components/LogoutButton.vue'
 import { useSwitchKiwiApp } from '@/hooks/useSwitchKiwiApp'
@@ -63,7 +62,7 @@ function handleClickMenuItem(selectedQualifiedName: string) {
     <a-layout class="h-0">
       <a-layout-sider class="relative !w-60 border-r !shadow-none">
         <a-menu
-          class="w-full pt-1 py-8"
+          class="w-full py-1"
           :default-selected-keys="[params.qualifiedName]"
           @menu-item-click="handleClickMenuItem"
         >
@@ -79,10 +78,6 @@ function handleClickMenuItem(selectedQualifiedName: string) {
             </div>
           </a-menu-item>
         </a-menu>
-
-        <Beian
-          class="absolute leading-8 h-8 bottom-0 left-1/2 -translate-x-1/2"
-        />
       </a-layout-sider>
       <a-layout-content>
         <router-view v-slot="{ Component }">
